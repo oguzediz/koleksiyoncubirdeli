@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksiyoncubirdeli</title>
+    <title>Koleksiyoncubirdeli - V4 CMS</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,11 +23,9 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-main); }
 
-        /* --- SOL MENÜ --- */
+        /* --- SOL MENÜ VE LOGO --- */
         .sidebar { width: 300px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 10; transition: margin-left 0.3s; }
         .sidebar.hidden { margin-left: -300px; }
-        
-        /* LOGO ALANI */
         .sidebar-header { padding: 25px; border-bottom: 1px solid var(--border-color); display: flex; gap: 15px; align-items: center; }
         #brandLogoContainer { flex: 1; cursor: pointer; display: flex; justify-content: flex-start; align-items: center; min-height: 40px; }
         #logoPlaceholder { border: 2px dashed var(--border-color); border-radius: 8px; width: 100%; text-align: center; color: var(--text-muted); font-size: 12px; font-weight: bold; padding: 10px; transition: 0.2s; }
@@ -44,21 +42,16 @@
         .category-btn { background: var(--hover-bg); border: 1px solid var(--border-color); width: 100%; border-radius: 10px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; position: relative; }
         .category-btn:hover { border-color: var(--text-muted); transform: translateX(3px); }
         .category-btn.active { border-color: var(--accent-color); background: rgba(46, 160, 67, 0.1); }
-        
         .drag-handle { padding: 12px; color: #444; cursor: grab; }
-        .drag-handle:active { cursor: grabbing; }
         .cat-name-click { flex: 1; text-align: left; padding: 12px 5px; font-size: 14px; font-weight: 500; }
         
-        .toggle-sub { padding: 12px; color: var(--text-muted); font-size: 12px; transition: transform 0.3s ease; display:flex; align-items:center; justify-content:center;}
-        .toggle-sub:hover { color: white; }
+        .toggle-sub { padding: 12px; color: var(--text-muted); font-size: 12px; transition: transform 0.3s ease; display:flex; align-items:center;}
         .toggle-sub.rotated { transform: rotate(180deg); }
 
-        /* ALT KATEGORİ SÜRÜKLENEBİLİR YAPISI */
         .sub-category-list { padding-left: 30px; display: none; margin: 5px 0 15px 0; border-left: 1px solid var(--border-color); }
         .sub-category-list.open { display: block; }
         .sub-btn-wrapper { display: flex; align-items: center; margin-bottom: 2px; }
         .sub-drag-handle { color: #444; cursor: grab; padding: 8px 10px 8px 0; font-size: 12px; }
-        .sub-drag-handle:active { cursor: grabbing; }
         .sub-btn { background: none; border: none; color: var(--text-muted); font-size: 13px; padding: 8px 0; flex: 1; text-align: left; cursor: pointer; transition: 0.2s; }
         .sub-btn:hover { color: white; padding-left: 5px; }
         .sub-btn.active { color: var(--accent-color); font-weight: bold; }
@@ -66,10 +59,8 @@
         /* --- ANA İÇERİK --- */
         .main-content { flex: 1; display: flex; flex-direction: column; }
         .top-bar { height: 75px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; border-bottom: 1px solid var(--border-color); background: var(--bg-color); }
-        
         .search-area { flex: 1; max-width: 450px; position: relative; margin: 0 20px; }
-        .search-area input { width: 100%; padding: 12px 15px 12px 40px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; outline: none; transition: 0.3s; }
-        .search-area input:focus { border-color: var(--accent-color); background: #000; }
+        .search-area input { width: 100%; padding: 12px 15px 12px 40px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; outline: none; }
         .search-area i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
         .view-controls { display: flex; gap: 5px; background: var(--sidebar-bg); padding: 5px; border-radius: 10px; border: 1px solid var(--border-color); }
@@ -81,8 +72,7 @@
         .grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
         .list-view { display: flex; flex-direction: column; gap: 15px; max-width: 900px; margin: 0 auto; }
         .list-view .card { flex-direction: row; height: 120px; }
-        .list-view .img-container { width: 100px; height: 120px; border-right: 1px solid var(--border-color); border-bottom: none; }
-        .list-view .text-cover { width: 100px; height: 120px; border-right: 1px solid var(--border-color); border-bottom: none; font-size: 24px; }
+        .list-view .img-container, .list-view .text-cover { width: 100px; height: 120px; border-right: 1px solid var(--border-color); font-size: 24px; }
         .masonry-view { column-count: 4; column-gap: 20px; }
         .masonry-view .card { break-inside: avoid; margin-bottom: 20px; }
         .masonry-view .img-container { height: auto; min-height: 150px; }
@@ -90,82 +80,85 @@
 
         .card { background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; display: flex; flex-direction: column; }
         .card:hover { border-color: #555; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
         .img-container { position: relative; width: 100%; height: 300px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; }
         .img-blur { position: absolute; width: 120%; height: 120%; background-size: cover; background-position: center; filter: blur(20px); opacity: 0.4; }
         .img-front { position: relative; max-width: 100%; max-height: 100%; object-fit: contain; z-index: 2; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .text-cover { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #1a1a1a, #333); color: var(--text-muted); font-size: 40px; font-weight: 900; letter-spacing: -2px; }
-
+        .text-cover { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #1a1a1a, #333); color: var(--text-muted); font-size: 40px; font-weight: 900; }
         .card-info { padding: 15px; flex: 1; }
         .card-title { font-size: 15px; font-weight: 700; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-meta { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; }
 
         /* --- MODALLAR --- */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--modal-bg); width: 550px; border-radius: 20px; border: 1px solid var(--border-color); z-index: 1001; padding: 35px; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; z-index: 999; }
+        .overlay.show { display: block; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--modal-bg); width: 600px; border-radius: 20px; border: 1px solid var(--border-color); z-index: 1001; padding: 35px; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
         .modal.show { display: block; }
-        .modal-top { z-index: 1002; } 
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; color: white; outline: none; font-size: 14px; }
-        .form-group input:focus { border-color: var(--accent-color); }
+        
+        /* Şablon Seçici Butonları */
+        .type-selector { display: flex; gap: 15px; margin-bottom: 20px; }
+        .type-btn { flex: 1; padding: 20px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; cursor: pointer; text-align: center; transition: 0.2s; }
+        .type-btn:hover { border-color: var(--text-muted); background: var(--hover-bg); transform: translateY(-3px); }
+        .type-btn i { font-size: 24px; margin-bottom: 10px; color: var(--accent-color); }
+        .type-btn div { font-size: 14px; font-weight: bold; }
 
-        .dynamic-fields-title { font-size: 13px; font-weight: 800; margin: 20px 0 10px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 20px; }
-        .field-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-        .field-row input { flex: 1; padding: 8px; font-size: 13px; }
-        .remove-field-btn { color: var(--danger-color); cursor: pointer; padding: 5px; }
+        /* Kişi (Cast) Kartları Tasarımı */
+        .cast-builder { background: var(--sidebar-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px; }
+        .cast-chip { display: inline-flex; align-items: center; background: var(--bg-color); border: 1px solid var(--border-color); padding: 5px 15px 5px 5px; border-radius: 30px; margin: 5px 5px 0 0; gap: 10px; }
+        .cast-chip img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+        .cast-chip-info { display: flex; flex-direction: column; }
+        .cast-chip-name { font-size: 12px; font-weight: bold; }
+        .cast-chip-role { font-size: 10px; color: var(--text-muted); }
+        .cast-chip-del { color: var(--danger-color); cursor: pointer; margin-left: 5px; }
 
         .submit-btn { width: 100%; padding: 15px; background: var(--text-main); color: #000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: 0.2s; }
         .submit-btn:hover { background: #fff; transform: translateY(-2px); }
 
         /* --- DETAY PANELİ --- */
-        .slide-panel { position: fixed; top: 0; right: -600px; width: 550px; height: 100vh; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; }
+        .slide-panel { position: fixed; top: 0; right: -600px; width: 600px; height: 100vh; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; }
         .slide-panel.open { right: 0; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; z-index: 999; }
-        .overlay.show { display: block; }
-        
         .panel-actions { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; }
-        .p-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); }
+        .p-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.6); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); }
         .p-btn:hover { background: white; color: black; }
 
         .panel-content { padding: 40px; }
         .panel-title { font-size: 36px; font-weight: 900; margin-bottom: 20px; line-height: 1.1; }
-        .custom-badge-area { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
-        .badge { background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 20px; font-size: 12px; color: var(--text-muted); }
-        .badge b { color: var(--accent-color); margin-right: 5px; }
-        .panel-desc { font-size: 16px; line-height: 1.8; color: var(--text-main); white-space: pre-wrap; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .badge { display: inline-block; background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 20px; font-size: 12px; color: var(--text-muted); margin: 0 8px 8px 0; }
+        
+        /* Galeri Vitrini (Thumbnail list) */
+        .gallery-thumbnails { display: flex; gap: 10px; padding: 15px 40px; background: var(--bg-color); overflow-x: auto; border-bottom: 1px solid var(--border-color); }
+        .thumb-img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: 0.6; transition: 0.2s; border: 2px solid transparent; }
+        .thumb-img:hover, .thumb-img.active { opacity: 1; border-color: var(--accent-color); }
+
+        /* Detay Paneli Kişi Listesi */
+        .p-cast-list { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .p-cast-card { display: flex; align-items: center; gap: 12px; background: var(--bg-color); padding: 8px 15px 8px 8px; border-radius: 40px; border: 1px solid var(--border-color); }
+        .p-cast-card img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
     </style>
 </head>
 <body>
-
     <div class="overlay" id="globalOverlay" onclick="window.closeAll()"></div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div id="brandLogoContainer" title="Logoyu Değiştir" onclick="document.getElementById('logoInput').click()">
-                <div id="logoPlaceholder">
-                    <i class="fa-solid fa-image" style="margin-right: 5px;"></i> Logo Yükle
-                </div>
+                <div id="logoPlaceholder"><i class="fa-solid fa-image"></i> Logo Yükle</div>
                 <img id="brandLogoImg" src="" style="display:none; max-width: 100%; max-height: 50px; object-fit: contain;">
             </div>
             <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="window.uploadLogo(event)">
-            <i class="fa-solid fa-bars-staggered menu-toggle-icon" title="Menüyü Gizle" onclick="document.getElementById('sidebar').classList.toggle('hidden')"></i>
+            <i class="fa-solid fa-bars-staggered menu-toggle-icon" onclick="document.getElementById('sidebar').classList.toggle('hidden')"></i>
         </div>
-
         <div class="sidebar-content">
             <div class="cat-section-header">
                 ARŞİV KATMANLARI
-                <button class="manage-cat-btn" title="Kategori Ekle / Düzenle" onclick="window.openCatManager()"><i class="fa-solid fa-plus"></i></button>
+                <button class="manage-cat-btn" onclick="window.openCatManager()"><i class="fa-solid fa-plus"></i></button>
             </div>
-            
-            <div class="cat-wrapper">
-                <div class="category-btn active" id="btn-all" onclick="window.selectAll()">
-                    <span class="cat-name-click" style="padding-left: 15px;">📁 Tüm Arşiv</span>
-                </div>
-            </div>
-            
+            <div class="cat-wrapper"><div class="category-btn active" id="btn-all" onclick="window.selectAll()"><span class="cat-name-click" style="padding-left: 15px;">📁 Tüm Arşiv</span></div></div>
             <div id="dynamicCategories"></div>
         </div>
     </div>
@@ -173,32 +166,71 @@
     <div class="main-content">
         <div class="top-bar">
             <div style="display:flex; align-items:center;">
-                <button class="view-btn" style="margin-right:15px; font-size:18px;" onclick="document.getElementById('sidebar').classList.toggle('hidden')">
-                    <i class="fa-solid fa-indent"></i>
-                </button>
+                <button class="view-btn" style="margin-right:15px; font-size:18px;" onclick="document.getElementById('sidebar').classList.toggle('hidden')"><i class="fa-solid fa-indent"></i></button>
                 <h2 id="viewTitle" style="font-size: 16px; font-weight: 700;">Tüm Arşiv</h2>
             </div>
-
             <div class="search-area">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" placeholder="İsim, sanatçı veya notlarda ara..." oninput="window.renderGallery()">
+                <input type="text" id="searchInput" placeholder="Eser, oyuncu, yazar veya not ara..." oninput="window.renderGallery()">
             </div>
-
             <div style="display:flex; gap:15px; align-items:center;">
                 <div class="view-controls">
-                    <button class="view-btn active" id="v-grid" onclick="window.changeView('grid')" title="Izgara"><i class="fa-solid fa-grip-vertical"></i></button>
-                    <button class="view-btn" id="v-list" onclick="window.changeView('list')" title="Liste"><i class="fa-solid fa-list"></i></button>
-                    <button class="view-btn" id="v-masonry" onclick="window.changeView('masonry')" title="Duvar"><i class="fa-solid fa-table-cells"></i></button>
+                    <button class="view-btn active" id="v-grid" onclick="window.changeView('grid')"><i class="fa-solid fa-grip-vertical"></i></button>
+                    <button class="view-btn" id="v-list" onclick="window.changeView('list')"><i class="fa-solid fa-list"></i></button>
+                    <button class="view-btn" id="v-masonry" onclick="window.changeView('masonry')"><i class="fa-solid fa-table-cells"></i></button>
                 </div>
-                <button class="add-new-btn" style="padding: 12px 20px; border-radius: 12px; background:white; border:none; font-weight:800; cursor:pointer;" onclick="window.openModal()">
-                    + EKLE
-                </button>
+                <button style="padding: 12px 20px; border-radius: 12px; background:white; color:black; border:none; font-weight:800; cursor:pointer;" onclick="window.openTypeSelectionModal()">+ EKLE</button>
             </div>
         </div>
+        <div class="content-area"><div id="galleryGrid" class="grid-view"></div></div>
+    </div>
 
-        <div class="content-area">
-            <div id="galleryGrid" class="grid-view"></div>
+    <div class="modal" id="typeSelectionModal" style="z-index: 1002;">
+        <div class="modal-header"><h3>Ne Ekliyoruz?</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
+        <div class="type-selector">
+            <div class="type-btn" onclick="window.openFormModal('film')"><i class="fa-solid fa-film"></i><div>Film / Dizi</div></div>
+            <div class="type-btn" onclick="window.openFormModal('kitap')"><i class="fa-solid fa-book"></i><div>Kitap</div></div>
+            <div class="type-btn" onclick="window.openFormModal('ayrac')"><i class="fa-solid fa-bookmark"></i><div>Ayraç / Koleksiyon</div></div>
         </div>
+    </div>
+
+    <div class="modal" id="addModal">
+        <div class="modal-header"><h3 id="modalHeaderTitle">Yeni Eser</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
+        <input type="hidden" id="editId">
+        <input type="hidden" id="currentItemType" value="diger">
+        
+        <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" required></div>
+
+        <div class="form-row">
+            <div class="form-group"><label>Kategori</label><select id="in-cat" onchange="window.updateSubSelect()"></select></div>
+            <div class="form-group"><label>Alt Kategori</label><select id="in-sub"></select></div>
+        </div>
+
+        <div class="form-group">
+            <label>Görseller (Birden Fazla Seçebilirsin)</label>
+            <input type="file" id="in-file" accept="image/*" multiple>
+            <div style="font-size:10px; color:#888; margin-top:5px;">*Ctrl veya Cmd'ye basılı tutarak birden fazla resim seçebilirsin.</div>
+        </div>
+
+        <div id="castSystem" class="cast-builder">
+            <label style="display:block; margin-bottom:10px; font-size:12px; font-weight:bold; color:var(--text-muted);">KİŞİLER / KADRO</label>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="tempCastName" placeholder="Kişi Adı" style="flex:1; padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white;">
+                <select id="tempCastRole" style="padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white;">
+                    <option>Yönetmen</option><option>Oyuncu</option><option>Yazar</option><option>Çizer</option><option>Karakter</option>
+                </select>
+                <input type="file" id="tempCastFile" accept="image/*" title="Profil Fotoğrafı" style="width:105px; font-size:11px;">
+                <button type="button" id="castAddBtn" style="padding:10px 15px; border-radius:8px; background:var(--accent-color); border:none; color:white; font-weight:bold; cursor:pointer;" onclick="window.addCastMember()">Ekle</button>
+            </div>
+            <div id="castChipsContainer" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" style="height:80px;"></textarea></div>
+
+        <div class="dynamic-fields-title">ÖZEL ALANLAR <button class="manage-cat-btn" onclick="window.addDynamicFieldRow()" style="font-size:12px;">+ Özellik Ekle</button></div>
+        <div id="dynamicFieldsContainer"></div>
+
+        <button class="submit-btn" id="saveBtn" onclick="window.saveItem()">ARŞİVE KAYDET</button>
     </div>
 
     <div class="slide-panel" id="detailPanel">
@@ -208,85 +240,29 @@
             <div class="p-btn" onclick="window.closeAll()"><i class="fa-solid fa-xmark"></i></div>
         </div>
         <div id="panelVisual"></div>
+        <div id="galleryThumbnails" class="gallery-thumbnails" style="display:none;"></div>
         <div class="panel-content">
             <h1 class="panel-title" id="p-title">Başlık</h1>
-            <div class="custom-badge-area" id="p-badges"></div>
+            <div id="p-badges"></div>
             <p class="panel-desc" id="p-desc"></p>
+            <div id="p-cast" class="p-cast-list"></div>
         </div>
-    </div>
-
-    <div class="modal" id="addModal">
-        <div class="modal-header">
-            <h3 id="modalHeaderTitle">Yeni Eser</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeAll()"></i>
-        </div>
-        <input type="hidden" id="editId">
-        
-        <div class="form-group">
-            <label>Eser Adı</label>
-            <input type="text" id="in-title" placeholder="Örn: Inception" required>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Kategori</label>
-                <select id="in-cat" onchange="window.updateSubSelect()"></select>
-            </div>
-            <div class="form-group">
-                <label>Alt Kategori</label>
-                <select id="in-sub"></select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Sanatçı / Yazar / Yönetmen</label>
-            <input type="text" id="in-author" placeholder="Örn: Christopher Nolan">
-        </div>
-
-        <div class="form-group">
-            <label>Görsel (Cloudinary'ye yüklenir)</label>
-            <input type="file" id="in-file" accept="image/*">
-        </div>
-
-        <div class="form-group">
-            <label>Açıklama & Notlar</label>
-            <textarea id="in-desc" placeholder="Eser hakkındaki düşüncelerin..."></textarea>
-        </div>
-
-        <div class="dynamic-fields-title">
-            DİNAMİK ÖZELLİKLER
-            <button class="manage-cat-btn" onclick="window.addDynamicFieldRow()" style="font-size:14px; font-weight:bold;">+ Alan Ekle</button>
-        </div>
-        <div id="dynamicFieldsContainer"></div>
-
-        <button class="submit-btn" id="saveBtn" onclick="window.saveItem()">ARŞİVE KAYDET</button>
     </div>
 
     <div class="modal" id="catModal">
-        <div class="modal-header">
-            <h3>Kategorileri Yapılandır</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeAll()"></i>
-        </div>
+        <div class="modal-header"><h3>Kategorileri Yapılandır</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
         <div id="catManList" style="margin-bottom:20px; max-height: 400px; overflow-y: auto; padding-right:5px;"></div>
         <button class="submit-btn" style="background:#333; color:white; border:1px dashed #666;" onclick="window.openNewCat()">+ Yeni Ana Kategori Yarat</button>
     </div>
-
     <div class="modal modal-top" id="newCatModal">
-        <div class="modal-header">
-            <h3>Yeni Ana Kategori</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeNewCat()"></i>
-        </div>
-        <input type="text" id="newCatInput" placeholder="Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px; font-size:15px; outline:none;">
+        <div class="modal-header"><h3>Yeni Ana Kategori</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeNewCat()"></i></div>
+        <input type="text" id="newCatInput" placeholder="Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px;">
         <button class="submit-btn" onclick="window.saveNewCat()">Kategoriyi Yarat</button>
     </div>
-
     <div class="modal modal-top" id="subCatModal">
-        <div class="modal-header">
-            <h3>Alt Kategori Ekle</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeSubCat()"></i>
-        </div>
+        <div class="modal-header"><h3>Alt Kategori Ekle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeSubCat()"></i></div>
         <input type="hidden" id="subParentId">
-        <input type="text" id="subCatInput" placeholder="Alt Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px; font-size:15px; outline:none;">
+        <input type="text" id="subCatInput" placeholder="Alt Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px;">
         <button class="submit-btn" onclick="window.saveSubCat()">Ekle</button>
     </div>
 
@@ -306,19 +282,16 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/de3kvm7zl/image/upload";
         const CLOUDINARY_PRESET = "ml_default";
 
-        let allItems = []; 
-        let categoryTree = [];
-        let appSettings = { logoUrl: '' }; // Logo için ayarlar veritabanı
-        let currentMain = 'Tümü';
-        let currentSub = null;
-        let viewMode = 'grid';
-        let activeId = null;
+        let allItems = [], categoryTree = [], appSettings = { logoUrl: '' };
+        let currentMain = 'Tümü', currentSub = null, viewMode = 'grid', activeId = null;
+        
+        // Yeni CMS Veri Yapıları
+        let currentCastArray = []; 
+        let currentImagesArray = []; // Düzenlemede eski resimleri tutmak için
 
-        // --- AYARLAR VE LOGO YÖNETİMİ ---
         const loadSettings = async () => {
             const snap = await getDoc(doc(db, "settings", "general"));
             if (snap.exists()) {
@@ -326,397 +299,285 @@
                 if(appSettings.logoUrl) {
                     document.getElementById('logoPlaceholder').style.display = 'none';
                     const logoImg = document.getElementById('brandLogoImg');
-                    logoImg.src = appSettings.logoUrl;
-                    logoImg.style.display = 'block';
+                    logoImg.src = appSettings.logoUrl; logoImg.style.display = 'block';
                 }
             }
         };
 
         window.uploadLogo = async (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-
-            const placeholder = document.getElementById('logoPlaceholder');
-            const imgEl = document.getElementById('brandLogoImg');
-            
-            placeholder.style.display = 'block';
-            imgEl.style.display = 'none';
-            placeholder.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yükleniyor...';
-
-            const fd = new FormData();
-            fd.append("file", file);
-            fd.append("upload_preset", CLOUDINARY_PRESET);
-            
+            const file = e.target.files[0]; if(!file) return;
+            const p = document.getElementById('logoPlaceholder'), i = document.getElementById('brandLogoImg');
+            p.style.display = 'block'; i.style.display = 'none'; p.innerHTML = 'Yükleniyor...';
+            const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", CLOUDINARY_PRESET);
             try {
                 const res = await fetch(CLOUDINARY_URL, { method:"POST", body:fd });
-                const json = await res.json();
-                appSettings.logoUrl = json.secure_url;
-                
+                appSettings.logoUrl = (await res.json()).secure_url;
                 await setDoc(doc(db, "settings", "general"), appSettings);
-                
-                placeholder.style.display = 'none';
-                imgEl.src = appSettings.logoUrl;
-                imgEl.style.display = 'block';
-            } catch(err) {
-                alert("Logo yüklenirken bir hata oluştu.");
-                placeholder.innerHTML = '<i class="fa-solid fa-image"></i> Logo Yükle';
-            }
+                p.style.display = 'none'; i.src = appSettings.logoUrl; i.style.display = 'block';
+            } catch(err) { p.innerHTML = 'Hata!'; }
         };
 
-        // --- KATEGORİ YÖNETİMİ VE SÜRÜKLE BIRAK ---
         const loadCategories = async () => {
             const snap = await getDoc(doc(db, "settings", "categories"));
             categoryTree = snap.exists() ? snap.data().tree : [{ id: "1", name: "Filmler", sub: [] }];
-            renderSidebar();
-            updateInCatSelect();
+            renderSidebar(); updateInCatSelect();
         };
 
         const renderSidebar = () => {
-            const cont = document.getElementById('dynamicCategories');
-            cont.innerHTML = '';
-            
+            const cont = document.getElementById('dynamicCategories'); cont.innerHTML = '';
             categoryTree.forEach(cat => {
-                const wrap = document.createElement('div');
-                wrap.className = 'cat-wrapper';
-                wrap.setAttribute('data-id', cat.id);
-                const hasSub = cat.sub && cat.sub.length > 0;
-                
+                const wrap = document.createElement('div'); wrap.className = 'cat-wrapper'; wrap.setAttribute('data-id', cat.id);
                 wrap.innerHTML = `
                     <div class="category-btn" id="cbtn-${cat.id}">
                         <i class="fa-solid fa-ellipsis-vertical drag-handle"></i>
                         <span class="cat-name-click" onclick="window.selectMain('${cat.name}', '${cat.id}')">${cat.name}</span>
-                        ${hasSub ? `<div class="toggle-sub" id="toggle-${cat.id}" onclick="window.toggleSubMenu('${cat.id}', event)"><i class="fa-solid fa-chevron-down"></i></div>` : ''}
+                        ${cat.sub.length > 0 ? `<div class="toggle-sub" id="toggle-${cat.id}" onclick="window.toggleSubMenu('${cat.id}', event)"><i class="fa-solid fa-chevron-down"></i></div>` : ''}
                     </div>
                     <div class="sub-category-list" id="slist-${cat.id}" data-parent-id="${cat.id}">
                         ${cat.sub.map(s => `
                             <div class="sub-btn-wrapper" id="swrap-${s.id}">
                                 <i class="fa-solid fa-grip-vertical sub-drag-handle"></i>
                                 <button class="sub-btn" id="sbtn-${s.id}" onclick="window.selectSub('${cat.name}', '${s.name}', '${cat.id}', '${s.id}')">↳ ${s.name}</button>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
+                            </div>`).join('')}
+                    </div>`;
                 cont.appendChild(wrap);
             });
-
-            // Ana Kategoriler için Sürükle-Bırak
-            Sortable.create(cont, {
-                handle: '.drag-handle', animation: 150,
-                onEnd: async function (evt) {
-                    const itemEl = categoryTree.splice(evt.oldIndex, 1)[0];
-                    categoryTree.splice(evt.newIndex, 0, itemEl);
-                    await saveTreeSilent();
-                }
-            });
-
-            // Alt Kategoriler için Sürükle-Bırak
-            document.querySelectorAll('.sub-category-list').forEach(subListEl => {
-                Sortable.create(subListEl, {
-                    handle: '.sub-drag-handle', animation: 150,
-                    onEnd: async function (evt) {
-                        const parentId = subListEl.getAttribute('data-parent-id');
-                        const parentCat = categoryTree.find(c => c.id === parentId);
-                        if(parentCat) {
-                            const itemEl = parentCat.sub.splice(evt.oldIndex, 1)[0];
-                            parentCat.sub.splice(evt.newIndex, 0, itemEl);
-                            await saveTreeSilent();
-                        }
-                    }
-                });
+            Sortable.create(cont, { handle: '.drag-handle', animation: 150, onEnd: async (evt) => { const item = categoryTree.splice(evt.oldIndex, 1)[0]; categoryTree.splice(evt.newIndex, 0, item); await saveTreeSilent(); } });
+            document.querySelectorAll('.sub-category-list').forEach(list => {
+                Sortable.create(list, { handle: '.sub-drag-handle', animation: 150, onEnd: async (evt) => {
+                    const p = categoryTree.find(c => c.id === list.getAttribute('data-parent-id'));
+                    if(p) { const item = p.sub.splice(evt.oldIndex, 1)[0]; p.sub.splice(evt.newIndex, 0, item); await saveTreeSilent(); }
+                }});
             });
         };
 
-        window.selectMain = (name, id) => {
-            currentMain = name; currentSub = null;
-            document.getElementById('viewTitle').innerText = name;
-            document.querySelectorAll('.category-btn, .sub-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`cbtn-${id}`).classList.add('active');
-            
-            const slist = document.getElementById(`slist-${id}`);
-            const toggle = document.getElementById(`toggle-${id}`);
-            if(slist && !slist.classList.contains('open')) {
-                slist.classList.add('open');
-                if(toggle) toggle.classList.add('rotated');
-            }
-            window.renderGallery();
-        };
+        window.selectMain = (name, id) => { currentMain = name; currentSub = null; document.getElementById('viewTitle').innerText = name; document.querySelectorAll('.category-btn, .sub-btn').forEach(b => b.classList.remove('active')); document.getElementById(`cbtn-${id}`).classList.add('active'); const slist = document.getElementById(`slist-${id}`); if(slist && !slist.classList.contains('open')) { slist.classList.add('open'); document.getElementById(`toggle-${id}`)?.classList.add('rotated'); } window.renderGallery(); };
+        window.selectSub = (mName, sName, mId, sId) => { currentMain = mName; currentSub = sName; document.getElementById('viewTitle').innerText = `${mName} / ${sName}`; document.querySelectorAll('.category-btn, .sub-btn').forEach(b => b.classList.remove('active')); document.getElementById(`cbtn-${mId}`).classList.add('active'); document.getElementById(`sbtn-${sId}`).classList.add('active'); window.renderGallery(); };
+        window.selectAll = () => { currentMain = 'Tümü'; currentSub = null; document.getElementById('viewTitle').innerText = 'Tüm Arşiv'; document.querySelectorAll('.category-btn, .sub-btn').forEach(b => b.classList.remove('active')); document.getElementById('btn-all').classList.add('active'); window.renderGallery(); };
+        window.toggleSubMenu = (id, e) => { e.stopPropagation(); document.getElementById(`slist-${id}`).classList.toggle('open'); document.getElementById(`toggle-${id}`).classList.toggle('rotated'); };
+        window.changeView = (mode) => { viewMode = mode; document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); document.getElementById(`v-${mode}`).classList.add('active'); window.renderGallery(); };
 
-        window.selectSub = (mName, sName, mId, sId) => {
-            currentMain = mName; currentSub = sName;
-            document.getElementById('viewTitle').innerText = `${mName} / ${sName}`;
-            document.querySelectorAll('.category-btn, .sub-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`cbtn-${mId}`).classList.add('active');
-            document.getElementById(`sbtn-${sId}`).classList.add('active');
-            window.renderGallery();
-        };
+        const loadData = () => { onSnapshot(query(collection(db, "arsiv"), orderBy("timestamp", "desc")), (s) => { allItems = s.docs.map(d => ({ id: d.id, ...d.data() })); window.renderGallery(); }); };
 
-        window.selectAll = () => {
-            currentMain = 'Tümü'; currentSub = null;
-            document.getElementById('viewTitle').innerText = 'Tüm Arşiv';
-            document.querySelectorAll('.category-btn, .sub-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-all').classList.add('active');
-            window.renderGallery();
-        };
-
-        window.toggleSubMenu = (id, e) => { 
-            e.stopPropagation(); 
-            const list = document.getElementById(`slist-${id}`);
-            const icon = document.getElementById(`toggle-${id}`);
-            list.classList.toggle('open');
-            icon.classList.toggle('rotated');
-        };
-
-        window.changeView = (mode) => {
-            viewMode = mode;
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`v-${mode}`).classList.add('active');
-            window.renderGallery();
-        };
-
-        const loadData = () => {
-            onSnapshot(query(collection(db, "arsiv"), orderBy("timestamp", "desc")), (s) => {
-                allItems = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                window.renderGallery();
-            });
-        };
-
+        // SÜPER ARAMA: Cast isimlerini de tarar
         window.renderGallery = () => {
-            const grid = document.getElementById('galleryGrid');
-            grid.className = `${viewMode}-view`;
-            grid.innerHTML = '';
-            
+            const grid = document.getElementById('galleryGrid'); grid.className = `${viewMode}-view`; grid.innerHTML = '';
             const search = document.getElementById('searchInput').value.toLowerCase().trim();
-
+            
             let filtered = allItems.filter(item => {
                 const matchMain = currentMain === 'Tümü' || item.category === currentMain;
                 const matchSub = !currentSub || item.subCategory === currentSub;
-                const matchSearch = !search || 
-                                    item.title.toLowerCase().includes(search) || 
-                                    (item.author && item.author.toLowerCase().includes(search)) ||
-                                    (item.description && item.description.toLowerCase().includes(search));
+                
+                // Super Search Logic
+                let matchSearch = !search || item.title.toLowerCase().includes(search) || (item.description && item.description.toLowerCase().includes(search));
+                if (item.cast && !matchSearch) { matchSearch = item.cast.some(c => c.name.toLowerCase().includes(search) || c.role.toLowerCase().includes(search)); }
+                
                 return matchMain && matchSub && matchSearch;
             });
 
-            if(filtered.length === 0) { grid.innerHTML = '<div class="empty-state" style="padding:50px; text-align:center; color:#888;">Aradığın kriterlerde eser bulunamadı.</div>'; return; }
+            if(filtered.length === 0) { grid.innerHTML = '<div style="grid-column:1/-1; padding:50px; text-align:center; color:#888;">Eser bulunamadı.</div>'; return; }
 
             filtered.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.onclick = () => window.openDetail(item.id);
-
-                let visual = '';
-                if(item.imageUrl) {
-                    visual = `<div class="img-container"><div class="img-blur" style="background-image:url('${item.imageUrl}')"></div><img src="${item.imageUrl}" class="img-front"></div>`;
-                } else {
-                    visual = `<div class="text-cover">${item.title.substring(0,2).toUpperCase()}</div>`;
-                }
-
-                card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta"><span>${item.category}</span><span>${item.author || ''}</span></div></div>`;
+                const card = document.createElement('div'); card.className = 'card'; card.onclick = () => window.openDetail(item.id);
+                const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl; // Geriye dönük uyumluluk
+                
+                let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${coverUrl}')"></div><img src="${coverUrl}" class="img-front"></div>` : `<div class="text-cover">${item.title.substring(0,2).toUpperCase()}</div>`;
+                card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta"><span>${item.category}</span></div></div>`;
                 grid.appendChild(card);
             });
         };
 
-        window.openDetail = (id) => {
-            activeId = id;
-            const item = allItems.find(i => i.id === id);
-            
-            const visual = document.getElementById('panelVisual');
-            if(item.imageUrl) {
-                visual.innerHTML = `<div class="img-container" style="height:400px;"><div class="img-blur" style="background-image:url('${item.imageUrl}')"></div><img src="${item.imageUrl}" class="img-front"></div>`;
-            } else {
-                visual.innerHTML = `<div class="text-cover" style="height:400px; font-size:80px;">${item.title.substring(0,2).toUpperCase()}</div>`;
-            }
-
-            document.getElementById('p-title').innerText = item.title;
-            document.getElementById('p-desc').innerText = item.description || 'Açıklama girilmemiş.';
-            
-            const badges = document.getElementById('p-badges');
-            badges.innerHTML = `<div class="badge"><b>KATEGORİ:</b> ${item.subCategory ? item.category + ' / ' + item.subCategory : item.category}</div>`;
-            if(item.author) badges.innerHTML += `<div class="badge"><b>SANATÇI:</b> ${item.author}</div>`;
-            
-            if(item.customFields) {
-                item.customFields.forEach(f => {
-                    if(f.val) badges.innerHTML += `<div class="badge"><b>${f.key.toUpperCase()}:</b> ${f.val}</div>`;
-                });
-            }
-
-            document.getElementById('detailPanel').classList.add('open');
+        // --- ŞABLON SİSTEMİ VE FORMLAR ---
+        window.openTypeSelectionModal = () => {
+            document.getElementById('typeSelectionModal').classList.add('show');
             document.getElementById('globalOverlay').classList.add('show');
         };
 
+        window.openFormModal = (type) => {
+            document.getElementById('typeSelectionModal').classList.remove('show');
+            document.getElementById('editId').value = '';
+            document.getElementById('currentItemType').value = type;
+            document.getElementById('in-title').value = ''; document.getElementById('in-desc').value = '';
+            document.getElementById('in-file').value = '';
+            
+            // Şablona Göre Formu Düzenle
+            const castSys = document.getElementById('castSystem');
+            if (type === 'ayrac') { castSys.style.display = 'none'; } else { castSys.style.display = 'block'; }
+            
+            currentCastArray = []; currentImagesArray = []; renderCastChips();
+            document.getElementById('dynamicFieldsContainer').innerHTML = '';
+            if (type === 'kitap') window.addDynamicFieldRow('Sayfa Sayısı', '');
+            if (type === 'film') window.addDynamicFieldRow('IMDB Puanı', '');
+
+            document.getElementById('addModal').classList.add('show');
+        };
+
+        // KİŞİ (CAST) SİSTEMİ
+        window.addCastMember = async () => {
+            const name = document.getElementById('tempCastName').value.trim();
+            const role = document.getElementById('tempCastRole').value;
+            const fileInput = document.getElementById('tempCastFile');
+            const btn = document.getElementById('castAddBtn');
+
+            if(!name) { alert("Lütfen bir isim girin."); return; }
+            btn.innerText = "..."; btn.disabled = true;
+
+            let imageUrl = "";
+            if (fileInput.files[0]) {
+                const fd = new FormData(); fd.append("file", fileInput.files[0]); fd.append("upload_preset", CLOUDINARY_PRESET);
+                try { const res = await fetch(CLOUDINARY_URL, { method:"POST", body:fd }); imageUrl = (await res.json()).secure_url; } catch(e) { console.error(e); }
+            }
+
+            currentCastArray.push({ id: Date.now().toString(), name, role, imageUrl });
+            document.getElementById('tempCastName').value = ''; fileInput.value = '';
+            btn.innerText = "Ekle"; btn.disabled = false;
+            renderCastChips();
+        };
+
+        const renderCastChips = () => {
+            const cont = document.getElementById('castChipsContainer');
+            cont.innerHTML = currentCastArray.map(c => `
+                <div class="cast-chip">
+                    ${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:30px;height:30px;border-radius:50%;background:#444;display:flex;align-items:center;justify-content:center;font-size:10px;">${c.name.substring(0,1)}</div>`}
+                    <div class="cast-chip-info"><span class="cast-chip-name">${c.name}</span><span class="cast-chip-role">${c.role}</span></div>
+                    <i class="fa-solid fa-xmark cast-chip-del" onclick="window.removeCast('${c.id}')"></i>
+                </div>
+            `).join('');
+        };
+        window.removeCast = (id) => { currentCastArray = currentCastArray.filter(c => c.id !== id); renderCastChips(); };
+
+        // DİNAMİK ALANLAR
         window.addDynamicFieldRow = (key = '', val = '') => {
-            const cont = document.getElementById('dynamicFieldsContainer');
-            const row = document.createElement('div');
-            row.className = 'field-row';
-            row.innerHTML = `<input type="text" placeholder="Örn: Sayfa" value="${key}" class="f-key"><input type="text" placeholder="Değer" value="${val}" class="f-val"><i class="fa-solid fa-trash-can remove-field-btn" onclick="this.parentElement.remove()"></i>`;
+            const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row';
+            row.innerHTML = `<input type="text" placeholder="Örn: Basım Yılı" value="${key}" class="f-key"><input type="text" placeholder="Değer" value="${val}" class="f-val"><i class="fa-solid fa-trash-can remove-field-btn" onclick="this.parentElement.remove()"></i>`;
             cont.appendChild(row);
         };
 
+        // KAPSAMLI KAYDETME (Çoklu Resim Dahil)
         window.saveItem = async () => {
             const id = document.getElementById('editId').value;
             const saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerText = "İŞLENİYOR...";
-            saveBtn.disabled = true;
+            const title = document.getElementById('in-title').value;
+            if(!title) { alert("Eser adı zorunlu!"); return; }
 
-            const fields = [];
-            document.querySelectorAll('.field-row').forEach(row => {
-                fields.push({ key: row.querySelector('.f-key').value, val: row.querySelector('.f-val').value });
-            });
+            saveBtn.innerText = "YÜKLENİYOR..."; saveBtn.disabled = true;
+
+            const fields = []; document.querySelectorAll('.field-row').forEach(row => { fields.push({ key: row.querySelector('.f-key').value, val: row.querySelector('.f-val').value }); });
 
             const data = {
-                title: document.getElementById('in-title').value,
-                category: document.getElementById('in-cat').value,
-                subCategory: document.getElementById('in-sub').value,
-                author: document.getElementById('in-author').value,
-                description: document.getElementById('in-desc').value,
-                customFields: fields,
-                timestamp: Date.now()
+                title: title, category: document.getElementById('in-cat').value, subCategory: document.getElementById('in-sub').value,
+                description: document.getElementById('in-desc').value, itemType: document.getElementById('currentItemType').value,
+                customFields: fields, cast: currentCastArray, timestamp: Date.now(), images: currentImagesArray
             };
 
-            const file = document.getElementById('in-file').files[0];
-            if(file) {
-                const fd = new FormData();
-                fd.append("file", file);
-                fd.append("upload_preset", CLOUDINARY_PRESET);
-                const res = await fetch(CLOUDINARY_URL, { method:"POST", body:fd });
-                const json = await res.json();
-                data.imageUrl = json.secure_url;
-            } else if(id) {
-                const old = allItems.find(i => i.id === id);
-                if(old.imageUrl) data.imageUrl = old.imageUrl;
+            const files = document.getElementById('in-file').files;
+            if (files.length > 0) {
+                for(let i = 0; i < files.length; i++) {
+                    const fd = new FormData(); fd.append("file", files[i]); fd.append("upload_preset", CLOUDINARY_PRESET);
+                    try { const res = await fetch(CLOUDINARY_URL, { method:"POST", body:fd }); data.images.push((await res.json()).secure_url); } catch(e) { console.error(e); }
+                }
             }
 
+            saveBtn.innerText = "VERİTABANINA YAZILIYOR...";
             id ? await updateDoc(doc(db, "arsiv", id), data) : await addDoc(collection(db, "arsiv"), data);
-            window.closeAll();
-            saveBtn.innerText = "ARŞİVE KAYDET";
-            saveBtn.disabled = false;
+            window.closeAll(); saveBtn.innerText = "ARŞİVE KAYDET"; saveBtn.disabled = false;
         };
 
-        window.openModal = () => {
-            document.getElementById('editId').value = '';
-            document.getElementById('modalHeaderTitle').innerText = "Yeni Eser";
-            document.getElementById('dynamicFieldsContainer').innerHTML = '';
-            document.getElementById('in-title').value = '';
-            document.getElementById('addModal').classList.add('show');
-            document.getElementById('globalOverlay').classList.add('show');
+        // --- DETAY PANELİ ---
+        window.openDetail = (id) => {
+            activeId = id; const item = allItems.find(i => i.id === id);
+            
+            // Görsel Vitrini Ayarlama
+            const visual = document.getElementById('panelVisual');
+            const thumbsCont = document.getElementById('galleryThumbnails');
+            const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
+
+            if(coverUrl) {
+                visual.innerHTML = `<div class="img-container" style="height:450px;"><div class="img-blur" id="mainBlur" style="background-image:url('${coverUrl}')"></div><img src="${coverUrl}" id="mainImg" class="img-front"></div>`;
+                if(item.images && item.images.length > 1) {
+                    thumbsCont.style.display = 'flex';
+                    thumbsCont.innerHTML = item.images.map(img => `<img src="${img}" class="thumb-img" onclick="window.changeMainImg('${img}', this)">`).join('');
+                } else { thumbsCont.style.display = 'none'; }
+            } else {
+                visual.innerHTML = `<div class="text-cover" style="height:400px; font-size:80px;">${item.title.substring(0,2).toUpperCase()}</div>`;
+                thumbsCont.style.display = 'none';
+            }
+
+            document.getElementById('p-title').innerText = item.title;
+            document.getElementById('p-desc').innerText = item.description || '';
+            
+            const badges = document.getElementById('p-badges');
+            badges.innerHTML = `<span class="badge"><b>KATEGORİ:</b> ${item.subCategory ? item.category + ' / ' + item.subCategory : item.category}</span>`;
+            if(item.customFields) item.customFields.forEach(f => { if(f.val) badges.innerHTML += `<span class="badge"><b>${f.key.toUpperCase()}:</b> ${f.val}</span>`; });
+
+            // Kişi Kartlarını Çizme
+            const castCont = document.getElementById('p-cast');
+            if(item.cast && item.cast.length > 0) {
+                castCont.style.display = 'flex';
+                castCont.innerHTML = item.cast.map(c => `
+                    <div class="p-cast-card">
+                        ${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:45px;height:45px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;color:white;">${c.name.substring(0,1)}</div>`}
+                        <div><div style="font-size:13px; font-weight:bold;">${c.name}</div><div style="font-size:11px; color:var(--accent-color);">${c.role}</div></div>
+                    </div>`).join('');
+            } else { castCont.style.display = 'none'; }
+
+            document.getElementById('detailPanel').classList.add('open'); document.getElementById('globalOverlay').classList.add('show');
+        };
+
+        window.changeMainImg = (url, el) => {
+            document.getElementById('mainImg').src = url; document.getElementById('mainBlur').style.backgroundImage = `url('${url}')`;
+            document.querySelectorAll('.thumb-img').forEach(i => i.classList.remove('active')); el.classList.add('active');
         };
 
         window.editCurrentItem = () => {
             const item = allItems.find(i => i.id === activeId);
             document.getElementById('editId').value = item.id;
-            document.getElementById('modalHeaderTitle').innerText = "Eseri Güncelle";
+            document.getElementById('currentItemType').value = item.itemType || 'diger';
             document.getElementById('in-title').value = item.title;
-            document.getElementById('in-cat').value = item.category;
-            window.updateSubSelect();
-            document.getElementById('in-sub').value = item.subCategory || '';
-            document.getElementById('in-author').value = item.author || '';
+            document.getElementById('in-cat').value = item.category; window.updateSubSelect(); document.getElementById('in-sub').value = item.subCategory || '';
             document.getElementById('in-desc').value = item.description || '';
             
-            const cont = document.getElementById('dynamicFieldsContainer');
-            cont.innerHTML = '';
+            currentCastArray = item.cast || []; renderCastChips();
+            currentImagesArray = item.images || (item.imageUrl ? [item.imageUrl] : []); // Eski tek resimli kayıtları array'e çevir
+
+            const castSys = document.getElementById('castSystem');
+            if (item.itemType === 'ayrac') { castSys.style.display = 'none'; } else { castSys.style.display = 'block'; }
+
+            const cont = document.getElementById('dynamicFieldsContainer'); cont.innerHTML = '';
             if(item.customFields) item.customFields.forEach(f => window.addDynamicFieldRow(f.key, f.val));
 
-            document.getElementById('addModal').classList.add('show');
-            document.getElementById('detailPanel').classList.remove('open');
+            document.getElementById('detailPanel').classList.remove('open'); document.getElementById('addModal').classList.add('show');
         };
 
-        window.deleteCurrentItem = async () => {
-            if(confirm("Bu eseri tamamen silmek istediğine emin misin?")) {
-                await deleteDoc(doc(db, "arsiv", activeId));
-                window.closeAll();
-            }
-        };
+        window.deleteCurrentItem = async () => { if(confirm("Bu eseri tamamen silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
 
-        window.closeAll = () => {
-            document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
-            document.getElementById('detailPanel').classList.remove('open');
-            document.getElementById('globalOverlay').classList.remove('show');
-        };
+        window.closeAll = () => { document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); document.getElementById('detailPanel').classList.remove('open'); document.getElementById('globalOverlay').classList.remove('show'); };
         window.closeNewCat = () => { document.getElementById('newCatModal').classList.remove('show'); };
         window.closeSubCat = () => { document.getElementById('subCatModal').classList.remove('show'); };
 
-        const updateInCatSelect = () => {
-            const s = document.getElementById('in-cat');
-            s.innerHTML = categoryTree.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-            window.updateSubSelect();
-        };
+        const updateInCatSelect = () => { const s = document.getElementById('in-cat'); s.innerHTML = categoryTree.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); window.updateSubSelect(); };
+        window.updateSubSelect = () => { const val = document.getElementById('in-cat').value; const sub = document.getElementById('in-sub'); const cat = categoryTree.find(c => c.name === val); sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? cat.sub.map(s => `<option value="${s.name}">${s.name}</option>`).join('') : ''); };
 
-        window.updateSubSelect = () => {
-            const val = document.getElementById('in-cat').value;
-            const sub = document.getElementById('in-sub');
-            const cat = categoryTree.find(c => c.name === val);
-            sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? cat.sub.map(s => `<option value="${s.name}">${s.name}</option>`).join('') : '');
-        };
-
-        // --- GELİŞMİŞ KATEGORİ YÖNETİMİ ---
+        // --- KATEGORİ YÖNETİMİ ---
         window.openCatManager = () => { renderCatMan(); document.getElementById('catModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show'); };
-        
         const renderCatMan = () => {
             const l = document.getElementById('catManList');
             l.innerHTML = categoryTree.map(c => `
                 <div style="display:flex; flex-direction:column; background:var(--bg-color); border:1px solid var(--border-color); border-radius:12px; padding:15px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <b style="font-size:15px; color:white;">${c.name}</b>
-                        <div>
-                            <button style="background:var(--hover-bg); border:none; color:var(--text-main); padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:5px; transition:0.2s;" onclick="window.openSubCat('${c.id}')"><i class="fa-solid fa-plus"></i> Alt Kategori Ekle</button>
-                            <button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px; transition:0.2s;" onclick="window.delCat('${c.id}')" title="Kategoriyi Sil"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                    ${c.sub.length > 0 ? `
-                        <div style="padding-left:15px; border-left:2px solid var(--border-color); display:flex; flex-direction:column; gap:5px;">
-                            ${c.sub.map(s => `
-                                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--sidebar-bg); padding:8px 12px; border-radius:8px;">
-                                    <span style="font-size:13px; color:var(--text-muted);">↳ ${s.name}</span>
-                                    <button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px;" onclick="window.delSubCat('${c.id}', '${s.id}')" title="Sil"><i class="fa-solid fa-xmark"></i></button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><b style="font-size:15px; color:white;">${c.name}</b><div><button style="background:var(--hover-bg); border:none; color:var(--text-main); padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:5px;" onclick="window.openSubCat('${c.id}')"><i class="fa-solid fa-plus"></i> Alt Kategori Ekle</button><button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px;" onclick="window.delCat('${c.id}')"><i class="fa-solid fa-trash"></i></button></div></div>
+                    ${c.sub.length > 0 ? `<div style="padding-left:15px; border-left:2px solid var(--border-color); display:flex; flex-direction:column; gap:5px;">${c.sub.map(s => `<div style="display:flex; justify-content:space-between; align-items:center; background:var(--sidebar-bg); padding:8px 12px; border-radius:8px;"><span style="font-size:13px; color:var(--text-muted);">↳ ${s.name}</span><button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px;" onclick="window.delSubCat('${c.id}', '${s.id}')"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}</div>` : ''}
+                </div>`).join('');
         };
-
         window.openNewCat = () => { document.getElementById('newCatInput').value = ''; document.getElementById('newCatModal').classList.add('show'); };
-        
-        window.saveNewCat = async () => {
-            const n = document.getElementById('newCatInput').value.trim();
-            if(n) { categoryTree.push({id: Date.now().toString(), name: n, sub: []}); await saveTree(); }
-            window.closeNewCat();
-        };
-
-        window.delCat = async (id) => { 
-            if(confirm('Ana kategori ve içindeki tüm alt kategoriler silinecek. Emin misin?')) {
-                categoryTree = categoryTree.filter(c => c.id !== id); await saveTree(); 
-            }
-        };
-
+        window.saveNewCat = async () => { const n = document.getElementById('newCatInput').value.trim(); if(n) { categoryTree.push({id: Date.now().toString(), name: n, sub: []}); await saveTree(); } window.closeNewCat(); };
+        window.delCat = async (id) => { if(confirm('Silinecek. Emin misin?')) { categoryTree = categoryTree.filter(c => c.id !== id); await saveTree(); } };
         window.openSubCat = (id) => { document.getElementById('subParentId').value = id; document.getElementById('subCatInput').value = ''; document.getElementById('subCatModal').classList.add('show'); };
-        
-        window.saveSubCat = async () => {
-            const n = document.getElementById('subCatInput').value.trim();
-            const id = document.getElementById('subParentId').value;
-            if(!n) return;
-            const c = categoryTree.find(x => x.id === id);
-            c.sub.push({id: Date.now().toString(), name: n});
-            await saveTree();
-            window.closeSubCat();
-        };
-
-        window.delSubCat = async (parentId, subId) => {
-            if(confirm('Alt kategori silinecek. Emin misin?')) {
-                const parent = categoryTree.find(c => c.id === parentId);
-                parent.sub = parent.sub.filter(s => s.id !== subId);
-                await saveTree();
-            }
-        };
-
+        window.saveSubCat = async () => { const n = document.getElementById('subCatInput').value.trim(); const id = document.getElementById('subParentId').value; if(!n) return; const c = categoryTree.find(x => x.id === id); c.sub.push({id: Date.now().toString(), name: n}); await saveTree(); window.closeSubCat(); };
+        window.delSubCat = async (parentId, subId) => { if(confirm('Silinecek. Emin misin?')) { const parent = categoryTree.find(c => c.id === parentId); parent.sub = parent.sub.filter(s => s.id !== subId); await saveTree(); } };
         const saveTree = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); renderSidebar(); renderCatMan(); updateInCatSelect(); };
         const saveTreeSilent = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); updateInCatSelect(); renderCatMan(); };
 
-        // Sayfa yüklendiğinde ayarları ve verileri çek
-        loadSettings();
-        loadCategories(); 
-        loadData();
+        loadSettings(); loadCategories(); loadData();
     </script>
 </body>
 </html>
