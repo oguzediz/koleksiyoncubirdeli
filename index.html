@@ -70,12 +70,20 @@
         .add-new-btn { background-color: var(--text-main); color: var(--bg-color); border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; transition: 0.2s;}
         .add-new-btn:hover { opacity: 0.9; transform: scale(1.02); }
 
-        /* --- GALERİ --- */
+        /* --- GALERİ VE AKILLI GÖRSELLER --- */
         .content-area { flex: 1; padding: 30px; overflow-y: auto; }
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-        .card { cursor: pointer; border-radius: 12px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; background: var(--sidebar-bg); border: 1px solid var(--border-color); }
+        .card { cursor: pointer; border-radius: 12px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; background: var(--sidebar-bg); border: 1px solid var(--border-color); display: flex; flex-direction: column;}
         .card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.4); border-color: #555; }
-        .card img { width: 100%; height: 320px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+        
+        /* Akıllı Resim Konteyneri (Blur Backdrop) */
+        .img-container { position: relative; width: 100%; height: 320px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #0a0a0a; border-bottom: 1px solid var(--border-color);}
+        .img-bg { position: absolute; top: -10%; left: -10%; right: -10%; bottom: -10%; background-size: cover; background-position: center; filter: blur(15px); opacity: 0.5; z-index: 1; }
+        .img-front { position: relative; z-index: 2; max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        
+        /* Tipografik Kapak (Resim Yoksa) */
+        .text-cover { width: 100%; height: 320px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--hover-bg), var(--border-color)); color: var(--text-muted); font-size: 50px; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid var(--border-color); letter-spacing: 2px;}
+
         .card-info { padding: 15px; }
         .card-title { font-size: 15px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-meta { font-size: 12px; color: var(--text-muted); }
@@ -91,7 +99,6 @@
         .action-circle-btn:hover { background: var(--text-main); color: var(--bg-color); }
         .delete-btn-action:hover { background: var(--danger-color); border-color: var(--danger-color); color: white;}
 
-        .panel-cover { width: 100%; height: 400px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
         .panel-content { padding: 30px; }
         .panel-title { font-size: 32px; margin-bottom: 15px; color: white; font-weight: 800;}
         .tags-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
@@ -175,7 +182,7 @@
             <div style="flex: 1;"><label>Alt Kategori</label><select id="inputSubCategory"><option value="">-- Seçiniz --</option></select></div>
         </div>
         <div class="form-group"><label>Yazar / Yönetmen / Sanatçı</label><input type="text" id="inputAuthor"></div>
-        <div class="form-group"><label>Afiş / Kapak Resmi</label><input type="file" id="inputFile" accept="image/*"></div>
+        <div class="form-group"><label>Afiş / Kapak / Ayraç Resmi</label><input type="file" id="inputFile" accept="image/*"></div>
         <div class="form-group"><label>Kişisel Notlar ve Açıklama</label><textarea id="inputDesc" style="height: 120px;"></textarea></div>
         <button class="submit-btn" id="saveBtn" onclick="window.saveItem()">Kaydet</button>
     </div>
@@ -220,7 +227,9 @@
             <button class="action-circle-btn delete-btn-action" onclick="window.deleteCurrentItem()" title="Sil">🗑️</button>
             <button class="action-circle-btn" onclick="window.closeAll()">✕</button>
         </div>
-        <img src="" class="panel-cover" id="panelCover">
+        
+        <div id="panelVisualContainer"></div>
+        
         <div class="panel-content">
             <h1 class="panel-title" id="panelTitle"></h1>
             <div class="tags-container">
@@ -316,7 +325,6 @@
             });
         };
 
-        // YENİ SEÇİM MANTIKLARI
         window.selectAll = () => {
             currentFilterMain = 'Tümü'; currentFilterSub = null;
             document.getElementById('currentCategoryTitle').innerText = 'Tüm Arşiv';
@@ -329,11 +337,9 @@
             currentFilterMain = mainCatName; currentFilterSub = null;
             document.getElementById('currentCategoryTitle').innerText = mainCatName;
 
-            // Renklendirme
             document.querySelectorAll('.category-btn, .sub-category-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`main-btn-${id}`).classList.add('active');
 
-            // Alt menü varsa SADECE AÇ (kapatma)
             const subList = document.getElementById(`sub-list-${id}`);
             if(subList) {
                 subList.classList.add('open');
@@ -343,7 +349,7 @@
         };
 
         window.toggleSub = (id, event) => {
-            event.stopPropagation(); // Butonun arkasındaki filtrelemeyi tetikleme
+            event.stopPropagation();
             const subList = document.getElementById(`sub-list-${id}`);
             const toggle = document.getElementById(`toggle-${id}`);
             if(subList.classList.contains('open')) {
@@ -360,7 +366,7 @@
             document.getElementById('currentCategoryTitle').innerText = `${mainCatName} / ${subCatName}`;
 
             document.querySelectorAll('.category-btn, .sub-category-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`main-btn-${mainId}`).classList.add('active'); // Ana kategoriyi de aktif göster
+            document.getElementById(`main-btn-${mainId}`).classList.add('active'); 
             document.getElementById(`sub-btn-${subId}`).classList.add('active');
             window.renderGallery();
         };
@@ -385,6 +391,7 @@
             });
         };
 
+        // EKRANA ÇİZME VE AKILLI GÖRSEL (BLUR & TIPOGRAFİ)
         window.renderGallery = () => {
             const grid = document.getElementById('galleryGrid');
             grid.innerHTML = '';
@@ -403,7 +410,7 @@
             }
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div class="empty-state">"${searchTerm}" araması için bu kategoride hiçbir sonuç bulunamadı.</div>`;
+                grid.innerHTML = `<div class="empty-state">Bu kategoride veya aramada henüz hiçbir sonuç bulunamadı.</div>`;
                 return;
             }
 
@@ -411,8 +418,22 @@
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.onclick = () => window.openPanel(item.id);
+                
+                // Resim var mı yok mu kontrolü
+                let visualHtml = '';
+                if(item.imageUrl) {
+                    visualHtml = `
+                        <div class="img-container">
+                            <div class="img-bg" style="background-image: url('${item.imageUrl}')"></div>
+                            <img src="${item.imageUrl}" class="img-front">
+                        </div>`;
+                } else {
+                    let initials = item.title ? item.title.substring(0, 2).toUpperCase() : '??';
+                    visualHtml = `<div class="text-cover">${initials}</div>`;
+                }
+
                 div.innerHTML = `
-                    <img src="${item.imageUrl || 'https://via.placeholder.com/300x450/1e1e1e/888888?text=Resim+Yok'}">
+                    ${visualHtml}
                     <div class="card-info">
                         <div class="card-title">${item.title}</div>
                         <div class="card-meta">${item.category}${item.subCategory ? ' / ' + item.subCategory : ''}</div>
@@ -424,11 +445,25 @@
         window.openPanel = (id) => {
             activePanelId = id;
             const item = allItems.find(i => i.id === id);
+            
+            // Görsel Alanı Dinamik Doldur
+            const visualContainer = document.getElementById('panelVisualContainer');
+            if (item.imageUrl) {
+                visualContainer.innerHTML = `
+                    <div class="img-container" style="height: 400px;">
+                        <div class="img-bg" style="background-image: url('${item.imageUrl}')"></div>
+                        <img src="${item.imageUrl}" class="img-front" style="max-height: 90%;">
+                    </div>`;
+            } else {
+                let initials = item.title ? item.title.substring(0, 2).toUpperCase() : '??';
+                visualContainer.innerHTML = `<div class="text-cover" style="height: 400px; font-size: 80px;">${initials}</div>`;
+            }
+
             document.getElementById('panelTitle').innerText = item.title;
-            document.getElementById('panelCover').src = item.imageUrl || '';
-            document.getElementById('panelAuthor').innerText = item.author || 'Bilinmiyor';
+            document.getElementById('panelAuthor').innerText = item.author || 'Belirtilmemiş';
             document.getElementById('panelCategory').innerText = item.subCategory ? `${item.category} / ${item.subCategory}` : item.category;
-            document.getElementById('panelDesc').innerText = item.description || 'Not eklenmemiş.';
+            document.getElementById('panelDesc').innerText = item.description || 'Bu eser için henüz bir açıklama veya not eklenmemiş.';
+            
             document.getElementById('slidePanel').classList.add('open');
             document.getElementById('panelOverlay').classList.add('show');
         };
@@ -471,7 +506,7 @@
             const title = document.getElementById('inputTitle').value;
             if(!title) { alert("Lütfen eser adı girin."); return; }
 
-            document.getElementById('saveBtn').innerText = "Resim yükleniyor, bekle...";
+            document.getElementById('saveBtn').innerText = "Yükleniyor, lütfen bekle...";
             document.getElementById('saveBtn').disabled = true;
 
             const data = {
@@ -499,6 +534,12 @@
                     document.getElementById('saveBtn').innerText = "Kaydet";
                     document.getElementById('saveBtn').disabled = false;
                     return;
+                }
+            } else if (id) {
+                // Düzenleme yapılıyorsa ve yeni resim seçilmediyse eski resmi koru
+                const existingItem = allItems.find(i => i.id === id);
+                if(existingItem && existingItem.imageUrl) {
+                    data.imageUrl = existingItem.imageUrl;
                 }
             }
 
