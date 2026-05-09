@@ -23,13 +23,19 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-main); }
 
-        /* --- SOL MENÜ (YÜZEN MODÜLER) --- */
+        /* --- SOL MENÜ --- */
         .sidebar { width: 300px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 10; transition: margin-left 0.3s; }
         .sidebar.hidden { margin-left: -300px; }
-        .sidebar-header { padding: 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .brand { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
-        .sidebar-content { padding: 20px 15px; flex: 1; overflow-y: auto; }
         
+        /* LOGO ALANI */
+        .sidebar-header { padding: 25px; border-bottom: 1px solid var(--border-color); display: flex; gap: 15px; align-items: center; }
+        #brandLogoContainer { flex: 1; cursor: pointer; display: flex; justify-content: flex-start; align-items: center; min-height: 40px; }
+        #logoPlaceholder { border: 2px dashed var(--border-color); border-radius: 8px; width: 100%; text-align: center; color: var(--text-muted); font-size: 12px; font-weight: bold; padding: 10px; transition: 0.2s; }
+        #logoPlaceholder:hover { border-color: var(--text-muted); color: white; }
+        .menu-toggle-icon { cursor: pointer; color: var(--text-muted); font-size: 18px; transition: 0.2s; }
+        .menu-toggle-icon:hover { color: white; }
+
+        .sidebar-content { padding: 20px 15px; flex: 1; overflow-y: auto; }
         .cat-section-header { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 15px; padding-left: 5px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;}
         .manage-cat-btn { font-size: 16px; color: var(--text-muted); cursor: pointer; background: none; border: none; transition: 0.2s;}
         .manage-cat-btn:hover { color: white; transform: scale(1.2); }
@@ -40,16 +46,20 @@
         .category-btn.active { border-color: var(--accent-color); background: rgba(46, 160, 67, 0.1); }
         
         .drag-handle { padding: 12px; color: #444; cursor: grab; }
+        .drag-handle:active { cursor: grabbing; }
         .cat-name-click { flex: 1; text-align: left; padding: 12px 5px; font-size: 14px; font-weight: 500; }
         
-        /* Akıllı Ok Tuşu */
         .toggle-sub { padding: 12px; color: var(--text-muted); font-size: 12px; transition: transform 0.3s ease; display:flex; align-items:center; justify-content:center;}
         .toggle-sub:hover { color: white; }
         .toggle-sub.rotated { transform: rotate(180deg); }
 
-        .sub-category-list { padding-left: 40px; display: none; margin: 5px 0 15px 0; border-left: 1px solid var(--border-color); }
+        /* ALT KATEGORİ SÜRÜKLENEBİLİR YAPISI */
+        .sub-category-list { padding-left: 30px; display: none; margin: 5px 0 15px 0; border-left: 1px solid var(--border-color); }
         .sub-category-list.open { display: block; }
-        .sub-btn { background: none; border: none; color: var(--text-muted); font-size: 13px; padding: 8px 0; width: 100%; text-align: left; cursor: pointer; transition: 0.2s; }
+        .sub-btn-wrapper { display: flex; align-items: center; margin-bottom: 2px; }
+        .sub-drag-handle { color: #444; cursor: grab; padding: 8px 10px 8px 0; font-size: 12px; }
+        .sub-drag-handle:active { cursor: grabbing; }
+        .sub-btn { background: none; border: none; color: var(--text-muted); font-size: 13px; padding: 8px 0; flex: 1; text-align: left; cursor: pointer; transition: 0.2s; }
         .sub-btn:hover { color: white; padding-left: 5px; }
         .sub-btn.active { color: var(--accent-color); font-weight: bold; }
 
@@ -134,9 +144,16 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="brand">Koleksiyoncubirdeli</div>
-            <i class="fa-solid fa-bars-staggered" style="cursor:pointer; color:var(--text-muted)"></i>
+            <div id="brandLogoContainer" title="Logoyu Değiştir" onclick="document.getElementById('logoInput').click()">
+                <div id="logoPlaceholder">
+                    <i class="fa-solid fa-image" style="margin-right: 5px;"></i> Logo Yükle
+                </div>
+                <img id="brandLogoImg" src="" style="display:none; max-width: 100%; max-height: 50px; object-fit: contain;">
+            </div>
+            <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="window.uploadLogo(event)">
+            <i class="fa-solid fa-bars-staggered menu-toggle-icon" title="Menüyü Gizle" onclick="document.getElementById('sidebar').classList.toggle('hidden')"></i>
         </div>
+
         <div class="sidebar-content">
             <div class="cat-section-header">
                 ARŞİV KATMANLARI
@@ -295,11 +312,58 @@
 
         let allItems = []; 
         let categoryTree = [];
+        let appSettings = { logoUrl: '' }; // Logo için ayarlar veritabanı
         let currentMain = 'Tümü';
         let currentSub = null;
         let viewMode = 'grid';
         let activeId = null;
 
+        // --- AYARLAR VE LOGO YÖNETİMİ ---
+        const loadSettings = async () => {
+            const snap = await getDoc(doc(db, "settings", "general"));
+            if (snap.exists()) {
+                appSettings = snap.data();
+                if(appSettings.logoUrl) {
+                    document.getElementById('logoPlaceholder').style.display = 'none';
+                    const logoImg = document.getElementById('brandLogoImg');
+                    logoImg.src = appSettings.logoUrl;
+                    logoImg.style.display = 'block';
+                }
+            }
+        };
+
+        window.uploadLogo = async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            const placeholder = document.getElementById('logoPlaceholder');
+            const imgEl = document.getElementById('brandLogoImg');
+            
+            placeholder.style.display = 'block';
+            imgEl.style.display = 'none';
+            placeholder.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yükleniyor...';
+
+            const fd = new FormData();
+            fd.append("file", file);
+            fd.append("upload_preset", CLOUDINARY_PRESET);
+            
+            try {
+                const res = await fetch(CLOUDINARY_URL, { method:"POST", body:fd });
+                const json = await res.json();
+                appSettings.logoUrl = json.secure_url;
+                
+                await setDoc(doc(db, "settings", "general"), appSettings);
+                
+                placeholder.style.display = 'none';
+                imgEl.src = appSettings.logoUrl;
+                imgEl.style.display = 'block';
+            } catch(err) {
+                alert("Logo yüklenirken bir hata oluştu.");
+                placeholder.innerHTML = '<i class="fa-solid fa-image"></i> Logo Yükle';
+            }
+        };
+
+        // --- KATEGORİ YÖNETİMİ VE SÜRÜKLE BIRAK ---
         const loadCategories = async () => {
             const snap = await getDoc(doc(db, "settings", "categories"));
             categoryTree = snap.exists() ? snap.data().tree : [{ id: "1", name: "Filmler", sub: [] }];
@@ -310,24 +374,32 @@
         const renderSidebar = () => {
             const cont = document.getElementById('dynamicCategories');
             cont.innerHTML = '';
+            
             categoryTree.forEach(cat => {
                 const wrap = document.createElement('div');
                 wrap.className = 'cat-wrapper';
                 wrap.setAttribute('data-id', cat.id);
                 const hasSub = cat.sub && cat.sub.length > 0;
+                
                 wrap.innerHTML = `
                     <div class="category-btn" id="cbtn-${cat.id}">
                         <i class="fa-solid fa-ellipsis-vertical drag-handle"></i>
                         <span class="cat-name-click" onclick="window.selectMain('${cat.name}', '${cat.id}')">${cat.name}</span>
                         ${hasSub ? `<div class="toggle-sub" id="toggle-${cat.id}" onclick="window.toggleSubMenu('${cat.id}', event)"><i class="fa-solid fa-chevron-down"></i></div>` : ''}
                     </div>
-                    <div class="sub-category-list" id="slist-${cat.id}">
-                        ${cat.sub.map(s => `<div class="sub-btn" id="sbtn-${s.id}" onclick="window.selectSub('${cat.name}', '${s.name}', '${cat.id}', '${s.id}')">↳ ${s.name}</div>`).join('')}
+                    <div class="sub-category-list" id="slist-${cat.id}" data-parent-id="${cat.id}">
+                        ${cat.sub.map(s => `
+                            <div class="sub-btn-wrapper" id="swrap-${s.id}">
+                                <i class="fa-solid fa-grip-vertical sub-drag-handle"></i>
+                                <button class="sub-btn" id="sbtn-${s.id}" onclick="window.selectSub('${cat.name}', '${s.name}', '${cat.id}', '${s.id}')">↳ ${s.name}</button>
+                            </div>
+                        `).join('')}
                     </div>
                 `;
                 cont.appendChild(wrap);
             });
 
+            // Ana Kategoriler için Sürükle-Bırak
             Sortable.create(cont, {
                 handle: '.drag-handle', animation: 150,
                 onEnd: async function (evt) {
@@ -335,6 +407,22 @@
                     categoryTree.splice(evt.newIndex, 0, itemEl);
                     await saveTreeSilent();
                 }
+            });
+
+            // Alt Kategoriler için Sürükle-Bırak
+            document.querySelectorAll('.sub-category-list').forEach(subListEl => {
+                Sortable.create(subListEl, {
+                    handle: '.sub-drag-handle', animation: 150,
+                    onEnd: async function (evt) {
+                        const parentId = subListEl.getAttribute('data-parent-id');
+                        const parentCat = categoryTree.find(c => c.id === parentId);
+                        if(parentCat) {
+                            const itemEl = parentCat.sub.splice(evt.oldIndex, 1)[0];
+                            parentCat.sub.splice(evt.newIndex, 0, itemEl);
+                            await saveTreeSilent();
+                        }
+                    }
+                });
             });
         };
 
@@ -344,7 +432,6 @@
             document.querySelectorAll('.category-btn, .sub-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`cbtn-${id}`).classList.add('active');
             
-            // Eğer alt menüsü varsa, ana kategoriye tıklandığında otomatik açılmasını sağlar (kapalıysa açılır, açıksa kapanmaz)
             const slist = document.getElementById(`slist-${id}`);
             const toggle = document.getElementById(`toggle-${id}`);
             if(slist && !slist.classList.contains('open')) {
@@ -371,7 +458,6 @@
             window.renderGallery();
         };
 
-        // Ok Tuşu Animasyonu ve Menü Aç/Kapat Mantığı
         window.toggleSubMenu = (id, e) => { 
             e.stopPropagation(); 
             const list = document.getElementById(`slist-${id}`);
@@ -541,7 +627,6 @@
             }
         };
 
-        // Modal Kapatma İşlemleri (X Tuşlarına Bağlı)
         window.closeAll = () => {
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
             document.getElementById('detailPanel').classList.remove('open');
@@ -628,7 +713,10 @@
         const saveTree = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); renderSidebar(); renderCatMan(); updateInCatSelect(); };
         const saveTreeSilent = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); updateInCatSelect(); renderCatMan(); };
 
-        loadCategories(); loadData();
+        // Sayfa yüklendiğinde ayarları ve verileri çek
+        loadSettings();
+        loadCategories(); 
+        loadData();
     </script>
 </body>
 </html>
