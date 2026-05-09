@@ -30,7 +30,10 @@
         .brand { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
         .sidebar-content { padding: 20px 15px; flex: 1; overflow-y: auto; }
         
-        .cat-section-header { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 15px; padding-left: 5px; text-transform: uppercase; display: flex; justify-content: space-between; }
+        .cat-section-header { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 15px; padding-left: 5px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;}
+        .manage-cat-btn { font-size: 16px; color: var(--text-muted); cursor: pointer; background: none; border: none; transition: 0.2s;}
+        .manage-cat-btn:hover { color: white; transform: scale(1.2); }
+
         .cat-wrapper { margin-bottom: 8px; }
         .category-btn { background: var(--hover-bg); border: 1px solid var(--border-color); width: 100%; border-radius: 10px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; position: relative; }
         .category-btn:hover { border-color: var(--text-muted); transform: translateX(3px); }
@@ -38,7 +41,11 @@
         
         .drag-handle { padding: 12px; color: #444; cursor: grab; }
         .cat-name-click { flex: 1; text-align: left; padding: 12px 5px; font-size: 14px; font-weight: 500; }
-        .toggle-sub { padding: 12px; color: var(--text-muted); font-size: 10px; }
+        
+        /* Akıllı Ok Tuşu */
+        .toggle-sub { padding: 12px; color: var(--text-muted); font-size: 12px; transition: transform 0.3s ease; display:flex; align-items:center; justify-content:center;}
+        .toggle-sub:hover { color: white; }
+        .toggle-sub.rotated { transform: rotate(180deg); }
 
         .sub-category-list { padding-left: 40px; display: none; margin: 5px 0 15px 0; border-left: 1px solid var(--border-color); }
         .sub-category-list.open { display: block; }
@@ -55,46 +62,38 @@
         .search-area input:focus { border-color: var(--accent-color); background: #000; }
         .search-area i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
-        /* Görünüm Değiştirme Butonları */
         .view-controls { display: flex; gap: 5px; background: var(--sidebar-bg); padding: 5px; border-radius: 10px; border: 1px solid var(--border-color); }
         .view-btn { background: none; border: none; color: var(--text-muted); width: 35px; height: 35px; border-radius: 7px; cursor: pointer; transition: 0.2s; }
         .view-btn.active { background: var(--accent-color); color: white; }
 
         /* --- GALERİ MODLARI --- */
         .content-area { flex: 1; padding: 30px; overflow-y: auto; }
-        
-        /* 1. Izgara (Grid) */
         .grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-        
-        /* 2. Liste (List) */
         .list-view { display: flex; flex-direction: column; gap: 15px; max-width: 900px; margin: 0 auto; }
         .list-view .card { flex-direction: row; height: 120px; }
         .list-view .img-container { width: 100px; height: 120px; border-right: 1px solid var(--border-color); border-bottom: none; }
         .list-view .text-cover { width: 100px; height: 120px; border-right: 1px solid var(--border-color); border-bottom: none; font-size: 24px; }
-
-        /* 3. Duvar (Masonry) */
         .masonry-view { column-count: 4; column-gap: 20px; }
         .masonry-view .card { break-inside: avoid; margin-bottom: 20px; }
         .masonry-view .img-container { height: auto; min-height: 150px; }
         .masonry-view .img-front { position: relative; width: 100%; height: auto; max-height: none; }
 
-        /* Kart Tasarımı */
         .card { background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; display: flex; flex-direction: column; }
         .card:hover { border-color: #555; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
         .img-container { position: relative; width: 100%; height: 300px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; }
         .img-blur { position: absolute; width: 120%; height: 120%; background-size: cover; background-position: center; filter: blur(20px); opacity: 0.4; }
         .img-front { position: relative; max-width: 100%; max-height: 100%; object-fit: contain; z-index: 2; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        
         .text-cover { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #1a1a1a, #333); color: var(--text-muted); font-size: 40px; font-weight: 900; letter-spacing: -2px; }
 
         .card-info { padding: 15px; flex: 1; }
         .card-title { font-size: 15px; font-weight: 700; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-meta { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; }
 
-        /* --- MODAL VE DİNAMİK ALANLAR --- */
+        /* --- MODALLAR --- */
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--modal-bg); width: 550px; border-radius: 20px; border: 1px solid var(--border-color); z-index: 1001; padding: 35px; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
         .modal.show { display: block; }
+        .modal-top { z-index: 1002; } 
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
@@ -103,7 +102,6 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; color: white; outline: none; font-size: 14px; }
         .form-group input:focus { border-color: var(--accent-color); }
 
-        /* Dinamik Alanlar (Custom Fields) */
         .dynamic-fields-title { font-size: 13px; font-weight: 800; margin: 20px 0 10px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 20px; }
         .field-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
         .field-row input { flex: 1; padding: 8px; font-size: 13px; }
@@ -127,7 +125,6 @@
         .custom-badge-area { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
         .badge { background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 20px; font-size: 12px; color: var(--text-muted); }
         .badge b { color: var(--accent-color); margin-right: 5px; }
-
         .panel-desc { font-size: 16px; line-height: 1.8; color: var(--text-main); white-space: pre-wrap; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
     </style>
 </head>
@@ -143,7 +140,7 @@
         <div class="sidebar-content">
             <div class="cat-section-header">
                 ARŞİV KATMANLARI
-                <button class="manage-cat-btn" onclick="window.openCatManager()"><i class="fa-solid fa-gear"></i></button>
+                <button class="manage-cat-btn" title="Kategori Ekle / Düzenle" onclick="window.openCatManager()"><i class="fa-solid fa-plus"></i></button>
             </div>
             
             <div class="cat-wrapper">
@@ -204,7 +201,7 @@
     <div class="modal" id="addModal">
         <div class="modal-header">
             <h3 id="modalHeaderTitle">Yeni Eser</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer" onclick="window.closeAll()"></i>
+            <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeAll()"></i>
         </div>
         <input type="hidden" id="editId">
         
@@ -241,7 +238,7 @@
 
         <div class="dynamic-fields-title">
             DİNAMİK ÖZELLİKLER
-            <button class="manage-cat-btn" onclick="window.addDynamicFieldRow()" style="font-size:14px;">+ Alan Ekle</button>
+            <button class="manage-cat-btn" onclick="window.addDynamicFieldRow()" style="font-size:14px; font-weight:bold;">+ Alan Ekle</button>
         </div>
         <div id="dynamicFieldsContainer"></div>
 
@@ -249,21 +246,30 @@
     </div>
 
     <div class="modal" id="catModal">
-        <div class="modal-header"><h3>Kategorileri Yapılandır</h3><i class="fa-solid fa-xmark" style="cursor:pointer" onclick="window.closeAll()"></i></div>
-        <div id="catManList" style="margin-bottom:20px;"></div>
-        <button class="submit-btn" style="background:#333; color:white;" onclick="window.openNewCat()">+ Yeni Ana Kategori</button>
+        <div class="modal-header">
+            <h3>Kategorileri Yapılandır</h3>
+            <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeAll()"></i>
+        </div>
+        <div id="catManList" style="margin-bottom:20px; max-height: 400px; overflow-y: auto; padding-right:5px;"></div>
+        <button class="submit-btn" style="background:#333; color:white; border:1px dashed #666;" onclick="window.openNewCat()">+ Yeni Ana Kategori Yarat</button>
     </div>
 
     <div class="modal modal-top" id="newCatModal">
-        <div class="modal-header"><h3>Yeni Kategori</h3></div>
-        <input type="text" id="newCatInput" placeholder="Kategori İsmi..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:white; border-radius:10px;">
+        <div class="modal-header">
+            <h3>Yeni Ana Kategori</h3>
+            <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeNewCat()"></i>
+        </div>
+        <input type="text" id="newCatInput" placeholder="Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px; font-size:15px; outline:none;">
         <button class="submit-btn" onclick="window.saveNewCat()">Kategoriyi Yarat</button>
     </div>
 
     <div class="modal modal-top" id="subCatModal">
-        <div class="modal-header"><h3>Alt Kategori Ekle</h3></div>
+        <div class="modal-header">
+            <h3>Alt Kategori Ekle</h3>
+            <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeSubCat()"></i>
+        </div>
         <input type="hidden" id="subParentId">
-        <input type="text" id="subCatInput" placeholder="Alt Kategori İsmi..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:white; border-radius:10px;">
+        <input type="text" id="subCatInput" placeholder="Alt Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px; font-size:15px; outline:none;">
         <button class="submit-btn" onclick="window.saveSubCat()">Ekle</button>
     </div>
 
@@ -294,7 +300,6 @@
         let viewMode = 'grid';
         let activeId = null;
 
-        // --- KATEGORİ SİSTEMİ ---
         const loadCategories = async () => {
             const snap = await getDoc(doc(db, "settings", "categories"));
             categoryTree = snap.exists() ? snap.data().tree : [{ id: "1", name: "Filmler", sub: [] }];
@@ -308,12 +313,13 @@
             categoryTree.forEach(cat => {
                 const wrap = document.createElement('div');
                 wrap.className = 'cat-wrapper';
+                wrap.setAttribute('data-id', cat.id);
                 const hasSub = cat.sub && cat.sub.length > 0;
                 wrap.innerHTML = `
                     <div class="category-btn" id="cbtn-${cat.id}">
                         <i class="fa-solid fa-ellipsis-vertical drag-handle"></i>
                         <span class="cat-name-click" onclick="window.selectMain('${cat.name}', '${cat.id}')">${cat.name}</span>
-                        ${hasSub ? `<i class="fa-solid fa-chevron-down toggle-sub" onclick="window.toggleSubMenu('${cat.id}', event)"></i>` : ''}
+                        ${hasSub ? `<div class="toggle-sub" id="toggle-${cat.id}" onclick="window.toggleSubMenu('${cat.id}', event)"><i class="fa-solid fa-chevron-down"></i></div>` : ''}
                     </div>
                     <div class="sub-category-list" id="slist-${cat.id}">
                         ${cat.sub.map(s => `<div class="sub-btn" id="sbtn-${s.id}" onclick="window.selectSub('${cat.name}', '${s.name}', '${cat.id}', '${s.id}')">↳ ${s.name}</div>`).join('')}
@@ -324,13 +330,10 @@
 
             Sortable.create(cont, {
                 handle: '.drag-handle', animation: 150,
-                onEnd: () => {
-                    const newTree = [];
-                    cont.querySelectorAll('.cat-wrapper').forEach(el => {
-                        const id = el.getAttribute('data-id'); // Bu kısım için id ataması renderda eklenebilir
-                        const found = categoryTree.find(c => c.id === el.id.replace('cbtn-','')); // Basitleştirilmiş mantık
-                    });
-                    // Sıralama mantığı geliştirilebilir, şimdilik statik bırakalım
+                onEnd: async function (evt) {
+                    const itemEl = categoryTree.splice(evt.oldIndex, 1)[0];
+                    categoryTree.splice(evt.newIndex, 0, itemEl);
+                    await saveTreeSilent();
                 }
             });
         };
@@ -340,8 +343,14 @@
             document.getElementById('viewTitle').innerText = name;
             document.querySelectorAll('.category-btn, .sub-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`cbtn-${id}`).classList.add('active');
+            
+            // Eğer alt menüsü varsa, ana kategoriye tıklandığında otomatik açılmasını sağlar (kapalıysa açılır, açıksa kapanmaz)
             const slist = document.getElementById(`slist-${id}`);
-            if(slist) slist.classList.add('open');
+            const toggle = document.getElementById(`toggle-${id}`);
+            if(slist && !slist.classList.contains('open')) {
+                slist.classList.add('open');
+                if(toggle) toggle.classList.add('rotated');
+            }
             window.renderGallery();
         };
 
@@ -362,9 +371,15 @@
             window.renderGallery();
         };
 
-        window.toggleSubMenu = (id, e) => { e.stopPropagation(); document.getElementById(`slist-${id}`).classList.toggle('open'); };
+        // Ok Tuşu Animasyonu ve Menü Aç/Kapat Mantığı
+        window.toggleSubMenu = (id, e) => { 
+            e.stopPropagation(); 
+            const list = document.getElementById(`slist-${id}`);
+            const icon = document.getElementById(`toggle-${id}`);
+            list.classList.toggle('open');
+            icon.classList.toggle('rotated');
+        };
 
-        // --- GALERİ VE GÖRÜNÜM ---
         window.changeView = (mode) => {
             viewMode = mode;
             document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
@@ -386,7 +401,6 @@
             
             const search = document.getElementById('searchInput').value.toLowerCase().trim();
 
-            // KRİTİK FİLTRELEME: Emojileri temizleyerek veya tam eşleşme arayarak yapıyoruz
             let filtered = allItems.filter(item => {
                 const matchMain = currentMain === 'Tümü' || item.category === currentMain;
                 const matchSub = !currentSub || item.subCategory === currentSub;
@@ -397,7 +411,7 @@
                 return matchMain && matchSub && matchSearch;
             });
 
-            if(filtered.length === 0) { grid.innerHTML = '<div class="empty-state">Aradığın kriterlerde eser bulunamadı.</div>'; return; }
+            if(filtered.length === 0) { grid.innerHTML = '<div class="empty-state" style="padding:50px; text-align:center; color:#888;">Aradığın kriterlerde eser bulunamadı.</div>'; return; }
 
             filtered.forEach(item => {
                 const card = document.createElement('div');
@@ -416,7 +430,6 @@
             });
         };
 
-        // --- DETAY VE DİNAMİK ALANLAR ---
         window.openDetail = (id) => {
             activeId = id;
             const item = allItems.find(i => i.id === id);
@@ -435,7 +448,6 @@
             badges.innerHTML = `<div class="badge"><b>KATEGORİ:</b> ${item.subCategory ? item.category + ' / ' + item.subCategory : item.category}</div>`;
             if(item.author) badges.innerHTML += `<div class="badge"><b>SANATÇI:</b> ${item.author}</div>`;
             
-            // Dinamik Alanları Göster
             if(item.customFields) {
                 item.customFields.forEach(f => {
                     if(f.val) badges.innerHTML += `<div class="badge"><b>${f.key.toUpperCase()}:</b> ${f.val}</div>`;
@@ -446,7 +458,6 @@
             document.getElementById('globalOverlay').classList.add('show');
         };
 
-        // --- VERİ KAYDETME ---
         window.addDynamicFieldRow = (key = '', val = '') => {
             const cont = document.getElementById('dynamicFieldsContainer');
             const row = document.createElement('div');
@@ -495,7 +506,6 @@
             saveBtn.disabled = false;
         };
 
-        // --- MODAL KONTROLLERİ ---
         window.openModal = () => {
             document.getElementById('editId').value = '';
             document.getElementById('modalHeaderTitle').innerText = "Yeni Eser";
@@ -531,11 +541,14 @@
             }
         };
 
+        // Modal Kapatma İşlemleri (X Tuşlarına Bağlı)
         window.closeAll = () => {
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
             document.getElementById('detailPanel').classList.remove('open');
             document.getElementById('globalOverlay').classList.remove('show');
         };
+        window.closeNewCat = () => { document.getElementById('newCatModal').classList.remove('show'); };
+        window.closeSubCat = () => { document.getElementById('subCatModal').classList.remove('show'); };
 
         const updateInCatSelect = () => {
             const s = document.getElementById('in-cat');
@@ -550,29 +563,70 @@
             sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? cat.sub.map(s => `<option value="${s.name}">${s.name}</option>`).join('') : '');
         };
 
-        // --- KATEGORİ YÖNETİMİ (KISA) ---
+        // --- GELİŞMİŞ KATEGORİ YÖNETİMİ ---
         window.openCatManager = () => { renderCatMan(); document.getElementById('catModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show'); };
+        
         const renderCatMan = () => {
             const l = document.getElementById('catManList');
-            l.innerHTML = categoryTree.map(c => `<div class="cat-item"><b>${c.name}</b><div><i class="fa-solid fa-plus" onclick="window.openSubCat('${c.id}')"></i> <i class="fa-solid fa-trash" onclick="window.delCat('${c.id}')"></i></div></div>`).join('');
+            l.innerHTML = categoryTree.map(c => `
+                <div style="display:flex; flex-direction:column; background:var(--bg-color); border:1px solid var(--border-color); border-radius:12px; padding:15px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <b style="font-size:15px; color:white;">${c.name}</b>
+                        <div>
+                            <button style="background:var(--hover-bg); border:none; color:var(--text-main); padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:5px; transition:0.2s;" onclick="window.openSubCat('${c.id}')"><i class="fa-solid fa-plus"></i> Alt Kategori Ekle</button>
+                            <button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px; transition:0.2s;" onclick="window.delCat('${c.id}')" title="Kategoriyi Sil"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    ${c.sub.length > 0 ? `
+                        <div style="padding-left:15px; border-left:2px solid var(--border-color); display:flex; flex-direction:column; gap:5px;">
+                            ${c.sub.map(s => `
+                                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--sidebar-bg); padding:8px 12px; border-radius:8px;">
+                                    <span style="font-size:13px; color:var(--text-muted);">↳ ${s.name}</span>
+                                    <button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px;" onclick="window.delSubCat('${c.id}', '${s.id}')" title="Sil"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
         };
-        window.openNewCat = () => { document.getElementById('newCatModal').classList.add('show'); };
+
+        window.openNewCat = () => { document.getElementById('newCatInput').value = ''; document.getElementById('newCatModal').classList.add('show'); };
+        
         window.saveNewCat = async () => {
-            const n = document.getElementById('newCatInput').value;
+            const n = document.getElementById('newCatInput').value.trim();
             if(n) { categoryTree.push({id: Date.now().toString(), name: n, sub: []}); await saveTree(); }
-            document.getElementById('newCatModal').classList.remove('show');
+            window.closeNewCat();
         };
-        window.delCat = async (id) => { categoryTree = categoryTree.filter(c => c.id !== id); await saveTree(); };
-        window.openSubCat = (id) => { document.getElementById('subParentId').value = id; document.getElementById('subCatModal').classList.add('show'); };
+
+        window.delCat = async (id) => { 
+            if(confirm('Ana kategori ve içindeki tüm alt kategoriler silinecek. Emin misin?')) {
+                categoryTree = categoryTree.filter(c => c.id !== id); await saveTree(); 
+            }
+        };
+
+        window.openSubCat = (id) => { document.getElementById('subParentId').value = id; document.getElementById('subCatInput').value = ''; document.getElementById('subCatModal').classList.add('show'); };
+        
         window.saveSubCat = async () => {
-            const n = document.getElementById('subCatInput').value;
+            const n = document.getElementById('subCatInput').value.trim();
             const id = document.getElementById('subParentId').value;
+            if(!n) return;
             const c = categoryTree.find(x => x.id === id);
             c.sub.push({id: Date.now().toString(), name: n});
             await saveTree();
-            document.getElementById('subCatModal').classList.remove('show');
+            window.closeSubCat();
         };
+
+        window.delSubCat = async (parentId, subId) => {
+            if(confirm('Alt kategori silinecek. Emin misin?')) {
+                const parent = categoryTree.find(c => c.id === parentId);
+                parent.sub = parent.sub.filter(s => s.id !== subId);
+                await saveTree();
+            }
+        };
+
         const saveTree = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); renderSidebar(); renderCatMan(); updateInCatSelect(); };
+        const saveTreeSilent = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); updateInCatSelect(); renderCatMan(); };
 
         loadCategories(); loadData();
     </script>
