@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koleksiyoncubirdeli</title>
+    <style>
+        /* --- DARK MODE RENKLERİ --- */
+        :root {
+            --bg-color: #121212;
+            --sidebar-bg: #1a1a1a;
+            --text-main: #e8e8e8;
+            --text-muted: #888888;
+            --border-color: #2e2e2e;
+            --hover-bg: #2a2a2a;
+            --accent-color: #2ea043;
+            --modal-bg: #1e1e1e;
+            --input-bg: #121212;
+            --danger-color: #cf6679;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+        body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-main); }
+
+        /* --- SOL MENÜ --- */
+        .sidebar { width: 280px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); transition: margin-left 0.3s ease; display: flex; flex-direction: column; z-index: 10; }
+        .sidebar.hidden { margin-left: -280px; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .brand { font-size: 16px; font-weight: bold; color: var(--text-main); letter-spacing: 0.5px; }
+        .sidebar-content { padding: 20px 10px; flex: 1; overflow-y: auto; }
+        .category-title { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; padding-left: 10px; letter-spacing: 1px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;}
+        
+        .category-btn { background: none; border: none; width: 100%; text-align: left; padding: 8px 10px; font-size: 14px; color: var(--text-main); border-radius: 6px; cursor: pointer; transition: background 0.2s; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center;}
+        .category-btn:hover { background-color: var(--hover-bg); }
+        .category-btn.active { background-color: var(--hover-bg); font-weight: 600; color: white; }
+        .sub-category-list { padding-left: 15px; display: none; }
+        .sub-category-list.open { display: block; }
+        .sub-category-btn { font-size: 13px; padding: 6px 10px; color: var(--text-muted); }
+
+        .manage-cat-btn { font-size: 11px; color: var(--accent-color); cursor: pointer; background: none; border: none; }
+
+        /* --- ANA İÇERİK --- */
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .top-bar { height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--border-color); }
+        .top-bar-left { display: flex; align-items: center; }
+        .toggle-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); margin-right: 15px; padding: 5px; border-radius: 4px; }
+        .toggle-btn:hover { background-color: var(--hover-bg); }
+        .add-new-btn { background-color: var(--text-main); color: var(--bg-color); border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
+
+        /* --- GALERİ --- */
+        .content-area { flex: 1; padding: 30px; overflow-y: auto; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+        .card { cursor: pointer; border-radius: 8px; overflow: hidden; transition: transform 0.2s; background: var(--sidebar-bg); border: 1px solid var(--border-color); }
+        .card:hover { transform: translateY(-4px); border-color: #444; }
+        .card img { width: 100%; height: 300px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+        .card-info { padding: 12px; }
+        .card-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+        /* --- YANDAN AÇILAN PANEL --- */
+        .slide-panel { position: fixed; top: 0; right: -550px; width: 500px; height: 100vh; background-color: var(--sidebar-bg); box-shadow: -5px 0 25px rgba(0,0,0,0.5); transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; overflow-y: auto; display: flex; flex-direction: column; border-left: 1px solid var(--border-color); }
+        .slide-panel.open { right: 0; }
+        .panel-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); opacity: 0; pointer-events: none; transition: opacity 0.4s; z-index: 999; backdrop-filter: blur(3px); }
+        .panel-overlay.show { opacity: 1; pointer-events: auto; }
+        
+        .panel-header-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; z-index: 11; }
+        .action-circle-btn { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+        .action-circle-btn:hover { background: var(--hover-bg); }
+        .delete-btn-action:hover { color: var(--danger-color); border-color: var(--danger-color); }
+
+        .panel-cover { width: 100%; height: 350px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+        .panel-content { padding: 30px; }
+        .panel-title { font-size: 28px; margin-bottom: 15px; color: white;}
+        .tags-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
+        .tag { display: flex; align-items: center; background-color: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 16px; font-size: 13px; }
+        .tag-role { font-weight: 600; margin-right: 5px; color: var(--text-muted); }
+        .panel-description { font-size: 15px; line-height: 1.6; color: var(--text-main); white-space: pre-wrap; }
+
+        /* --- MODALLAR --- */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--modal-bg); width: 500px; border-radius: 12px; border: 1px solid var(--border-color); z-index: 1001; padding: 30px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.6);}
+        .modal.show { display: block; }
+        .modal-top { z-index: 1002; } 
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: var(--text-muted); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background-color: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none;}
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent-color); }
+        .submit-btn { width: 100%; background: var(--text-main); color: var(--bg-color); border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px; transition: 0.2s;}
+        .submit-btn:hover { background: white; }
+        
+        .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: var(--bg-color); border: 1px solid var(--border-color); margin-bottom: 5px; border-radius: 6px; }
+        .cat-sub-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; border-left: 2px solid var(--border-color); margin-left: 15px; margin-bottom: 5px; font-size: 13px;}
+        .cat-actions button { background: none; border: none; color: var(--text-muted); cursor: pointer; margin-left: 5px; }
+        .cat-actions button:hover { color: white; }
+
+        /* --- LOGO SEÇİCİ --- */
+        .emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 10px; max-height: 200px; overflow-y: auto; padding: 5px; }
+        .emoji-item { font-size: 24px; text-align: center; cursor: pointer; padding: 8px; border-radius: 8px; border: 2px solid transparent; transition: 0.2s; background: var(--input-bg); }
+        .emoji-item:hover { transform: scale(1.1); background: var(--hover-bg); }
+        .emoji-item.selected { border-color: var(--accent-color); background: var(--hover-bg); transform: scale(1.1); }
+
+        .empty-state { text-align: center; padding: 50px; color: var(--text-muted); grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header"><div class="brand">Koleksiyoncubirdeli</div></div>
+        <div class="sidebar-content">
+            <div class="category-title">KATEGORİLER <button class="manage-cat-btn" onclick="window.openCatManager()">Düzenle</button></div>
+            <button class="category-btn active" id="btn-all" onclick="window.filterCategory('Tümü', null)">📁 Tüm Arşiv</button>
+            <div id="dynamicCategories"></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="toggle-btn" onclick="window.toggleSidebar()">☰</button>
+                <h2 id="currentCategoryTitle">Tüm Arşiv</h2>
+            </div>
+            <button class="add-new-btn" onclick="window.openModal()">+ Yeni Eser Ekle</button>
+        </div>
+        <div class="content-area"><div class="gallery-grid" id="galleryGrid"><div class="empty-state">Yükleniyor...</div></div></div>
+    </div>
+
+    <div class="panel-overlay" id="panelOverlay" onclick="window.closeAll()"></div>
+
+    <div class="modal" id="addModal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Arşive Yeni Ekle</h3>
+            <button class="action-circle-btn" style="position:static; border:none;" onclick="window.closeAll()">✕</button>
+        </div>
+        <input type="hidden" id="editItemId">
+        <div class="form-group">
+            <label>Eser Adı</label>
+            <input type="text" id="inputTitle" required>
+        </div>
+        <div class="form-group" style="display: flex; gap: 10px;">
+            <div style="flex: 1;"><label>Ana Kategori</label><select id="inputCategory" onchange="window.updateSubCategorySelect()"></select></div>
+            <div style="flex: 1;"><label>Alt Kategori</label><select id="inputSubCategory"><option value="">-- Seçiniz --</option></select></div>
+        </div>
+        <div class="form-group"><label>Yazar / Yönetmen / Sanatçı</label><input type="text" id="inputAuthor"></div>
+        <div class="form-group"><label>Afiş / Kapak Resmi</label><input type="file" id="inputFile" accept="image/*"></div>
+        <div class="form-group"><label>Açıklama</label><textarea id="inputDesc"></textarea></div>
+        <button class="submit-btn" id="saveBtn" onclick="window.saveItem()">Kaydet</button>
+    </div>
+
+    <div class="modal" id="catManagerModal">
+        <div class="modal-header">
+            <h3>Kategorileri Düzenle</h3>
+            <button class="action-circle-btn" style="position:static; border:none;" onclick="window.closeAll()">✕</button>
+        </div>
+        <div class="cat-manager-list" id="catManagerList"></div>
+        <button class="submit-btn" style="background:#333; color:white;" onclick="window.openNewCatCreator()">+ Yeni Ana Kategori Oluştur</button>
+    </div>
+
+    <div class="modal modal-top" id="newCatModal">
+        <div class="modal-header">
+            <h3>Yeni Kategori Yarat</h3>
+            <button class="action-circle-btn" style="position:static; border:none;" onclick="window.closeNewCatCreator()">✕</button>
+        </div>
+        <div class="form-group">
+            <label>Kategori Adı</label>
+            <input type="text" id="newCatName" placeholder="Örn: Konsol Oyunları">
+        </div>
+        <div class="form-group">
+            <label>Kategori Logosu Seç</label>
+            <div class="emoji-grid" id="emojiGrid"></div>
+        </div>
+        <button class="submit-btn" style="background:var(--accent-color); color:white;" onclick="window.saveNewMainCat()">Kategoriyi Kaydet</button>
+    </div>
+
+    <div class="slide-panel" id="slidePanel">
+        <div class="panel-header-actions">
+            <button class="action-circle-btn" onclick="window.editCurrentItem()" title="Düzenle">✏️</button>
+            <button class="action-circle-btn delete-btn-action" onclick="window.deleteCurrentItem()" title="Sil">🗑️</button>
+            <button class="action-circle-btn" onclick="window.closeAll()">✕</button>
+        </div>
+        <img src="" class="panel-cover" id="panelCover">
+        <div class="panel-content">
+            <h1 class="panel-title" id="panelTitle"></h1>
+            <div class="tags-container">
+                <div class="tag"><span class="tag-role">Sanatçı:</span> <span id="panelAuthor"></span></div>
+                <div class="tag"><span class="tag-role">Kategori:</span> <span id="panelCategory"></span></div>
+            </div>
+            <p class="panel-description" id="panelDesc"></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // SENİN YENİ FIREBASE BİLGİLERİN
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAHySPlWjGqBcyLmcW1aZxnUkQjzRe-xE",
+            authDomain: "koleksiyoncubirdeli.firebaseapp.com",
+            projectId: "koleksiyoncubirdeli",
+            storageBucket: "koleksiyoncubirdeli.firebasestorage.app",
+            messagingSenderId: "925853880419",
+            appId: "1:925853880419:web:9174ef2d0e12b16214a856",
+            measurementId: "G-PP0W2M3GQP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // SENİN YENİ CLOUDINARY BİLGİLERİN
+        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/de3kvm7zl/image/upload";
+        const CLOUDINARY_PRESET = "ml_default";
+
+        let allItems = []; 
+        let categoryTree = [];
+        let currentFilterMain = 'Tümü';
+        let currentFilterSub = null;
+        let activePanelId = null;
+
+        const logoList = ['📁', '🎬', '📚', '📺', '🎮', '🎧', '🎵', '🎨', '🧸', '🚗', '👗', '👟', '💍', '⚽', '🏀', '🎸', '📷', '🧩', '🪴', '🍷', '🛠️', '💎', '🎫', '✈️'];
+        let selectedLogo = '📁';
+
+        const loadCategories = async () => {
+            const docSnap = await getDoc(doc(db, "settings", "categories"));
+            categoryTree = docSnap.exists() ? docSnap.data().tree : [{ id: "1", name: "🎬 Filmler", sub: [] }];
+            renderSidebarCategories();
+            updateFormCategorySelect();
+        };
+
+        const saveCategories = async () => {
+            await setDoc(doc(db, "settings", "categories"), { tree: categoryTree });
+            renderSidebarCategories();
+            updateFormCategorySelect();
+            renderCategoryManager();
+        };
+
+        const renderSidebarCategories = () => {
+            const container = document.getElementById('dynamicCategories');
+            container.innerHTML = '';
+            categoryTree.forEach(mainCat => {
+                const div = document.createElement('div');
+                div.innerHTML = `<button class="category-btn" onclick="this.nextSibling?.classList.toggle('open'); window.filterCategory('${mainCat.name}', null)">${mainCat.name}</button>`;
+                const subDiv = document.createElement('div');
+                subDiv.className = 'sub-category-list';
+                mainCat.sub.forEach(sub => {
+                    subDiv.innerHTML += `<button class="category-btn sub-category-btn" onclick="window.filterCategory('${mainCat.name}', '${sub.name}')">↳ ${sub.name}</button>`;
+                });
+                div.appendChild(subDiv);
+                container.appendChild(div);
+            });
+        };
+
+        const updateFormCategorySelect = () => {
+            const s = document.getElementById('inputCategory');
+            s.innerHTML = categoryTree.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            window.updateSubCategorySelect();
+        };
+
+        window.updateSubCategorySelect = () => {
+            const val = document.getElementById('inputCategory').value;
+            const sub = document.getElementById('inputSubCategory');
+            const cat = categoryTree.find(c => c.name === val);
+            sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? cat.sub.map(s => `<option value="${s.name}">${s.name}</option>`).join('') : '');
+        };
+
+        window.filterCategory = (m, s) => {
+            currentFilterMain = m; currentFilterSub = s;
+            document.getElementById('currentCategoryTitle').innerText = m === 'Tümü' ? 'Tüm Arşiv' : `${m}${s ? ' / ' + s : ''}`;
+            renderGallery();
+        };
+
+        const loadData = () => {
+            onSnapshot(query(collection(db, "arsiv"), orderBy("timestamp", "desc")), (s) => {
+                allItems = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderGallery();
+            });
+        };
+
+        const renderGallery = () => {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            const filtered = allItems.filter(i => currentFilterMain === 'Tümü' || (i.category === currentFilterMain && (!currentFilterSub || i.subCategory === currentFilterSub)));
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.onclick = () => window.openPanel(item.id);
+                div.innerHTML = `<img src="${item.imageUrl || ''}"><div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta">${item.category}</div></div>`;
+                grid.appendChild(div);
+            });
+        };
+
+        window.openPanel = (id) => {
+            activePanelId = id;
+            const item = allItems.find(i => i.id === id);
+            document.getElementById('panelTitle').innerText = item.title;
+            document.getElementById('panelCover').src = item.imageUrl || '';
+            document.getElementById('panelAuthor').innerText = item.author || '-';
+            document.getElementById('panelCategory').innerText = item.subCategory ? `${item.category} / ${item.subCategory}` : item.category;
+            document.getElementById('panelDesc').innerText = item.description || '';
+            document.getElementById('slidePanel').classList.add('open');
+            document.getElementById('panelOverlay').classList.add('show');
+        };
+
+        window.openModal = () => {
+            document.getElementById('modalTitle').innerText = "Arşive Yeni Ekle";
+            document.getElementById('editItemId').value = "";
+            document.getElementById('inputTitle').value = "";
+            document.getElementById('inputAuthor').value = "";
+            document.getElementById('inputDesc').value = "";
+            document.getElementById('inputFile').value = "";
+            document.getElementById('addModal').classList.add('show');
+            document.getElementById('panelOverlay').classList.add('show');
+        };
+
+        window.editCurrentItem = () => {
+            const item = allItems.find(i => i.id === activePanelId);
+            document.getElementById('modalTitle').innerText = "Eseri Düzenle";
+            document.getElementById('editItemId').value = item.id;
+            document.getElementById('inputTitle').value = item.title;
+            document.getElementById('inputCategory').value = item.category;
+            window.updateSubCategorySelect();
+            document.getElementById('inputSubCategory').value = item.subCategory || "";
+            document.getElementById('inputAuthor').value = item.author || "";
+            document.getElementById('inputDesc').value = item.description || "";
+            document.getElementById('addModal').classList.add('show');
+            document.getElementById('slidePanel').classList.remove('open');
+        };
+
+        window.deleteCurrentItem = async () => {
+            if(confirm("Bu eseri arşive veda ettirmek istediğine emin misin?")) {
+                await deleteDoc(doc(db, "arsiv", activePanelId));
+                window.closeAll();
+            }
+        };
+
+        // --- CLOUDINARY ENTEGRASYONU ---
+        window.saveItem = async () => {
+            const id = document.getElementById('editItemId').value;
+            const title = document.getElementById('inputTitle').value;
+            if(!title) { alert("Lütfen eser adı girin."); return; }
+
+            document.getElementById('saveBtn').innerText = "Resim yükleniyor...";
+            document.getElementById('saveBtn').disabled = true;
+
+            const data = {
+                title: title,
+                category: document.getElementById('inputCategory').value,
+                subCategory: document.getElementById('inputSubCategory').value,
+                author: document.getElementById('inputAuthor').value,
+                description: document.getElementById('inputDesc').value,
+                timestamp: Date.now()
+            };
+            
+            const file = document.getElementById('inputFile').files[0];
+            
+            if(file) {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", CLOUDINARY_PRESET);
+
+                try {
+                    const res = await fetch(CLOUDINARY_URL, {
+                        method: "POST",
+                        body: formData
+                    });
+                    const uploadedImage = await res.json();
+                    data.imageUrl = uploadedImage.secure_url;
+                } catch (error) {
+                    alert("Resim yüklenirken bir hata oluştu!");
+                    console.error(error);
+                    document.getElementById('saveBtn').innerText = "Kaydet";
+                    document.getElementById('saveBtn').disabled = false;
+                    return;
+                }
+            }
+
+            document.getElementById('saveBtn').innerText = "Bilgiler kaydediliyor...";
+            id ? await updateDoc(doc(db, "arsiv", id), data) : await addDoc(collection(db, "arsiv"), data);
+            
+            document.getElementById('saveBtn').innerText = "Kaydet";
+            document.getElementById('saveBtn').disabled = false;
+            window.closeAll();
+        };
+
+        window.closeAll = () => {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
+            document.getElementById('slidePanel').classList.remove('open');
+            document.getElementById('panelOverlay').classList.remove('show');
+        };
+
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('hidden');
+        window.openCatManager = () => { renderCategoryManager(); document.getElementById('catManagerModal').classList.add('show'); document.getElementById('panelOverlay').classList.add('show'); };
+        
+        const renderCategoryManager = () => {
+            const l = document.getElementById('catManagerList');
+            l.innerHTML = categoryTree.map(c => `
+                <div class="cat-item">
+                    <b>${c.name}</b> 
+                    <div class="cat-actions">
+                        <button onclick="window.addSubCat('${c.id}')" title="Alt Kategori Ekle">➕</button>
+                        <button onclick="window.deleteCat('${c.id}')" title="Sil">❌</button>
+                    </div>
+                </div>
+                ${c.sub.map(s => `
+                    <div class="cat-sub-item">
+                        ↳ ${s.name} <button onclick="window.deleteSubCat('${c.id}', '${s.id}')">❌</button>
+                    </div>
+                `).join('')}
+            `).join('');
+        };
+
+        window.openNewCatCreator = () => {
+            document.getElementById('newCatName').value = "";
+            selectedLogo = logoList[0];
+            renderLogoGrid();
+            document.getElementById('catManagerModal').classList.remove('show');
+            document.getElementById('newCatModal').classList.add('show');
+        };
+
+        window.closeNewCatCreator = () => {
+            document.getElementById('newCatModal').classList.remove('show');
+            document.getElementById('catManagerModal').classList.add('show'); 
+        };
+
+        const renderLogoGrid = () => {
+            const grid = document.getElementById('emojiGrid');
+            grid.innerHTML = logoList.map(logo => `
+                <div class="emoji-item ${logo === selectedLogo ? 'selected' : ''}" onclick="window.selectLogo('${logo}')">
+                    ${logo}
+                </div>
+            `).join('');
+        };
+
+        window.selectLogo = (logo) => { selectedLogo = logo; renderLogoGrid(); };
+
+        window.saveNewMainCat = () => {
+            const name = document.getElementById('newCatName').value.trim();
+            if(!name) { alert("Lütfen kategoriye bir isim ver."); return; }
+            const fullName = `${selectedLogo} ${name}`;
+            categoryTree.push({id: Date.now().toString(), name: fullName, sub: []});
+            saveCategories();
+            window.closeNewCatCreator();
+        };
+
+        window.addSubCat = (parentId) => {
+            const name = prompt("Alt Kategori Adı:");
+            if (name) { const parent = categoryTree.find(c => c.id === parentId); parent.sub.push({ id: Date.now().toString(), name: name }); saveCategories(); }
+        };
+
+        window.deleteCat = (id) => { if(confirm("Tüm alt kategorilerle beraber silinsin mi?")) { categoryTree = categoryTree.filter(c => c.id !== id); saveCategories(); } };
+        window.deleteSubCat = (parentId, subId) => { const p = categoryTree.find(c => c.id === parentId); p.sub = p.sub.filter(s => s.id !== subId); saveCategories(); };
+
+        loadCategories(); loadData();
+    </script>
+</body>
+</html>
