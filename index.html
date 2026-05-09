@@ -35,20 +35,23 @@
 
         /* Yüzen Buton Tasarımı */
         .cat-wrapper { margin-bottom: 10px; }
-        .category-btn { background: var(--hover-bg); border: 1px solid var(--border-color); width: 100%; text-align: left; padding: 10px 12px; font-size: 14px; color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .category-btn { background: var(--hover-bg); border: 1px solid var(--border-color); width: 100%; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 0;}
         .category-btn:hover { border-color: var(--text-muted); box-shadow: 0 6px 12px rgba(0,0,0,0.3); transform: translateY(-1px); }
         .category-btn.active { border-color: var(--accent-color); font-weight: bold; color: white; box-shadow: 0 0 10px rgba(46, 160, 67, 0.2); }
         
-        .drag-handle { cursor: grab; margin-right: 10px; color: var(--text-muted); font-size: 16px; padding: 0 5px; }
+        .drag-handle { cursor: grab; padding: 10px 5px 10px 12px; color: var(--text-muted); font-size: 16px; user-select: none;}
         .drag-handle:active { cursor: grabbing; }
-        .cat-name-click { flex: 1; text-align: left; } /* Tıklanabilir alan */
+        
+        .cat-name-click { flex: 1; text-align: left; padding: 10px 5px; cursor: pointer; font-size: 14px; user-select: none; } 
+        .toggle-sub { padding: 10px 12px; cursor: pointer; font-size: 10px; color: var(--text-muted); user-select: none; }
+        .toggle-sub:hover { color: white; }
 
         /* Alt Kategori Listesi */
         .sub-category-list { padding-left: 30px; display: none; margin-top: 5px; }
         .sub-category-list.open { display: block; }
         .sub-category-btn { font-size: 13px; padding: 8px 10px; color: var(--text-muted); background: transparent; border: none; width: 100%; text-align: left; cursor: pointer; border-radius: 6px; transition: 0.2s;}
         .sub-category-btn:hover { background: var(--bg-color); color: var(--text-main); }
-        .sub-category-btn.active { color: var(--accent-color); font-weight: bold; }
+        .sub-category-btn.active { color: var(--accent-color); font-weight: bold; background: var(--bg-color); }
 
         /* --- ANA İÇERİK VE ÜST ÇUBUK (FİLTRELEME ALANI) --- */
         .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
@@ -127,9 +130,9 @@
             </div>
             
             <div class="cat-wrapper">
-                <button class="category-btn active" id="btn-all" onclick="window.filterCategory('Tümü', null)">
-                    <span class="cat-name-click">Tüm Arşiv</span>
-                </button>
+                <div class="category-btn active" id="btn-all">
+                    <span class="cat-name-click" style="padding-left: 12px;" onclick="window.selectAll()">📁 Tüm Arşiv</span>
+                </div>
             </div>
             
             <div id="dynamicCategories"></div>
@@ -255,7 +258,7 @@
         let currentFilterMain = 'Tümü';
         let currentFilterSub = null;
         let activePanelId = null;
-        let sortableInstance = null; // Sürükle Bırak motoru
+        let sortableInstance = null;
 
         const loadCategories = async () => {
             const docSnap = await getDoc(doc(db, "settings", "categories"));
@@ -271,53 +274,95 @@
             renderCategoryManager();
         };
 
+        // UI VE UX GÜNCELLEMESİ (AKILLI MENÜ)
         const renderSidebarCategories = () => {
             const container = document.getElementById('dynamicCategories');
             container.innerHTML = '';
             
-            categoryTree.forEach((mainCat, index) => {
+            categoryTree.forEach((mainCat) => {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'cat-wrapper';
                 wrapper.setAttribute('data-id', mainCat.id);
                 
                 const hasSub = mainCat.sub.length > 0;
                 
-                // Yüzen buton ve sürükleme ikonu (Drag Handle)
                 wrapper.innerHTML = `
-                    <div class="category-btn">
+                    <div class="category-btn" id="main-btn-${mainCat.id}">
                         <span class="drag-handle" title="Basılı tutup sürükle">⋮⋮</span>
-                        <span class="cat-name-click" onclick="this.parentElement.nextElementSibling?.classList.toggle('open'); window.filterCategory('${mainCat.name}', null)">${mainCat.name}</span>
-                        ${hasSub ? '<span style="font-size:10px; color:#888;">▼</span>' : ''}
+                        <span class="cat-name-click" onclick="window.selectMainCategory('${mainCat.name}', '${mainCat.id}')">${mainCat.name}</span>
+                        ${hasSub ? `<span class="toggle-sub" id="toggle-${mainCat.id}" onclick="window.toggleSub('${mainCat.id}', event)">▼</span>` : ''}
+                    </div>
+                    <div class="sub-category-list" id="sub-list-${mainCat.id}">
+                        ${mainCat.sub.map(sub => `
+                            <button class="sub-category-btn" id="sub-btn-${sub.id}" onclick="window.selectSubCategory('${mainCat.name}', '${sub.name}', '${mainCat.id}', '${sub.id}')">↳ ${sub.name}</button>
+                        `).join('')}
                     </div>
                 `;
-                
-                const subDiv = document.createElement('div');
-                subDiv.className = 'sub-category-list';
-                mainCat.sub.forEach(sub => {
-                    subDiv.innerHTML += `<button class="sub-category-btn" onclick="window.filterCategory('${mainCat.name}', '${sub.name}')">↳ ${sub.name}</button>`;
-                });
-                
-                wrapper.appendChild(subDiv);
                 container.appendChild(wrapper);
             });
 
-            // SortableJS'i Aktifleştir (Sürükle Bırak)
-            if(sortableInstance) sortableInstance.destroy(); // Eskiyi temizle
+            if(sortableInstance) sortableInstance.destroy(); 
             sortableInstance = Sortable.create(container, {
-                handle: '.drag-handle', // Sadece ikondan tutulabilsin
+                handle: '.drag-handle', 
                 animation: 200,
                 ghostClass: 'sortable-ghost',
                 onEnd: function (evt) {
-                    // Diziyi yeni sıralamaya göre güncelle ve Firestore'a yaz
                     const itemEl = categoryTree.splice(evt.oldIndex, 1)[0];
                     categoryTree.splice(evt.newIndex, 0, itemEl);
-                    
-                    // Sadece arka planda kaydet, ekranı baştan çizmeye gerek yok, Sortable UI'ı halletti.
                     setDoc(doc(db, "settings", "categories"), { tree: categoryTree });
                     updateFormCategorySelect();
                     renderCategoryManager();
                 },
             });
+        };
+
+        // YENİ SEÇİM MANTIKLARI
+        window.selectAll = () => {
+            currentFilterMain = 'Tümü'; currentFilterSub = null;
+            document.getElementById('currentCategoryTitle').innerText = 'Tüm Arşiv';
+            document.querySelectorAll('.category-btn, .sub-category-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-all').classList.add('active');
+            window.renderGallery();
+        };
+
+        window.selectMainCategory = (mainCatName, id) => {
+            currentFilterMain = mainCatName; currentFilterSub = null;
+            document.getElementById('currentCategoryTitle').innerText = mainCatName;
+
+            // Renklendirme
+            document.querySelectorAll('.category-btn, .sub-category-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`main-btn-${id}`).classList.add('active');
+
+            // Alt menü varsa SADECE AÇ (kapatma)
+            const subList = document.getElementById(`sub-list-${id}`);
+            if(subList) {
+                subList.classList.add('open');
+                document.getElementById(`toggle-${id}`).innerText = '▲';
+            }
+            window.renderGallery();
+        };
+
+        window.toggleSub = (id, event) => {
+            event.stopPropagation(); // Butonun arkasındaki filtrelemeyi tetikleme
+            const subList = document.getElementById(`sub-list-${id}`);
+            const toggle = document.getElementById(`toggle-${id}`);
+            if(subList.classList.contains('open')) {
+                subList.classList.remove('open');
+                toggle.innerText = '▼';
+            } else {
+                subList.classList.add('open');
+                toggle.innerText = '▲';
+            }
+        };
+
+        window.selectSubCategory = (mainCatName, subCatName, mainId, subId) => {
+            currentFilterMain = mainCatName; currentFilterSub = subCatName;
+            document.getElementById('currentCategoryTitle').innerText = `${mainCatName} / ${subCatName}`;
+
+            document.querySelectorAll('.category-btn, .sub-category-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`main-btn-${mainId}`).classList.add('active'); // Ana kategoriyi de aktif göster
+            document.getElementById(`sub-btn-${subId}`).classList.add('active');
+            window.renderGallery();
         };
 
         const updateFormCategorySelect = () => {
@@ -333,21 +378,6 @@
             sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? cat.sub.map(s => `<option value="${s.name}">${s.name}</option>`).join('') : '');
         };
 
-        window.filterCategory = (m, s) => {
-            currentFilterMain = m; currentFilterSub = s;
-            document.getElementById('currentCategoryTitle').innerText = m === 'Tümü' ? 'Tüm Arşiv' : `${m}${s ? ' / ' + s : ''}`;
-            
-            // Aktif buton rengi ayarlama
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            if(event && event.currentTarget) {
-                let target = event.currentTarget;
-                if(target.classList.contains('cat-name-click')) target = target.parentElement;
-                target.classList.add('active');
-            }
-            
-            renderGallery();
-        };
-
         const loadData = () => {
             onSnapshot(query(collection(db, "arsiv"), orderBy("timestamp", "desc")), (s) => {
                 allItems = s.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -355,18 +385,14 @@
             });
         };
 
-        // Ekrana Çizme ve Gelişmiş Filtreleme Arama Motoru
         window.renderGallery = () => {
             const grid = document.getElementById('galleryGrid');
             grid.innerHTML = '';
             
-            // 1. Arama Kutusundan Veriyi Al
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
 
-            // 2. Kategori Filtresi Uygula
             let filtered = allItems.filter(i => currentFilterMain === 'Tümü' || (i.category === currentFilterMain && (!currentFilterSub || i.subCategory === currentFilterSub)));
             
-            // 3. Arama Motoru Filtresi Uygula
             if (searchTerm !== "") {
                 filtered = filtered.filter(item => {
                     const titleMatch = item.title && item.title.toLowerCase().includes(searchTerm);
@@ -530,7 +556,6 @@
             window.closeNewCatCreator();
         };
 
-        // YENİ ÖZEL ALT KATEGORİ MODALI FONKSİYONLARI
         window.openSubCatModal = (parentId) => {
             document.getElementById('subCatParentId').value = parentId;
             document.getElementById('newSubCatName').value = "";
