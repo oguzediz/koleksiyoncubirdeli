@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksiyoncubirdeli - V4 CMS</title>
+    <title>Koleksiyoncubirdeli - V5 Kanva</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -60,7 +60,8 @@
         .main-content { flex: 1; display: flex; flex-direction: column; }
         .top-bar { height: 75px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; border-bottom: 1px solid var(--border-color); background: var(--bg-color); }
         .search-area { flex: 1; max-width: 450px; position: relative; margin: 0 20px; }
-        .search-area input { width: 100%; padding: 12px 15px 12px 40px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; outline: none; }
+        .search-area input { width: 100%; padding: 12px 15px 12px 40px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; outline: none; transition: 0.3s; }
+        .search-area input:focus { border-color: var(--accent-color); background: #000; }
         .search-area i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
         .view-controls { display: flex; gap: 5px; background: var(--sidebar-bg); padding: 5px; border-radius: 10px; border: 1px solid var(--border-color); }
@@ -91,21 +92,32 @@
         /* --- MODALLAR --- */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; z-index: 999; }
         .overlay.show { display: block; }
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--modal-bg); width: 600px; border-radius: 20px; border: 1px solid var(--border-color); z-index: 1001; padding: 35px; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--modal-bg); border-radius: 20px; border: 1px solid var(--border-color); z-index: 1001; box-shadow: 0 30px 60px rgba(0,0,0,0.8); overflow: hidden; }
         .modal.show { display: block; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         
+        /* SPLIT MODAL (Kanva Tasarımı) */
+        #addModal { width: 900px; height: 650px; padding: 0; display: flex; flex-direction: row; }
+        .modal-sidebar { width: 220px; background: #111; border-right: 1px solid var(--border-color); padding: 20px; display: flex; flex-direction: column; }
+        .modal-body { flex: 1; padding: 30px; overflow-y: auto; position: relative; background: var(--modal-bg); }
+        
+        .tab-btn { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 10px; transition: 0.2s; font-weight: 600; font-size: 14px; border: 1px solid transparent;}
+        .tab-btn:hover { background: var(--hover-bg); color: white; }
+        .tab-btn.active { background: rgba(46, 160, 67, 0.15); color: var(--accent-color); border-color: rgba(46, 160, 67, 0.3); }
+        .tab-btn i { font-size: 18px; width: 20px; text-align: center; }
+
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; color: white; outline: none; font-size: 14px; }
-        
-        /* Şablon Seçici Butonları */
-        .type-selector { display: flex; gap: 15px; margin-bottom: 20px; }
-        .type-btn { flex: 1; padding: 20px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; cursor: pointer; text-align: center; transition: 0.2s; }
-        .type-btn:hover { border-color: var(--text-muted); background: var(--hover-bg); transform: translateY(-3px); }
-        .type-btn i { font-size: 24px; margin-bottom: 10px; color: var(--accent-color); }
-        .type-btn div { font-size: 14px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; color: white; outline: none; font-size: 14px; transition: 0.2s;}
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent-color); }
+
+        /* Kanva Modül Çubuğu */
+        .module-toolbar { display: none; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px dashed var(--border-color); align-items: center;}
+        .mod-title { width: 100%; font-size: 11px; font-weight: 800; color: var(--accent-color); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+        .mod-btn { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 5px;}
+        .mod-btn:hover { border-color: var(--text-muted); background: var(--hover-bg); }
+        .mod-btn.added { opacity: 0.5; cursor: not-allowed; border-color: var(--accent-color); color: var(--accent-color); }
 
         /* Kişi (Cast) Kartları Tasarımı */
         .cast-builder { background: var(--sidebar-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px; }
@@ -115,6 +127,11 @@
         .cast-chip-name { font-size: 12px; font-weight: bold; }
         .cast-chip-role { font-size: 10px; color: var(--text-muted); }
         .cast-chip-del { color: var(--danger-color); cursor: pointer; margin-left: 5px; }
+
+        .dynamic-fields-title { font-size: 13px; font-weight: 800; margin: 20px 0 10px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 20px; }
+        .field-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .field-row input { flex: 1; padding: 8px; font-size: 13px; }
+        .remove-field-btn { color: var(--danger-color); cursor: pointer; padding: 5px; }
 
         .submit-btn { width: 100%; padding: 15px; background: var(--text-main); color: #000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: 0.2s; }
         .submit-btn:hover { background: #fff; transform: translateY(-2px); }
@@ -130,12 +147,10 @@
         .panel-title { font-size: 36px; font-weight: 900; margin-bottom: 20px; line-height: 1.1; }
         .badge { display: inline-block; background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 20px; font-size: 12px; color: var(--text-muted); margin: 0 8px 8px 0; }
         
-        /* Galeri Vitrini (Thumbnail list) */
         .gallery-thumbnails { display: flex; gap: 10px; padding: 15px 40px; background: var(--bg-color); overflow-x: auto; border-bottom: 1px solid var(--border-color); }
         .thumb-img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: 0.6; transition: 0.2s; border: 2px solid transparent; }
         .thumb-img:hover, .thumb-img.active { opacity: 1; border-color: var(--accent-color); }
 
-        /* Detay Paneli Kişi Listesi */
         .p-cast-list { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .p-cast-card { display: flex; align-items: center; gap: 12px; background: var(--bg-color); padding: 8px 15px 8px 8px; border-radius: 40px; border: 1px solid var(--border-color); }
         .p-cast-card img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
@@ -179,58 +194,75 @@
                     <button class="view-btn" id="v-list" onclick="window.changeView('list')"><i class="fa-solid fa-list"></i></button>
                     <button class="view-btn" id="v-masonry" onclick="window.changeView('masonry')"><i class="fa-solid fa-table-cells"></i></button>
                 </div>
-                <button style="padding: 12px 20px; border-radius: 12px; background:white; color:black; border:none; font-weight:800; cursor:pointer;" onclick="window.openTypeSelectionModal()">+ EKLE</button>
+                <button style="padding: 12px 20px; border-radius: 12px; background:white; color:black; border:none; font-weight:800; cursor:pointer;" onclick="window.openModal()">+ EKLE</button>
             </div>
         </div>
         <div class="content-area"><div id="galleryGrid" class="grid-view"></div></div>
     </div>
 
-    <div class="modal" id="typeSelectionModal" style="z-index: 1002;">
-        <div class="modal-header"><h3>Ne Ekliyoruz?</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
-        <div class="type-selector">
-            <div class="type-btn" onclick="window.openFormModal('film')"><i class="fa-solid fa-film"></i><div>Film / Dizi</div></div>
-            <div class="type-btn" onclick="window.openFormModal('kitap')"><i class="fa-solid fa-book"></i><div>Kitap</div></div>
-            <div class="type-btn" onclick="window.openFormModal('ayrac')"><i class="fa-solid fa-bookmark"></i><div>Ayraç / Koleksiyon</div></div>
-        </div>
-    </div>
-
-    <div class="modal" id="addModal">
-        <div class="modal-header"><h3 id="modalHeaderTitle">Yeni Eser</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
-        <input type="hidden" id="editId">
-        <input type="hidden" id="currentItemType" value="diger">
-        
-        <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" required></div>
-
-        <div class="form-row">
-            <div class="form-group"><label>Kategori</label><select id="in-cat" onchange="window.updateSubSelect()"></select></div>
-            <div class="form-group"><label>Alt Kategori</label><select id="in-sub"></select></div>
-        </div>
-
-        <div class="form-group">
-            <label>Görseller (Birden Fazla Seçebilirsin)</label>
-            <input type="file" id="in-file" accept="image/*" multiple>
-            <div style="font-size:10px; color:#888; margin-top:5px;">*Ctrl veya Cmd'ye basılı tutarak birden fazla resim seçebilirsin.</div>
-        </div>
-
-        <div id="castSystem" class="cast-builder">
-            <label style="display:block; margin-bottom:10px; font-size:12px; font-weight:bold; color:var(--text-muted);">KİŞİLER / KADRO</label>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <input type="text" id="tempCastName" placeholder="Kişi Adı" style="flex:1; padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white;">
-                <select id="tempCastRole" style="padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white;">
-                    <option>Yönetmen</option><option>Oyuncu</option><option>Yazar</option><option>Çizer</option><option>Karakter</option>
-                </select>
-                <input type="file" id="tempCastFile" accept="image/*" title="Profil Fotoğrafı" style="width:105px; font-size:11px;">
-                <button type="button" id="castAddBtn" style="padding:10px 15px; border-radius:8px; background:var(--accent-color); border:none; color:white; font-weight:bold; cursor:pointer;" onclick="window.addCastMember()">Ekle</button>
+    <div class="modal" id="addModal" style="padding:0;">
+        <div style="display:flex; height:100%;">
+            
+            <div class="modal-sidebar">
+                <div style="font-size:11px; font-weight:bold; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px;">ŞABLON SEÇ</div>
+                <div class="tab-btn active" id="tab-film" onclick="window.setFormType('film')"><i class="fa-solid fa-film"></i> Film/Dizi</div>
+                <div class="tab-btn" id="tab-kitap" onclick="window.setFormType('kitap')"><i class="fa-solid fa-book"></i> Kitap</div>
+                <div class="tab-btn" id="tab-ayrac" onclick="window.setFormType('ayrac')"><i class="fa-solid fa-bookmark"></i> Ayraç/Obje</div>
+                <div class="tab-btn" id="tab-ozel" onclick="window.setFormType('ozel')" style="margin-top:auto;"><i class="fa-solid fa-cube"></i> Özel Kanva</div>
             </div>
-            <div id="castChipsContainer" style="margin-top:10px;"></div>
+
+            <div class="modal-body">
+                <i class="fa-solid fa-xmark" style="position:absolute; top:20px; right:25px; cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeAll()"></i>
+                <h3 id="modalHeaderTitle" style="margin-bottom: 25px; font-weight: 900; font-size: 24px;">Yeni Eser Ekle</h3>
+                
+                <input type="hidden" id="editId">
+                <input type="hidden" id="currentItemType" value="film">
+
+                <div id="moduleToolbar" class="module-toolbar">
+                    <div class="mod-title">TUVale Modül Ekle</div>
+                    <button class="mod-btn" id="btn-mod-images" onclick="window.showModule('wrap-images', this)"><i class="fa-solid fa-image"></i> Görseller</button>
+                    <button class="mod-btn" id="btn-mod-cast" onclick="window.showModule('wrap-cast', this)"><i class="fa-solid fa-users"></i> Kişi/Kadro</button>
+                    <button class="mod-btn" id="btn-mod-desc" onclick="window.showModule('wrap-desc', this)"><i class="fa-solid fa-align-left"></i> Açıklama</button>
+                    <button class="mod-btn" id="btn-mod-custom" onclick="window.showModule('wrap-custom', this)"><i class="fa-solid fa-sliders"></i> Özel Veri</button>
+                </div>
+
+                <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Kategori</label><select id="in-cat" onchange="window.updateSubSelect()"></select></div>
+                    <div class="form-group"><label>Alt Kategori</label><select id="in-sub"></select></div>
+                </div>
+
+                <div id="wrap-images" class="form-group">
+                    <label>Görseller <span style="font-weight:normal; color:#666; font-size:10px;">(Birden Fazla Seçilebilir)</span></label>
+                    <input type="file" id="in-file" accept="image/*" multiple>
+                </div>
+
+                <div id="wrap-cast" class="cast-builder">
+                    <label style="display:block; margin-bottom:10px; font-size:12px; font-weight:bold; color:var(--text-muted);">KİŞİLER / KADRO</label>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="text" id="tempCastName" placeholder="Kişi Adı" style="flex:1; padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white;">
+                        <select id="tempCastRole" style="padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white;">
+                            <option>Yönetmen</option><option>Oyuncu</option><option>Yazar</option><option>Çizer</option><option>Karakter</option>
+                        </select>
+                        <input type="file" id="tempCastFile" accept="image/*" title="Profil Fotoğrafı" style="width:105px; font-size:11px;">
+                        <button type="button" id="castAddBtn" style="padding:10px 15px; border-radius:8px; background:var(--accent-color); border:none; color:white; font-weight:bold; cursor:pointer;" onclick="window.addCastMember()">Ekle</button>
+                    </div>
+                    <div id="castChipsContainer" style="margin-top:10px;"></div>
+                </div>
+
+                <div id="wrap-desc" class="form-group">
+                    <label>Açıklama & Notlar</label>
+                    <textarea id="in-desc" style="height:80px;"></textarea>
+                </div>
+
+                <div id="wrap-custom">
+                    <div class="dynamic-fields-title">ÖZEL ALANLAR <button class="manage-cat-btn" onclick="window.addDynamicFieldRow()" style="font-size:12px; color:var(--accent-color);">+ Özellik Ekle</button></div>
+                    <div id="dynamicFieldsContainer"></div>
+                </div>
+
+                <button class="submit-btn" id="saveBtn" onclick="window.saveItem()">ARŞİVE KAYDET</button>
+            </div>
         </div>
-
-        <div class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" style="height:80px;"></textarea></div>
-
-        <div class="dynamic-fields-title">ÖZEL ALANLAR <button class="manage-cat-btn" onclick="window.addDynamicFieldRow()" style="font-size:12px;">+ Özellik Ekle</button></div>
-        <div id="dynamicFieldsContainer"></div>
-
-        <button class="submit-btn" id="saveBtn" onclick="window.saveItem()">ARŞİVE KAYDET</button>
     </div>
 
     <div class="slide-panel" id="detailPanel">
@@ -249,17 +281,17 @@
         </div>
     </div>
 
-    <div class="modal" id="catModal">
+    <div class="modal" id="catModal" style="width:500px; padding:35px;">
         <div class="modal-header"><h3>Kategorileri Yapılandır</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
         <div id="catManList" style="margin-bottom:20px; max-height: 400px; overflow-y: auto; padding-right:5px;"></div>
         <button class="submit-btn" style="background:#333; color:white; border:1px dashed #666;" onclick="window.openNewCat()">+ Yeni Ana Kategori Yarat</button>
     </div>
-    <div class="modal modal-top" id="newCatModal">
+    <div class="modal" id="newCatModal" style="width:400px; padding:35px; z-index:1003;">
         <div class="modal-header"><h3>Yeni Ana Kategori</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeNewCat()"></i></div>
         <input type="text" id="newCatInput" placeholder="Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px;">
         <button class="submit-btn" onclick="window.saveNewCat()">Kategoriyi Yarat</button>
     </div>
-    <div class="modal modal-top" id="subCatModal">
+    <div class="modal" id="subCatModal" style="width:400px; padding:35px; z-index:1003;">
         <div class="modal-header"><h3>Alt Kategori Ekle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeSubCat()"></i></div>
         <input type="hidden" id="subParentId">
         <input type="text" id="subCatInput" placeholder="Alt Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px;">
@@ -287,10 +319,7 @@
 
         let allItems = [], categoryTree = [], appSettings = { logoUrl: '' };
         let currentMain = 'Tümü', currentSub = null, viewMode = 'grid', activeId = null;
-        
-        // Yeni CMS Veri Yapıları
-        let currentCastArray = []; 
-        let currentImagesArray = []; // Düzenlemede eski resimleri tutmak için
+        let currentCastArray = [], currentImagesArray = []; 
 
         const loadSettings = async () => {
             const snap = await getDoc(doc(db, "settings", "general"));
@@ -359,7 +388,6 @@
 
         const loadData = () => { onSnapshot(query(collection(db, "arsiv"), orderBy("timestamp", "desc")), (s) => { allItems = s.docs.map(d => ({ id: d.id, ...d.data() })); window.renderGallery(); }); };
 
-        // SÜPER ARAMA: Cast isimlerini de tarar
         window.renderGallery = () => {
             const grid = document.getElementById('galleryGrid'); grid.className = `${viewMode}-view`; grid.innerHTML = '';
             const search = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -367,11 +395,8 @@
             let filtered = allItems.filter(item => {
                 const matchMain = currentMain === 'Tümü' || item.category === currentMain;
                 const matchSub = !currentSub || item.subCategory === currentSub;
-                
-                // Super Search Logic
                 let matchSearch = !search || item.title.toLowerCase().includes(search) || (item.description && item.description.toLowerCase().includes(search));
                 if (item.cast && !matchSearch) { matchSearch = item.cast.some(c => c.name.toLowerCase().includes(search) || c.role.toLowerCase().includes(search)); }
-                
                 return matchMain && matchSub && matchSearch;
             });
 
@@ -379,37 +404,73 @@
 
             filtered.forEach(item => {
                 const card = document.createElement('div'); card.className = 'card'; card.onclick = () => window.openDetail(item.id);
-                const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl; // Geriye dönük uyumluluk
-                
+                const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
                 let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${coverUrl}')"></div><img src="${coverUrl}" class="img-front"></div>` : `<div class="text-cover">${item.title.substring(0,2).toUpperCase()}</div>`;
                 card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta"><span>${item.category}</span></div></div>`;
                 grid.appendChild(card);
             });
         };
 
-        // --- ŞABLON SİSTEMİ VE FORMLAR ---
-        window.openTypeSelectionModal = () => {
-            document.getElementById('typeSelectionModal').classList.add('show');
-            document.getElementById('globalOverlay').classList.add('show');
-        };
-
-        window.openFormModal = (type) => {
-            document.getElementById('typeSelectionModal').classList.remove('show');
+        // --- SPLIT MODAL VE KANVA MANTIĞI ---
+        window.openModal = () => {
             document.getElementById('editId').value = '';
-            document.getElementById('currentItemType').value = type;
+            document.getElementById('modalHeaderTitle').innerText = "Yeni Eser Ekle";
             document.getElementById('in-title').value = ''; document.getElementById('in-desc').value = '';
             document.getElementById('in-file').value = '';
-            
-            // Şablona Göre Formu Düzenle
-            const castSys = document.getElementById('castSystem');
-            if (type === 'ayrac') { castSys.style.display = 'none'; } else { castSys.style.display = 'block'; }
-            
             currentCastArray = []; currentImagesArray = []; renderCastChips();
             document.getElementById('dynamicFieldsContainer').innerHTML = '';
-            if (type === 'kitap') window.addDynamicFieldRow('Sayfa Sayısı', '');
-            if (type === 'film') window.addDynamicFieldRow('IMDB Puanı', '');
-
+            
             document.getElementById('addModal').classList.add('show');
+            document.getElementById('globalOverlay').classList.add('show');
+            
+            // Varsayılan olarak Film seçili gelsin
+            window.setFormType('film');
+        };
+
+        window.setFormType = (type) => {
+            document.getElementById('currentItemType').value = type;
+            
+            // Sol Sekme Aktifliğini Ayarla
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${type}`).classList.add('active');
+
+            // Tüm modülleri ve toolbarı sıfırla
+            const tBar = document.getElementById('moduleToolbar');
+            const wImg = document.getElementById('wrap-images');
+            const wCast = document.getElementById('wrap-cast');
+            const wDesc = document.getElementById('wrap-desc');
+            const wCus = document.getElementById('wrap-custom');
+            
+            document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('added'));
+
+            if (type === 'ozel') {
+                // Kanva Modu: Her şey kapalı, Toolbar açık
+                tBar.style.display = 'flex';
+                wImg.style.display = 'none'; wCast.style.display = 'none'; wDesc.style.display = 'none'; wCus.style.display = 'none';
+            } else {
+                // Şablon Modları
+                tBar.style.display = 'none';
+                wImg.style.display = 'block'; wDesc.style.display = 'block'; wCus.style.display = 'block';
+                
+                if (type === 'ayrac') {
+                    wCast.style.display = 'none';
+                } else {
+                    wCast.style.display = 'block';
+                }
+            }
+
+            // Eğer Yeni Ekleniyorsa Özel Alanlara Şablon Verisi Atalım (Düzenlemede ezilmemesi için kontrol ekliyoruz)
+            if(!document.getElementById('editId').value && type !== 'ozel') {
+                document.getElementById('dynamicFieldsContainer').innerHTML = '';
+                if(type === 'film') window.addDynamicFieldRow('IMDB Puanı', '');
+                if(type === 'kitap') window.addDynamicFieldRow('Sayfa Sayısı', '');
+            }
+        };
+
+        // Kanva'da Modül Gösterme Fonksiyonu
+        window.showModule = (wrapId, btnEl) => {
+            document.getElementById(wrapId).style.display = 'block';
+            btnEl.classList.add('added');
         };
 
         // KİŞİ (CAST) SİSTEMİ
@@ -446,14 +507,12 @@
         };
         window.removeCast = (id) => { currentCastArray = currentCastArray.filter(c => c.id !== id); renderCastChips(); };
 
-        // DİNAMİK ALANLAR
         window.addDynamicFieldRow = (key = '', val = '') => {
             const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row';
             row.innerHTML = `<input type="text" placeholder="Örn: Basım Yılı" value="${key}" class="f-key"><input type="text" placeholder="Değer" value="${val}" class="f-val"><i class="fa-solid fa-trash-can remove-field-btn" onclick="this.parentElement.remove()"></i>`;
             cont.appendChild(row);
         };
 
-        // KAPSAMLI KAYDETME (Çoklu Resim Dahil)
         window.saveItem = async () => {
             const id = document.getElementById('editId').value;
             const saveBtn = document.getElementById('saveBtn');
@@ -487,7 +546,6 @@
         window.openDetail = (id) => {
             activeId = id; const item = allItems.find(i => i.id === id);
             
-            // Görsel Vitrini Ayarlama
             const visual = document.getElementById('panelVisual');
             const thumbsCont = document.getElementById('galleryThumbnails');
             const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
@@ -510,7 +568,6 @@
             badges.innerHTML = `<span class="badge"><b>KATEGORİ:</b> ${item.subCategory ? item.category + ' / ' + item.subCategory : item.category}</span>`;
             if(item.customFields) item.customFields.forEach(f => { if(f.val) badges.innerHTML += `<span class="badge"><b>${f.key.toUpperCase()}:</b> ${f.val}</span>`; });
 
-            // Kişi Kartlarını Çizme
             const castCont = document.getElementById('p-cast');
             if(item.cast && item.cast.length > 0) {
                 castCont.style.display = 'flex';
@@ -532,21 +589,29 @@
         window.editCurrentItem = () => {
             const item = allItems.find(i => i.id === activeId);
             document.getElementById('editId').value = item.id;
-            document.getElementById('currentItemType').value = item.itemType || 'diger';
+            
+            // Verileri doldur
             document.getElementById('in-title').value = item.title;
             document.getElementById('in-cat').value = item.category; window.updateSubSelect(); document.getElementById('in-sub').value = item.subCategory || '';
             document.getElementById('in-desc').value = item.description || '';
-            
             currentCastArray = item.cast || []; renderCastChips();
-            currentImagesArray = item.images || (item.imageUrl ? [item.imageUrl] : []); // Eski tek resimli kayıtları array'e çevir
-
-            const castSys = document.getElementById('castSystem');
-            if (item.itemType === 'ayrac') { castSys.style.display = 'none'; } else { castSys.style.display = 'block'; }
+            currentImagesArray = item.images || (item.imageUrl ? [item.imageUrl] : []);
 
             const cont = document.getElementById('dynamicFieldsContainer'); cont.innerHTML = '';
             if(item.customFields) item.customFields.forEach(f => window.addDynamicFieldRow(f.key, f.val));
 
-            document.getElementById('detailPanel').classList.remove('open'); document.getElementById('addModal').classList.add('show');
+            // Şablonu Ayarla ve Açık olanları koru
+            window.setFormType(item.itemType || 'ozel');
+            
+            if ((item.itemType || 'ozel') === 'ozel') {
+                if (currentImagesArray.length > 0) window.showModule('wrap-images', document.getElementById('btn-mod-images'));
+                if (currentCastArray.length > 0) window.showModule('wrap-cast', document.getElementById('btn-mod-cast'));
+                if (item.description) window.showModule('wrap-desc', document.getElementById('btn-mod-desc'));
+                if (item.customFields && item.customFields.length > 0) window.showModule('wrap-custom', document.getElementById('btn-mod-custom'));
+            }
+
+            document.getElementById('detailPanel').classList.remove('open'); 
+            document.getElementById('addModal').classList.add('show');
         };
 
         window.deleteCurrentItem = async () => { if(confirm("Bu eseri tamamen silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
