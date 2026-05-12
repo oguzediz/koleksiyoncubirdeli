@@ -10,7 +10,6 @@
         /* ÖZEL FONT TANIMLAMASI */
         @font-face {
             font-family: 'OzelFont';
-            /* Boşluklar web'de %20 ile ifade edilir */
             src: url('./fonts/DJB%20Chalk%20It%20Up.ttf') format('truetype');
         }
 
@@ -27,9 +26,14 @@
             --danger-color: #cf6679;
         }
 
-        /* FONT BURADA TÜM SİTEYE UYGULANIYOR */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'OzelFont', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; }
+        /* --- FONT DÜZELTMESİ (İkonları bozmaması için) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
+        /* Sadece genel sayfa metinlerine ve girdilere uygula */
+        body, input, button, textarea, select { 
+            font-family: 'OzelFont', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        }
+
         body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-main); }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -57,7 +61,7 @@
         .category-btn:hover { border-color: var(--text-muted); transform: translateX(3px); }
         .category-btn.active { border-color: var(--accent-color); background: rgba(46, 160, 67, 0.1); }
         .drag-handle { padding: 12px; color: #444; cursor: grab; }
-        .cat-name-click { flex: 1; text-align: left; padding: 12px 5px; font-size: 14px; font-weight: 500; display:flex; align-items:center; gap:8px;}
+        .cat-name-click { flex: 1; text-align: left; padding: 12px 5px; font-size: 16px; font-weight: 500; display:flex; align-items:center; gap:8px;}
         
         .cat-icon-img { width: 18px; height: 18px; object-fit: contain; }
 
@@ -68,7 +72,7 @@
         .sub-category-list.open { display: block; }
         .sub-btn-wrapper { display: flex; align-items: center; margin-bottom: 2px; }
         .sub-drag-handle { color: #444; cursor: grab; padding: 8px 10px 8px 0; font-size: 12px; }
-        .sub-btn { background: none; border: none; color: var(--text-muted); font-size: 13px; padding: 8px 0; flex: 1; text-align: left; cursor: pointer; transition: 0.2s; display:flex; align-items:center; gap:8px;}
+        .sub-btn { background: none; border: none; color: var(--text-muted); font-size: 14px; padding: 8px 0; flex: 1; text-align: left; cursor: pointer; transition: 0.2s; display:flex; align-items:center; gap:8px;}
         .sub-btn:hover { color: white; padding-left: 5px; }
         .sub-btn.active { color: var(--accent-color); font-weight: bold; }
 
@@ -76,7 +80,7 @@
         .main-content { flex: 1; display: flex; flex-direction: column; }
         .top-bar { height: 75px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; border-bottom: 1px solid var(--border-color); background: var(--bg-color); }
         .search-area { flex: 1; max-width: 450px; position: relative; margin: 0 20px; }
-        .search-area input { width: 100%; padding: 12px 15px 12px 40px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; outline: none; transition: 0.3s; }
+        .search-area input { width: 100%; padding: 12px 15px 12px 40px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; outline: none; transition: 0.3s; font-size: 16px;}
         .search-area input:focus { border-color: var(--accent-color); background: #000; }
         .search-area i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         .view-controls { display: flex; gap: 5px; background: var(--sidebar-bg); padding: 5px; border-radius: 10px; border: 1px solid var(--border-color); }
@@ -101,13 +105,14 @@
         .img-front { position: relative; max-width: 100%; max-height: 100%; object-fit: contain; z-index: 2; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         .text-cover { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #1a1a1a, #333); color: var(--text-muted); font-size: 40px; font-weight: 900; }
         .card-info { padding: 15px; flex: 1; }
-        .card-title { font-size: 15px; font-weight: 700; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-meta { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .card-title { font-size: 16px; font-weight: 700; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: 13px; color: var(--text-muted); display: flex; justify-content: space-between; }
 
         /* --- MODALLAR --- */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; z-index: 999; }
         .overlay.show { display: block; }
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--modal-bg); border-radius: 20px; border: 1px solid var(--border-color); z-index: 1001; box-shadow: 0 30px 60px rgba(0,0,0,0.8); overflow: hidden; }
+        .modal.show { display: block; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         
         #addModal { width: 900px; height: 650px; padding: 0; }
@@ -141,10 +146,10 @@
 
         .dynamic-fields-title { font-size: 13px; font-weight: 800; margin: 20px 0 10px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 20px; }
         .field-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-        .field-row input { flex: 1; padding: 8px; font-size: 13px; }
+        .field-row input { flex: 1; padding: 8px; font-size: 14px; }
         .remove-field-btn { color: var(--danger-color); cursor: pointer; padding: 5px; }
 
-        .submit-btn { width: 100%; padding: 15px; background: var(--text-main); color: #000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+        .submit-btn { width: 100%; padding: 15px; background: var(--text-main); color: #000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 16px;}
         .submit-btn:hover { background: #fff; transform: translateY(-2px); }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -248,7 +253,7 @@
 
             <div id="wrap-images" class="form-group">
                 <label>Görseller <span style="font-weight:normal; color:#666; font-size:10px;">(Birden Fazla Seçilebilir)</span></label>
-                <input type="file" id="in-file" accept="image/*" multiple>
+                <input type="file" id="in-file" accept="image/*" multiple style="padding-top:10px;">
             </div>
 
             <div id="wrap-cast" class="cast-builder">
@@ -300,21 +305,21 @@
         <button class="submit-btn" style="background:#333; color:white; border:1px dashed #666;" onclick="window.openNewCat()">+ Yeni Ana Kategori Yarat</button>
     </div>
     
-    <div class="modal" id="newCatModal" style="width:400px; padding:35px; z-index:1003; display:none;">
-        <div class="modal-header"><h3>Yeni Ana Kategori</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeNewCat()"></i></div>
+    <div class="modal" id="newCatModal" style="width:400px; padding:35px; z-index:1003;">
+        <div class="modal-header"><h3>Yeni Ana Kategori</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
         <div class="form-group">
             <label>Kategori İsmi</label>
             <input type="text" id="newCatInput" placeholder="Örn: Müzik Plakları">
         </div>
         <div class="form-group">
             <label>Kategori İkonu (Opsiyonel)</label>
-            <input type="file" id="newCatIcon" accept="image/*">
+            <input type="file" id="newCatIcon" accept="image/*" style="padding-top:10px;">
         </div>
         <button class="submit-btn" id="saveCatBtn" onclick="window.saveNewCat()">Kategoriyi Yarat</button>
     </div>
     
-    <div class="modal" id="subCatModal" style="width:400px; padding:35px; z-index:1003; display:none;">
-        <div class="modal-header"><h3>Alt Kategori Ekle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeSubCat()"></i></div>
+    <div class="modal" id="subCatModal" style="width:400px; padding:35px; z-index:1003;">
+        <div class="modal-header"><h3>Alt Kategori Ekle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
         <input type="hidden" id="subParentId">
         <div class="form-group">
             <label>Alt Kategori İsmi</label>
@@ -322,7 +327,7 @@
         </div>
         <div class="form-group">
             <label>İkon (Opsiyonel)</label>
-            <input type="file" id="subCatIcon" accept="image/*">
+            <input type="file" id="subCatIcon" accept="image/*" style="padding-top:10px;">
         </div>
         <button class="submit-btn" id="saveSubCatBtn" onclick="window.saveSubCat()">Ekle</button>
     </div>
@@ -453,6 +458,7 @@
             });
         };
 
+        // --- SPLIT MODAL VE KANVA ---
         window.openModal = () => {
             document.getElementById('editId').value = '';
             document.getElementById('modalHeaderTitle').innerText = "Yeni Eser Ekle";
@@ -585,9 +591,12 @@
         };
 
         window.deleteCurrentItem = async () => { if(confirm("Bu eseri tamamen silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
+        
+        /* Modal Kapatma İşlemlerinin Hepsi Ortak (.classList.remove('show')) Yapıldı */
         window.closeAll = () => { document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); document.getElementById('detailPanel').classList.remove('open'); document.getElementById('globalOverlay').classList.remove('show'); };
-        window.closeNewCat = () => { document.getElementById('newCatModal').style.display = 'none'; };
-        window.closeSubCat = () => { document.getElementById('subCatModal').style.display = 'none'; };
+        window.closeNewCat = () => { document.getElementById('newCatModal').classList.remove('show'); };
+        window.closeSubCat = () => { document.getElementById('subCatModal').classList.remove('show'); };
+        
         const updateInCatSelect = () => { const s = document.getElementById('in-cat'); s.innerHTML = categoryTree.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); window.updateSubSelect(); };
         window.updateSubSelect = () => { const val = document.getElementById('in-cat').value; const sub = document.getElementById('in-sub'); const cat = categoryTree.find(c => c.name === val); sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? cat.sub.map(s => `<option value="${s.name}">${s.name}</option>`).join('') : ''); };
 
@@ -600,7 +609,7 @@
                 </div>`).join('');
         };
         
-        window.openNewCat = () => { document.getElementById('newCatInput').value = ''; document.getElementById('newCatIcon').value = ''; document.getElementById('newCatModal').style.display = 'block'; };
+        window.openNewCat = () => { document.getElementById('newCatInput').value = ''; document.getElementById('newCatIcon').value = ''; document.getElementById('newCatModal').classList.add('show'); };
         window.saveNewCat = async () => { 
             const n = document.getElementById('newCatInput').value.trim(); const file = document.getElementById('newCatIcon').files[0];
             if(!n) return;
@@ -612,8 +621,7 @@
         };
         
         window.delCat = async (id) => { if(confirm('Silinecek. Emin misin?')) { categoryTree = categoryTree.filter(c => c.id !== id); await saveTree(); } };
-        window.openSubCat = (id) => { document.getElementById('subParentId').value = id; document.getElementById('subCatInput').value = ''; document.getElementById('subCatIcon').value = ''; document.getElementById('subCatModal').style.display = 'block'; };
-        
+        window.openSubCat = (id) => { document.getElementById('subParentId').value = id; document.getElementById('subCatInput').value = ''; document.getElementById('subCatIcon').value = ''; document.getElementById('subCatModal').classList.add('show'); };
         window.saveSubCat = async () => { 
             const n = document.getElementById('subCatInput').value.trim(); const id = document.getElementById('subParentId').value; const file = document.getElementById('subCatIcon').files[0];
             if(!n) return;
