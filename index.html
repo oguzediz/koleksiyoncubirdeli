@@ -3,26 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksiyoncubirdeli - V7.2 CMS</title>
+    <title>Koleksiyoncubirdeli - Oguz Ediz</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === KENDİ FONTUNU KULLANMAK İÇİN === */
-        @font-face {
-            font-family: 'OzelFont';
-            src: url('./fonts/DJB%20Chalk%20It%20Up.ttf') format('truetype');
-        }
-
-        :root {
-            --bg-color: #0f0f0f; --sidebar-bg: #161616; --text-main: #efefef; --text-muted: #a0a0a0;
-            --border-color: #2a2a2a; --hover-bg: #222222; --accent-color: #2ea043;
-            --modal-bg: #1c1c1c; --input-bg: #0a0a0a; --danger-color: #cf6679;
-        }
-
+        @font-face { font-family: 'OzelFont'; src: url('./fonts/DJB%20Chalk%20It%20Up.ttf') format('truetype'); }
+        :root { --bg-color: #0f0f0f; --sidebar-bg: #161616; --text-main: #efefef; --text-muted: #a0a0a0; --border-color: #2a2a2a; --hover-bg: #222222; --accent-color: #2ea043; --modal-bg: #1c1c1c; --input-bg: #0a0a0a; --danger-color: #cf6679; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body, input, button, textarea, select { font-family: 'OzelFont', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-main); }
-
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
@@ -124,20 +113,19 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; color: white; outline: none; font-size: 14px; transition: 0.2s;}
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent-color); }
 
-        /* ESKİ RESİMLERİ GÖSTERME ALANI */
         .existing-img-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .existing-img-preview .img-box { position: relative; width: 60px; height: 60px; }
         .existing-img-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color); }
         .existing-img-preview .del-icon { position: absolute; top: -5px; right: -5px; background: var(--bg-color); color: var(--danger-color); border-radius: 50%; font-size: 14px; cursor: pointer; }
 
         .module-toolbar { display: none; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px dashed var(--border-color); align-items: center;}
-        .mod-title { width: 100%; font-size: 12px; font-weight: 800; color: var(--accent-color); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; display:flex; justify-content:space-between; align-items:center;}
-        .mod-btn { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 5px;}
+        .mod-title { width: 100%; font-size: 11px; font-weight: 800; color: var(--accent-color); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; display:flex; justify-content:space-between; align-items:center;}
+        .mod-btn { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 5px;}
         .mod-btn:hover { border-color: var(--text-muted); background: var(--hover-bg); }
         .mod-btn.added { opacity: 0.5; cursor: not-allowed; border-color: var(--accent-color); color: var(--accent-color); }
 
         .cast-builder { background: var(--sidebar-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px; }
-        .cast-chip { display: inline-flex; align-items: center; background: var(--bg-color); border: 1px solid var(--border-color); padding: 5px 15px 5px 5px; border-radius: 30px; margin: 5px 5px 0 0; gap: 8px; }
+        .cast-chip { display: inline-flex; align-items: center; background: var(--bg-color); border: 1px solid var(--border-color); padding: 5px 15px 5px 5px; border-radius: 30px; margin: 5px 5px 0 0; gap: 10px; }
         .cast-chip img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
         .cast-chip-info { display: flex; flex-direction: column; }
         .cast-chip-name { font-size: 12px; font-weight: bold; }
@@ -147,9 +135,11 @@
         .cast-chip-del { color: var(--danger-color); cursor: pointer; font-size: 11px;}
 
         .dynamic-fields-title { font-size: 13px; font-weight: 800; margin: 20px 0 10px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 20px; }
-        .field-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-        .field-row input { flex: 1; padding: 8px; font-size: 14px; }
-        .remove-field-btn { color: var(--danger-color); cursor: pointer; padding: 5px; }
+        .field-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: var(--sidebar-bg); padding: 8px; border-radius: 8px; border: 1px dashed var(--border-color);}
+        .field-row input { flex: 1; padding: 8px; font-size: 13px; background: var(--input-bg); border: 1px solid var(--border-color); color: white; border-radius: 6px; outline: none; }
+        .field-row input:focus { border-color: var(--accent-color); }
+        .remove-field-btn { color: var(--danger-color); cursor: pointer; padding: 5px; font-size: 14px; }
+        .f-img-preview { display: flex; align-items: center; justify-content: center; }
 
         .submit-btn { width: 100%; padding: 15px; background: var(--text-main); color: #000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 16px;}
         .submit-btn:hover { background: #fff; transform: translateY(-2px); }
@@ -257,7 +247,7 @@
                 <button class="mod-btn" id="btn-mod-custom" onclick="window.showModule('wrap-custom', this)"><i class="fa-solid fa-sliders"></i> Özel Veri</button>
             </div>
 
-            <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" required></div>
+            <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" placeholder="Örn: Eserse Tabii :))" required></div>
             <div class="form-row">
                 <div class="form-group"><label>Ana Kategori</label><select id="in-cat" onchange="window.updateSubSelect()"></select></div>
                 <div class="form-group"><label>Alt Kategori</label><select id="in-sub" onchange="window.updateSubSubSelect()"></select></div>
@@ -265,7 +255,7 @@
             </div>
 
             <div id="wrap-images" class="form-group">
-                <label>Yeni Görseller Ekle <span style="font-weight:normal; color:#666; font-size:10px;">(Birden Fazla Seçilebilir)</span></label>
+                <label>Görseller Ekle <span style="font-weight:normal; color:#666; font-size:10px;">(Birden Fazla Seçilebilir)</span></label>
                 <input type="file" id="in-file" accept="image/*" multiple style="padding-top:10px;">
                 <div id="existingImagesPreview" class="existing-img-preview"></div>
             </div>
@@ -273,7 +263,12 @@
             <div id="wrap-cast" class="cast-builder">
                 <label style="display:block; margin-bottom:10px; font-size:11px; font-weight:bold; color:var(--text-muted);">KİŞİLER / KADRO</label>
                 <div style="display:flex; gap:10px; align-items:center;">
-                    <input type="hidden" id="tempCastImageUrl"> <input type="text" id="tempCastName" placeholder="Kişi Adı" style="flex:1; padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white; font-size:13px;">
+                    <input type="hidden" id="tempCastImageUrl"> <div id="castExistingImgPreview" style="display:none; position:relative; width:40px; height:40px; margin-right:5px;">
+                        <img id="castExistingImg" src="" style="width:100%;height:100%;object-fit:cover;border-radius:50%; border:1px solid #555;">
+                        <i class="fa-solid fa-circle-xmark" style="position:absolute; top:-5px; right:-5px; color:var(--danger-color); cursor:pointer; background:var(--bg-color); border-radius:50%;" onclick="window.removeTempCastImg()"></i>
+                    </div>
+
+                    <input type="text" id="tempCastName" placeholder="Kişi Adı" style="flex:1; padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white; font-size:13px;">
                     <select id="tempCastRole" style="padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white; font-size:13px;">
                         <option>Yönetmen</option><option>Oyuncu</option><option>Yazar</option><option>Çizer</option><option>Karakter</option>
                     </select>
@@ -283,10 +278,16 @@
                 <div id="castChipsContainer" style="margin-top:10px;"></div>
             </div>
 
-            <div id="wrap-desc" class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" style="height:80px;"></textarea></div>
+            <div id="wrap-desc" class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" placeholder="Örn: Yaz İşte Birşeyler (^.^)" style="height:80px;"></textarea></div>
 
             <div id="wrap-custom">
-                <div class="dynamic-fields-title">ÖZEL ALANLAR <button class="manage-cat-btn" onclick="window.addDynamicFieldRow()" style="font-size:11px; color:var(--accent-color); font-weight:bold;">+ Özellik Ekle</button></div>
+                <div class="dynamic-fields-title">
+                    ÖZEL ALANLAR 
+                    <div>
+                        <button class="manage-cat-btn" onclick="window.addDynamicFieldRow('','','text')" style="font-size:11px; color:var(--text-main); font-weight:bold; margin-right:10px; background:var(--hover-bg); padding:4px 8px; border-radius:4px;">+ Metin</button>
+                        <button class="manage-cat-btn" onclick="window.addDynamicFieldRow('','','image')" style="font-size:11px; color:var(--accent-color); font-weight:bold; background:var(--hover-bg); padding:4px 8px; border-radius:4px;">+ Görsel</button>
+                    </div>
+                </div>
                 <div id="dynamicFieldsContainer"></div>
             </div>
 
@@ -319,7 +320,7 @@
     <div class="modal" id="editCatModal" style="width:400px; padding:35px; z-index:1003;">
         <div class="modal-header"><h3 id="editCatTitle">Kategori Düzenle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeEditCatModal()"></i></div>
         <input type="hidden" id="ec-mId"> <input type="hidden" id="ec-sId"> <input type="hidden" id="ec-ssId">
-        <div class="form-group"><label>Kategori İsmi</label><input type="text" id="ec-name" placeholder="Örn: 90'lar Rock" required></div>
+        <div class="form-group"><label>Kategori İsmi</label><input type="text" id="ec-name" placeholder="Örn: Ne Dersen de BANA NE!" required></div>
         <div class="form-group"><label>İkon (Opsiyonel)</label><input type="file" id="ec-icon" accept="image/*" style="padding-top:10px;"></div>
         <button class="submit-btn" id="saveEditCatBtn" onclick="window.saveEditCat()">Kaydet</button>
     </div>
@@ -388,7 +389,6 @@
                         ${(cat.sub || []).map(s => {
                             const subIconHtml = s.iconUrl ? `<img src="${s.iconUrl}" class="cat-icon-img">` : `<span style="opacity:0.5;">↳</span>`;
                             const hasSS = s.sub && s.sub.length > 0;
-                            // Sortable hatasını önlemek için container eklendi:
                             return `
                             <div class="sub-item-container" data-id="${s.id}">
                                 <div class="sub-btn-wrapper" id="swrap-${s.id}">
@@ -408,21 +408,8 @@
                 cont.appendChild(wrap);
             });
             Sortable.create(cont, { handle: '.drag-handle', animation: 150, onEnd: async (evt) => { const item = categoryTree.splice(evt.oldIndex, 1)[0]; categoryTree.splice(evt.newIndex, 0, item); await saveTreeSilent(); } });
-            
-            // Alt Kategori Sürükleme Onarımı
             document.querySelectorAll('.sub-category-list').forEach(list => { 
-                Sortable.create(list, { 
-                    handle: '.sub-drag-handle', 
-                    animation: 150, 
-                    onEnd: async (evt) => { 
-                        const p = categoryTree.find(c => c.id === list.getAttribute('data-parent-id')); 
-                        if(p) { 
-                            const item = p.sub.splice(evt.oldIndex, 1)[0]; 
-                            p.sub.splice(evt.newIndex, 0, item); 
-                            await saveTreeSilent(); 
-                        } 
-                    }
-                }); 
+                Sortable.create(list, { handle: '.sub-drag-handle', animation: 150, onEnd: async (evt) => { const p = categoryTree.find(c => c.id === list.getAttribute('data-parent-id')); if(p) { const item = p.sub.splice(evt.oldIndex, 1)[0]; p.sub.splice(evt.newIndex, 0, item); await saveTreeSilent(); } }}); 
             });
         };
 
@@ -466,13 +453,13 @@
         };
 
         window.saveCustomTemplate = async () => {
-            const name = prompt("Bu şablona bir isim ver (Örn: Çizgi Romanlar):"); if(!name) return;
+            const name = prompt("Bu şablona bir isim ver (Örn: Aman İsimsiz Kalmasın):"); if(!name) return;
             const activeMods = [];
             if(document.getElementById('wrap-images').style.display === 'block') activeMods.push('images');
             if(document.getElementById('wrap-cast').style.display === 'block') activeMods.push('cast');
             if(document.getElementById('wrap-desc').style.display === 'block') activeMods.push('desc');
             if(document.getElementById('wrap-custom').style.display === 'block') activeMods.push('custom');
-            const fields = []; document.querySelectorAll('.field-row').forEach(row => fields.push(row.querySelector('.f-key').value));
+            const fields = []; document.querySelectorAll('.field-row').forEach(row => fields.push({ key: row.querySelector('.f-key').value, type: row.dataset.type || 'text' }));
             
             savedTemplates.push({ id: Date.now().toString(), name, activeMods, fields, type: 'ozel' });
             await setDoc(doc(db, "settings", "templates"), { list: savedTemplates });
@@ -493,10 +480,9 @@
             t.activeMods.forEach(m => { document.getElementById(`wrap-${m}`).style.display = 'block'; document.getElementById(`btn-mod-${m}`).classList.add('added'); });
             
             document.getElementById('dynamicFieldsContainer').innerHTML = '';
-            t.fields.forEach(fKey => window.addDynamicFieldRow(fKey, ''));
+            t.fields.forEach(f => window.addDynamicFieldRow(f.key, '', f.type));
         };
 
-        // --- ESKİ RESİMLERİ GÖSTERME (EDIT MODU İÇİN) ---
         const renderExistingImagesPreview = () => {
             const cont = document.getElementById('existingImagesPreview');
             if(currentImagesArray.length === 0) { cont.innerHTML = ''; return; }
@@ -508,16 +494,29 @@
             `).join('');
         };
 
-        window.removeExistingImage = (idx) => {
-            currentImagesArray.splice(idx, 1);
-            renderExistingImagesPreview();
+        window.removeExistingImage = (idx) => { currentImagesArray.splice(idx, 1); renderExistingImagesPreview(); };
+
+        // MODAL STATE SIFIRLAMA
+        const resetFormState = () => {
+            document.getElementById('editId').value = '';
+            document.getElementById('modalHeaderTitle').innerText = "Yeni Eser Ekle";
+            document.getElementById('in-title').value = ''; document.getElementById('in-desc').value = ''; document.getElementById('in-file').value = '';
+            
+            document.getElementById('castAddBtn').innerText = "Ekle";
+            document.getElementById('castAddBtn').removeAttribute('data-editing-id');
+            document.getElementById('tempCastName').value = '';
+            document.getElementById('tempCastFile').value = '';
+            document.getElementById('tempCastImageUrl').value = '';
+            document.getElementById('castExistingImgPreview').style.display = 'none';
+
+            currentCastArray = []; currentImagesArray = []; renderCastChips(); renderExistingImagesPreview(); 
+            document.getElementById('dynamicFieldsContainer').innerHTML = '';
         };
 
         window.openModal = () => {
-            document.getElementById('editId').value = ''; document.getElementById('modalHeaderTitle').innerText = "Yeni Eser Ekle";
-            document.getElementById('in-title').value = ''; document.getElementById('in-desc').value = ''; document.getElementById('in-file').value = '';
-            currentCastArray = []; currentImagesArray = []; renderCastChips(); renderExistingImagesPreview(); document.getElementById('dynamicFieldsContainer').innerHTML = '';
-            document.getElementById('addModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show');
+            resetFormState();
+            document.getElementById('addModal').classList.add('show'); 
+            document.getElementById('globalOverlay').classList.add('show');
             window.setFormType('film');
         };
 
@@ -531,12 +530,17 @@
 
             if (type === 'ozel') { tBar.style.display = 'flex'; wImg.style.display = 'none'; wCast.style.display = 'none'; wDesc.style.display = 'none'; wCus.style.display = 'none'; } 
             else { tBar.style.display = 'none'; wImg.style.display = 'block'; wDesc.style.display = 'block'; wCus.style.display = 'block'; if (type === 'ayrac') { wCast.style.display = 'none'; } else { wCast.style.display = 'block'; } }
-            if(!document.getElementById('editId').value && type !== 'ozel' && !savedTemplates.some(t=>t.id===type)) { document.getElementById('dynamicFieldsContainer').innerHTML = ''; if(type === 'film') window.addDynamicFieldRow('IMDB Puanı', ''); if(type === 'kitap') window.addDynamicFieldRow('Sayfa Sayısı', ''); }
+            
+            if(!document.getElementById('editId').value && type !== 'ozel' && !savedTemplates.some(t=>t.id===type)) { 
+                document.getElementById('dynamicFieldsContainer').innerHTML = ''; 
+                if(type === 'film') window.addDynamicFieldRow('Puanı Var Mı?', '', 'Varsa Bakma Yaz!'); 
+                if(type === 'kitap') window.addDynamicFieldRow('Kaç Sayfa Ki ?', '', 'Okudun mu? :)'); 
+            }
         };
 
         window.showModule = (wrapId, btnEl) => { document.getElementById(wrapId).style.display = 'block'; btnEl.classList.add('added'); };
 
-        // KİŞİ (CAST) SİSTEMİ DÜZENLEME ONARIMI
+        // KİŞİ (CAST) SİSTEMİ
         window.addCastMember = async () => {
             const name = document.getElementById('tempCastName').value.trim(), role = document.getElementById('tempCastRole').value, fileInput = document.getElementById('tempCastFile'), btn = document.getElementById('castAddBtn');
             const editingId = btn.getAttribute('data-editing-id');
@@ -554,49 +558,69 @@
                 currentCastArray.push({ id: Date.now().toString(), name, role, imageUrl });
             }
 
-            document.getElementById('tempCastName').value = ''; fileInput.value = ''; document.getElementById('tempCastImageUrl').value = ''; btn.innerText = "Ekle"; btn.disabled = false; renderCastChips();
+            document.getElementById('tempCastName').value = ''; fileInput.value = ''; document.getElementById('tempCastImageUrl').value = ''; 
+            document.getElementById('castExistingImgPreview').style.display = 'none';
+            btn.innerText = "Ekle"; btn.disabled = false; renderCastChips();
         };
+
+        window.removeTempCastImg = () => { document.getElementById('tempCastImageUrl').value = ''; document.getElementById('castExistingImgPreview').style.display = 'none'; };
 
         const renderCastChips = () => {
             document.getElementById('castChipsContainer').innerHTML = currentCastArray.map(c => `
                 <div class="cast-chip">
                     ${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:30px;height:30px;border-radius:50%;background:#444;display:flex;align-items:center;justify-content:center;font-size:10px;">${c.name.substring(0,1)}</div>`}
                     <div class="cast-chip-info"><span class="cast-chip-name">${c.name}</span><span class="cast-chip-role">${c.role}</span></div>
-                    <div class="cast-chip-actions">
-                        <i class="fa-solid fa-pen cast-chip-edit" onclick="window.editCast('${c.id}')" title="Düzenle"></i>
-                        <i class="fa-solid fa-xmark cast-chip-del" onclick="window.removeCast('${c.id}')" title="Sil"></i>
-                    </div>
+                    <div class="cast-chip-actions"><i class="fa-solid fa-pen cast-chip-edit" onclick="window.editCast('${c.id}')"></i><i class="fa-solid fa-xmark cast-chip-del" onclick="window.removeCast('${c.id}')"></i></div>
                 </div>`).join('');
         };
         
         window.editCast = (id) => {
             const c = currentCastArray.find(x => x.id === id); if(!c) return;
             document.getElementById('tempCastName').value = c.name; document.getElementById('tempCastRole').value = c.role; document.getElementById('tempCastImageUrl').value = c.imageUrl || '';
+            if(c.imageUrl) { document.getElementById('castExistingImg').src = c.imageUrl; document.getElementById('castExistingImgPreview').style.display = 'block'; } else { document.getElementById('castExistingImgPreview').style.display = 'none'; }
             const btn = document.getElementById('castAddBtn'); btn.innerText = "Güncelle"; btn.setAttribute('data-editing-id', id);
         };
         
         window.removeCast = (id) => { currentCastArray = currentCastArray.filter(c => c.id !== id); renderCastChips(); };
-        window.addDynamicFieldRow = (key = '', val = '') => { const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row'; row.innerHTML = `<input type="text" placeholder="Örn: Basım Yılı" value="${key}" class="f-key"><input type="text" placeholder="Değer" value="${val}" class="f-val"><i class="fa-solid fa-trash-can remove-field-btn" onclick="this.parentElement.remove()"></i>`; cont.appendChild(row); };
+
+        // ÖZEL ALANLAR (METİN VE GÖRSEL)
+        window.addDynamicFieldRow = (key = '', val = '', type = 'text') => { 
+            const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row'; row.dataset.type = type;
+            if (type === 'text') {
+                row.innerHTML = `<input type="text" placeholder="Özellik Adı" value="${key}" class="f-key"><input type="text" placeholder="Değer" value="${val}" class="f-val"><i class="fa-solid fa-trash-can remove-field-btn" onclick="this.parentElement.remove()"></i>`; 
+            } else if (type === 'image') {
+                let imgHtml = val ? `<div style="position:relative; width:35px; height:35px; margin-left:10px;"><img src="${val}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;"><i class="fa-solid fa-circle-xmark" style="position:absolute;top:-5px;right:-5px;color:var(--danger-color);cursor:pointer;background:var(--bg-color);border-radius:50%;" onclick="this.parentElement.remove(); this.parentElement.parentElement.querySelector('.f-val-hidden').value='';"></i></div>` : '';
+                row.innerHTML = `<input type="text" placeholder="Görselin Adı" value="${key}" class="f-key"><input type="file" accept="image/*" class="f-file" style="flex:1; padding:5px; font-size:11px;"><input type="hidden" class="f-val-hidden" value="${val}"><div class="f-img-preview">${imgHtml}</div><i class="fa-solid fa-trash-can remove-field-btn" onclick="this.parentElement.remove()"></i>`; 
+            }
+            cont.appendChild(row); 
+        };
 
         window.saveItem = async () => {
             const id = document.getElementById('editId').value, saveBtn = document.getElementById('saveBtn'), title = document.getElementById('in-title').value;
             if(!title) { alert("Eser adı zorunlu!"); return; }
             saveBtn.innerText = "YÜKLENİYOR..."; saveBtn.disabled = true;
-            const fields = []; document.querySelectorAll('.field-row').forEach(row => { fields.push({ key: row.querySelector('.f-key').value, val: row.querySelector('.f-val').value }); });
+
+            const fields = []; 
+            const rows = document.querySelectorAll('.field-row');
+            for (const row of Array.from(rows)) { 
+                const type = row.dataset.type || 'text'; const key = row.querySelector('.f-key').value;
+                if(type === 'text') { fields.push({ key, val: row.querySelector('.f-val').value, type: 'text' }); }
+                else if(type === 'image') {
+                    const fileInput = row.querySelector('.f-file'); const hiddenVal = row.querySelector('.f-val-hidden').value;
+                    let finalUrl = hiddenVal;
+                    if(fileInput && fileInput.files.length > 0) { try { finalUrl = await uploadImageToCloud(fileInput.files[0]); } catch(e){} }
+                    if(finalUrl || key) fields.push({ key, val: finalUrl, type: 'image' });
+                }
+            }
 
             const data = {
                 title: title, category: document.getElementById('in-cat').value, subCategory: document.getElementById('in-sub').value, subSubCategory: document.getElementById('in-sub-sub').value,
                 description: document.getElementById('in-desc').value, itemType: document.getElementById('currentItemType').value,
-                customFields: fields, cast: currentCastArray, timestamp: Date.now(), 
-                images: currentImagesArray // Eski resimleri de veriye dahil et
+                customFields: fields, cast: currentCastArray, timestamp: Date.now(), images: currentImagesArray
             };
 
             const files = document.getElementById('in-file').files;
-            if (files.length > 0) { 
-                for(let i = 0; i < files.length; i++) { 
-                    try { data.images.push(await uploadImageToCloud(files[i])); } catch(e) {} 
-                } 
-            }
+            if (files.length > 0) { for(let i = 0; i < files.length; i++) { try { data.images.push(await uploadImageToCloud(files[i])); } catch(e) {} } }
 
             saveBtn.innerText = "YAZILIYOR...";
             id ? await updateDoc(doc(db, "arsiv", id), data) : await addDoc(collection(db, "arsiv"), data);
@@ -617,7 +641,12 @@
             const badges = document.getElementById('p-badges'); 
             let catStr = item.category; if(item.subCategory) catStr += ' / ' + item.subCategory; if(item.subSubCategory) catStr += ' / ' + item.subSubCategory;
             badges.innerHTML = `<span class="badge"><b>KATEGORİ:</b> ${catStr}</span>`;
-            if(item.customFields) item.customFields.forEach(f => { if(f.val) badges.innerHTML += `<span class="badge"><b>${f.key.toUpperCase()}:</b> ${f.val}</span>`; });
+            if(item.customFields) item.customFields.forEach(f => { 
+                if(f.val) {
+                    if(f.type === 'image') badges.innerHTML += `<span class="badge" style="display:inline-flex; align-items:center; gap:5px; padding:4px 10px;"><b>${f.key.toUpperCase()}:</b> <a href="${f.val}" target="_blank"><img src="${f.val}" style="width:20px;height:20px;object-fit:cover;border-radius:4px;cursor:pointer;"></a></span>`;
+                    else badges.innerHTML += `<span class="badge"><b>${f.key.toUpperCase()}:</b> ${f.val}</span>`; 
+                }
+            });
 
             const castCont = document.getElementById('p-cast');
             if(item.cast && item.cast.length > 0) { castCont.style.display = 'flex'; castCont.innerHTML = item.cast.map(c => `<div class="p-cast-card">${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:45px;height:45px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;color:white;">${c.name.substring(0,1)}</div>`}<div><div style="font-size:13px; font-weight:bold;">${c.name}</div><div style="font-size:11px; color:var(--accent-color);">${c.role}</div></div></div>`).join(''); } else { castCont.style.display = 'none'; }
@@ -627,7 +656,8 @@
         window.changeMainImg = (url, el) => { document.getElementById('mainImg').src = url; document.getElementById('mainBlur').style.backgroundImage = `url('${url}')`; document.querySelectorAll('.thumb-img').forEach(i => i.classList.remove('active')); el.classList.add('active'); };
 
         window.editCurrentItem = () => {
-            const item = allItems.find(i => i.id === activeId); document.getElementById('editId').value = item.id;
+            const item = allItems.find(i => i.id === activeId); resetFormState(); document.getElementById('editId').value = item.id;
+            document.getElementById('modalHeaderTitle').innerText = "Eseri Düzenle";
             document.getElementById('in-title').value = item.title; 
             document.getElementById('in-cat').value = item.category; window.updateSubSelect(); 
             document.getElementById('in-sub').value = item.subCategory || ''; window.updateSubSubSelect();
@@ -636,7 +666,7 @@
             currentCastArray = item.cast || []; renderCastChips(); 
             currentImagesArray = item.images || (item.imageUrl ? [item.imageUrl] : []); renderExistingImagesPreview();
             
-            document.getElementById('dynamicFieldsContainer').innerHTML = ''; if(item.customFields) item.customFields.forEach(f => window.addDynamicFieldRow(f.key, f.val));
+            document.getElementById('dynamicFieldsContainer').innerHTML = ''; if(item.customFields) item.customFields.forEach(f => window.addDynamicFieldRow(f.key, f.val, f.type));
 
             const type = item.itemType || 'ozel';
             if(['film','kitap','ayrac','ozel'].includes(type) || savedTemplates.some(t=>t.id===type)) window.setFormType(type); else window.setFormType('ozel');
@@ -653,6 +683,7 @@
         window.deleteCurrentItem = async () => { if(confirm("Bu eseri silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
         
         window.closeAll = () => { 
+            resetFormState(); // Kapanırken de hafızayı sil
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); 
             document.getElementById('detailPanel').classList.remove('open'); 
             document.getElementById('globalOverlay').classList.remove('show'); 
@@ -662,7 +693,7 @@
         window.updateSubSelect = () => { const val = document.getElementById('in-cat').value; const sub = document.getElementById('in-sub'); const cat = categoryTree.find(c => c.name === val); sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? (cat.sub||[]).map(s => `<option value="${s.name}">${s.name}</option>`).join('') : ''); window.updateSubSubSelect(); };
         window.updateSubSubSelect = () => { const mVal = document.getElementById('in-cat').value; const sVal = document.getElementById('in-sub').value; const ss = document.getElementById('in-sub-sub'); const mCat = categoryTree.find(c => c.name === mVal); const sCat = mCat ? (mCat.sub||[]).find(s => s.name === sVal) : null; ss.innerHTML = '<option value="">-- Yok --</option>' + (sCat ? (sCat.sub||[]).map(x => `<option value="${x.name}">${x.name}</option>`).join('') : ''); };
 
-        // --- KATEGORİ YÖNETİMİ (3 SEVİYE & DÜZENLEME) ---
+        // --- KATEGORİ YÖNETİMİ ---
         window.openCatManager = () => { renderCatMan(); document.getElementById('catModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show'); };
         const renderCatMan = () => {
             document.getElementById('catManList').innerHTML = categoryTree.map(c => `
@@ -689,8 +720,7 @@
             else if(sId === 'NEW_SUB') title = "Alt Kategori Ekle";
             else if(ssId === 'NEW_SUB_SUB') title = "3. Seviye Alt Kategori Ekle";
             
-            document.getElementById('editCatTitle').innerText = title;
-            document.getElementById('editCatModal').classList.add('show');
+            document.getElementById('editCatTitle').innerText = title; document.getElementById('editCatModal').classList.add('show');
         };
 
         window.closeEditCatModal = () => document.getElementById('editCatModal').classList.remove('show');
