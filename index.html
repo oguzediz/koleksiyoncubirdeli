@@ -247,7 +247,7 @@
                 <button class="mod-btn" id="btn-mod-custom" onclick="window.showModule('wrap-custom', this)"><i class="fa-solid fa-sliders"></i> Özel Veri</button>
             </div>
 
-            <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" placeholder="Örn: Eserse Tabii :))" required></div>
+            <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" placeholder="Eserse Tabii (^.^)" required></div>
             <div class="form-row">
                 <div class="form-group"><label>Ana Kategori</label><select id="in-cat" onchange="window.updateSubSelect()"></select></div>
                 <div class="form-group"><label>Alt Kategori</label><select id="in-sub" onchange="window.updateSubSubSelect()"></select></div>
@@ -278,7 +278,7 @@
                 <div id="castChipsContainer" style="margin-top:10px;"></div>
             </div>
 
-            <div id="wrap-desc" class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" placeholder="Örn: Yaz İşte Birşeyler (^.^)" style="height:80px;"></textarea></div>
+            <div id="wrap-desc" class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" placeholder="Yaz İşte Birşeyler (^.^)" style="height:80px;"></textarea></div>
 
             <div id="wrap-custom">
                 <div class="dynamic-fields-title">
@@ -320,7 +320,7 @@
     <div class="modal" id="editCatModal" style="width:400px; padding:35px; z-index:1003;">
         <div class="modal-header"><h3 id="editCatTitle">Kategori Düzenle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeEditCatModal()"></i></div>
         <input type="hidden" id="ec-mId"> <input type="hidden" id="ec-sId"> <input type="hidden" id="ec-ssId">
-        <div class="form-group"><label>Kategori İsmi</label><input type="text" id="ec-name" placeholder="Örn: Ne Dersen de BANA NE!" required></div>
+        <div class="form-group"><label>Kategori İsmi</label><input type="text" id="ec-name" placeholder="Ne Dersen de BANA NE! (^.^)" required></div>
         <div class="form-group"><label>İkon (Opsiyonel)</label><input type="file" id="ec-icon" accept="image/*" style="padding-top:10px;"></div>
         <button class="submit-btn" id="saveEditCatBtn" onclick="window.saveEditCat()">Kaydet</button>
     </div>
@@ -453,7 +453,7 @@
         };
 
         window.saveCustomTemplate = async () => {
-            const name = prompt("Bu şablona bir isim ver (Örn: Aman İsimsiz Kalmasın):"); if(!name) return;
+            const name = prompt("Bu şablona bir isim ver (Aman İsimsiz Kalmasın (^.^)):"); if(!name) return;
             const activeMods = [];
             if(document.getElementById('wrap-images').style.display === 'block') activeMods.push('images');
             if(document.getElementById('wrap-cast').style.display === 'block') activeMods.push('cast');
