@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KoleksiyoncuBirDeli</title>
+    <title>Koleksiyoncubirdeli - V6 Butik CMS</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ÖZEL FONT TANIMLAMASI */
+        @font-face {
+            font-family: 'OzelFont';
+            /* Boşluklar web'de %20 ile ifade edilir */
+            src: url('./fonts/DJB%20Chalk%20It%20Up.ttf') format('truetype');
+        }
+
         :root {
             --bg-color: #0f0f0f;
             --sidebar-bg: #161616;
@@ -20,16 +27,17 @@
             --danger-color: #cf6679;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        /* FONT BURADA TÜM SİTEYE UYGULANIYOR */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'OzelFont', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; }
+        
         body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-main); }
 
-        /* --- MODERN SCROLLBAR TWEAKS --- */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
 
-        /* --- SOL MENÜ VE LOGO --- */
+        /* --- SOL MENÜ --- */
         .sidebar { width: 300px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 10; transition: margin-left 0.3s; }
         .sidebar.hidden { margin-left: -300px; }
         .sidebar-header { padding: 25px; border-bottom: 1px solid var(--border-color); display: flex; gap: 15px; align-items: center; }
@@ -49,8 +57,10 @@
         .category-btn:hover { border-color: var(--text-muted); transform: translateX(3px); }
         .category-btn.active { border-color: var(--accent-color); background: rgba(46, 160, 67, 0.1); }
         .drag-handle { padding: 12px; color: #444; cursor: grab; }
-        .cat-name-click { flex: 1; text-align: left; padding: 12px 5px; font-size: 14px; font-weight: 500; }
+        .cat-name-click { flex: 1; text-align: left; padding: 12px 5px; font-size: 14px; font-weight: 500; display:flex; align-items:center; gap:8px;}
         
+        .cat-icon-img { width: 18px; height: 18px; object-fit: contain; }
+
         .toggle-sub { padding: 12px; color: var(--text-muted); font-size: 12px; transition: transform 0.3s ease; display:flex; align-items:center;}
         .toggle-sub.rotated { transform: rotate(180deg); }
 
@@ -58,7 +68,7 @@
         .sub-category-list.open { display: block; }
         .sub-btn-wrapper { display: flex; align-items: center; margin-bottom: 2px; }
         .sub-drag-handle { color: #444; cursor: grab; padding: 8px 10px 8px 0; font-size: 12px; }
-        .sub-btn { background: none; border: none; color: var(--text-muted); font-size: 13px; padding: 8px 0; flex: 1; text-align: left; cursor: pointer; transition: 0.2s; }
+        .sub-btn { background: none; border: none; color: var(--text-muted); font-size: 13px; padding: 8px 0; flex: 1; text-align: left; cursor: pointer; transition: 0.2s; display:flex; align-items:center; gap:8px;}
         .sub-btn:hover { color: white; padding-left: 5px; }
         .sub-btn.active { color: var(--accent-color); font-weight: bold; }
 
@@ -69,7 +79,6 @@
         .search-area input { width: 100%; padding: 12px 15px 12px 40px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; outline: none; transition: 0.3s; }
         .search-area input:focus { border-color: var(--accent-color); background: #000; }
         .search-area i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-
         .view-controls { display: flex; gap: 5px; background: var(--sidebar-bg); padding: 5px; border-radius: 10px; border: 1px solid var(--border-color); }
         .view-btn { background: none; border: none; color: var(--text-muted); width: 35px; height: 35px; border-radius: 7px; cursor: pointer; transition: 0.2s; }
         .view-btn.active { background: var(--accent-color); color: white; }
@@ -99,20 +108,16 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; z-index: 999; }
         .overlay.show { display: block; }
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--modal-bg); border-radius: 20px; border: 1px solid var(--border-color); z-index: 1001; box-shadow: 0 30px 60px rgba(0,0,0,0.8); overflow: hidden; }
-        .modal.show { display: block; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         
-        /* SPLIT MODAL (Kanva Tasarımı) */
         #addModal { width: 900px; height: 650px; padding: 0; }
-        #addModal.show { display: flex; flex-direction: row; } /* CRITICAL FIX: Sadece show sınıfı varken flex olur */
-        
+        #addModal.show { display: flex; flex-direction: row; }
         .modal-sidebar { width: 220px; background: #111; border-right: 1px solid var(--border-color); padding: 20px; display: flex; flex-direction: column; overflow-y: auto;}
         .modal-body { flex: 1; padding: 30px 40px; overflow-y: auto; position: relative; background: var(--modal-bg); }
         
         .tab-btn { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 10px; transition: 0.2s; font-weight: 600; font-size: 14px; border: 1px solid transparent;}
         .tab-btn:hover { background: var(--hover-bg); color: white; }
         .tab-btn.active { background: rgba(46, 160, 67, 0.15); color: var(--accent-color); border-color: rgba(46, 160, 67, 0.3); }
-        .tab-btn i { font-size: 18px; width: 20px; text-align: center; }
 
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; margin-bottom: 15px; }
@@ -120,14 +125,12 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; color: white; outline: none; font-size: 14px; transition: 0.2s;}
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent-color); }
 
-        /* Kanva Modül Çubuğu */
         .module-toolbar { display: none; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px dashed var(--border-color); align-items: center;}
         .mod-title { width: 100%; font-size: 11px; font-weight: 800; color: var(--accent-color); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
         .mod-btn { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 5px;}
         .mod-btn:hover { border-color: var(--text-muted); background: var(--hover-bg); }
         .mod-btn.added { opacity: 0.5; cursor: not-allowed; border-color: var(--accent-color); color: var(--accent-color); }
 
-        /* Kişi (Cast) Kartları Tasarımı */
         .cast-builder { background: var(--sidebar-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px; }
         .cast-chip { display: inline-flex; align-items: center; background: var(--bg-color); border: 1px solid var(--border-color); padding: 5px 15px 5px 5px; border-radius: 30px; margin: 5px 5px 0 0; gap: 10px; }
         .cast-chip img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
@@ -143,6 +146,7 @@
 
         .submit-btn { width: 100%; padding: 15px; background: var(--text-main); color: #000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: 0.2s; }
         .submit-btn:hover { background: #fff; transform: translateY(-2px); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* --- DETAY PANELİ --- */
         .slide-panel { position: fixed; top: 0; right: -600px; width: 600px; height: 100vh; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; }
@@ -154,7 +158,6 @@
         .panel-content { padding: 40px; }
         .panel-title { font-size: 36px; font-weight: 900; margin-bottom: 20px; line-height: 1.1; }
         .badge { display: inline-block; background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 15px; border-radius: 20px; font-size: 12px; color: var(--text-muted); margin: 0 8px 8px 0; }
-        
         .gallery-thumbnails { display: flex; gap: 10px; padding: 15px 40px; background: var(--bg-color); overflow-x: auto; border-bottom: 1px solid var(--border-color); }
         .thumb-img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; cursor: pointer; opacity: 0.6; transition: 0.2s; border: 2px solid transparent; }
         .thumb-img:hover, .thumb-img.active { opacity: 1; border-color: var(--accent-color); }
@@ -181,7 +184,13 @@
                 ARŞİV KATMANLARI
                 <button class="manage-cat-btn" onclick="window.openCatManager()"><i class="fa-solid fa-plus"></i></button>
             </div>
-            <div class="cat-wrapper"><div class="category-btn active" id="btn-all" onclick="window.selectAll()"><span class="cat-name-click" style="padding-left: 15px;">📁 Tüm Arşiv</span></div></div>
+            <div class="cat-wrapper">
+                <div class="category-btn active" id="btn-all" onclick="window.selectAll()">
+                    <span class="cat-name-click" style="padding-left: 15px;">
+                        <i class="fa-solid fa-folder-open" style="margin-right:8px; color:var(--accent-color)"></i> Tüm Arşiv
+                    </span>
+                </div>
+            </div>
             <div id="dynamicCategories"></div>
         </div>
     </div>
@@ -216,7 +225,6 @@
             <div class="tab-btn" id="tab-ayrac" onclick="window.setFormType('ayrac')"><i class="fa-solid fa-bookmark"></i> Ayraç/Obje</div>
             <div class="tab-btn" id="tab-ozel" onclick="window.setFormType('ozel')" style="margin-top:auto;"><i class="fa-solid fa-cube"></i> Özel Kanva</div>
         </div>
-
         <div class="modal-body">
             <i class="fa-solid fa-xmark" style="position:absolute; top:20px; right:25px; cursor:pointer; font-size:20px; color:var(--text-muted);" onclick="window.closeAll()"></i>
             <h3 id="modalHeaderTitle" style="margin-bottom: 25px; font-weight: 900; font-size: 24px;">Yeni Eser Ekle</h3>
@@ -286,21 +294,37 @@
         </div>
     </div>
 
-    <div class="modal" id="catModal" style="width:500px; padding:35px;">
+    <div class="modal" id="catModal" style="width:550px; padding:35px;">
         <div class="modal-header"><h3>Kategorileri Yapılandır</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
         <div id="catManList" style="margin-bottom:20px; max-height: 400px; overflow-y: auto; padding-right:5px;"></div>
         <button class="submit-btn" style="background:#333; color:white; border:1px dashed #666;" onclick="window.openNewCat()">+ Yeni Ana Kategori Yarat</button>
     </div>
-    <div class="modal" id="newCatModal" style="width:400px; padding:35px; z-index:1003;">
+    
+    <div class="modal" id="newCatModal" style="width:400px; padding:35px; z-index:1003; display:none;">
         <div class="modal-header"><h3>Yeni Ana Kategori</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeNewCat()"></i></div>
-        <input type="text" id="newCatInput" placeholder="Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px;">
-        <button class="submit-btn" onclick="window.saveNewCat()">Kategoriyi Yarat</button>
+        <div class="form-group">
+            <label>Kategori İsmi</label>
+            <input type="text" id="newCatInput" placeholder="Örn: Müzik Plakları">
+        </div>
+        <div class="form-group">
+            <label>Kategori İkonu (Opsiyonel)</label>
+            <input type="file" id="newCatIcon" accept="image/*">
+        </div>
+        <button class="submit-btn" id="saveCatBtn" onclick="window.saveNewCat()">Kategoriyi Yarat</button>
     </div>
-    <div class="modal" id="subCatModal" style="width:400px; padding:35px; z-index:1003;">
+    
+    <div class="modal" id="subCatModal" style="width:400px; padding:35px; z-index:1003; display:none;">
         <div class="modal-header"><h3>Alt Kategori Ekle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeSubCat()"></i></div>
         <input type="hidden" id="subParentId">
-        <input type="text" id="subCatInput" placeholder="Alt Kategori İsmi..." style="width:100%; padding:14px; background:#000; border:1px solid #333; color:white; border-radius:10px;">
-        <button class="submit-btn" onclick="window.saveSubCat()">Ekle</button>
+        <div class="form-group">
+            <label>Alt Kategori İsmi</label>
+            <input type="text" id="subCatInput" placeholder="Örn: 90lar Pop">
+        </div>
+        <div class="form-group">
+            <label>İkon (Opsiyonel)</label>
+            <input type="file" id="subCatIcon" accept="image/*">
+        </div>
+        <button class="submit-btn" id="saveSubCatBtn" onclick="window.saveSubCat()">Ekle</button>
     </div>
 
     <script type="module">
@@ -326,6 +350,12 @@
         let currentMain = 'Tümü', currentSub = null, viewMode = 'grid', activeId = null;
         let currentCastArray = [], currentImagesArray = []; 
 
+        const uploadImageToCloud = async (file) => {
+            const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", CLOUDINARY_PRESET);
+            const res = await fetch(CLOUDINARY_URL, { method:"POST", body:fd });
+            return (await res.json()).secure_url;
+        };
+
         const loadSettings = async () => {
             const snap = await getDoc(doc(db, "settings", "general"));
             if (snap.exists()) {
@@ -342,10 +372,8 @@
             const file = e.target.files[0]; if(!file) return;
             const p = document.getElementById('logoPlaceholder'), i = document.getElementById('brandLogoImg');
             p.style.display = 'block'; i.style.display = 'none'; p.innerHTML = 'Yükleniyor...';
-            const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", CLOUDINARY_PRESET);
             try {
-                const res = await fetch(CLOUDINARY_URL, { method:"POST", body:fd });
-                appSettings.logoUrl = (await res.json()).secure_url;
+                appSettings.logoUrl = await uploadImageToCloud(file);
                 await setDoc(doc(db, "settings", "general"), appSettings);
                 p.style.display = 'none'; i.src = appSettings.logoUrl; i.style.display = 'block';
             } catch(err) { p.innerHTML = 'Hata!'; }
@@ -361,18 +389,27 @@
             const cont = document.getElementById('dynamicCategories'); cont.innerHTML = '';
             categoryTree.forEach(cat => {
                 const wrap = document.createElement('div'); wrap.className = 'cat-wrapper'; wrap.setAttribute('data-id', cat.id);
+                const iconHtml = cat.iconUrl ? `<img src="${cat.iconUrl}" class="cat-icon-img">` : `<i class="fa-solid fa-folder"></i>`;
+                
                 wrap.innerHTML = `
                     <div class="category-btn" id="cbtn-${cat.id}">
                         <i class="fa-solid fa-ellipsis-vertical drag-handle"></i>
-                        <span class="cat-name-click" onclick="window.selectMain('${cat.name}', '${cat.id}')">${cat.name}</span>
+                        <span class="cat-name-click" onclick="window.selectMain('${cat.name}', '${cat.id}')">
+                            ${iconHtml} <span style="margin-left:8px;">${cat.name}</span>
+                        </span>
                         ${cat.sub.length > 0 ? `<div class="toggle-sub" id="toggle-${cat.id}" onclick="window.toggleSubMenu('${cat.id}', event)"><i class="fa-solid fa-chevron-down"></i></div>` : ''}
                     </div>
                     <div class="sub-category-list" id="slist-${cat.id}" data-parent-id="${cat.id}">
-                        ${cat.sub.map(s => `
+                        ${cat.sub.map(s => {
+                            const subIconHtml = s.iconUrl ? `<img src="${s.iconUrl}" class="cat-icon-img">` : `<span style="opacity:0.5;">↳</span>`;
+                            return `
                             <div class="sub-btn-wrapper" id="swrap-${s.id}">
                                 <i class="fa-solid fa-grip-vertical sub-drag-handle"></i>
-                                <button class="sub-btn" id="sbtn-${s.id}" onclick="window.selectSub('${cat.name}', '${s.name}', '${cat.id}', '${s.id}')">↳ ${s.name}</button>
-                            </div>`).join('')}
+                                <button class="sub-btn" id="sbtn-${s.id}" onclick="window.selectSub('${cat.name}', '${s.name}', '${cat.id}', '${s.id}')">
+                                    ${subIconHtml} <span style="margin-left:8px;">${s.name}</span>
+                                </button>
+                            </div>`
+                        }).join('')}
                     </div>`;
                 cont.appendChild(wrap);
             });
@@ -416,7 +453,6 @@
             });
         };
 
-        // --- SPLIT MODAL VE KANVA MANTIĞI ---
         window.openModal = () => {
             document.getElementById('editId').value = '';
             document.getElementById('modalHeaderTitle').innerText = "Yeni Eser Ekle";
@@ -427,30 +463,23 @@
             
             document.getElementById('addModal').classList.add('show');
             document.getElementById('globalOverlay').classList.add('show');
-            
-            window.setFormType('film'); // Default template
+            window.setFormType('film');
         };
 
         window.setFormType = (type) => {
             document.getElementById('currentItemType').value = type;
-            
             document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
             document.getElementById(`tab-${type}`).classList.add('active');
 
-            const tBar = document.getElementById('moduleToolbar');
-            const wImg = document.getElementById('wrap-images');
-            const wCast = document.getElementById('wrap-cast');
-            const wDesc = document.getElementById('wrap-desc');
-            const wCus = document.getElementById('wrap-custom');
+            const tBar = document.getElementById('moduleToolbar'), wImg = document.getElementById('wrap-images');
+            const wCast = document.getElementById('wrap-cast'), wDesc = document.getElementById('wrap-desc'), wCus = document.getElementById('wrap-custom');
             
             document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('added'));
 
             if (type === 'ozel') {
-                tBar.style.display = 'flex';
-                wImg.style.display = 'none'; wCast.style.display = 'none'; wDesc.style.display = 'none'; wCus.style.display = 'none';
+                tBar.style.display = 'flex'; wImg.style.display = 'none'; wCast.style.display = 'none'; wDesc.style.display = 'none'; wCus.style.display = 'none';
             } else {
-                tBar.style.display = 'none';
-                wImg.style.display = 'block'; wDesc.style.display = 'block'; wCus.style.display = 'block';
+                tBar.style.display = 'none'; wImg.style.display = 'block'; wDesc.style.display = 'block'; wCus.style.display = 'block';
                 if (type === 'ayrac') { wCast.style.display = 'none'; } else { wCast.style.display = 'block'; }
             }
 
@@ -461,58 +490,38 @@
             }
         };
 
-        window.showModule = (wrapId, btnEl) => {
-            document.getElementById(wrapId).style.display = 'block';
-            btnEl.classList.add('added');
-        };
+        window.showModule = (wrapId, btnEl) => { document.getElementById(wrapId).style.display = 'block'; btnEl.classList.add('added'); };
 
         window.addCastMember = async () => {
-            const name = document.getElementById('tempCastName').value.trim();
-            const role = document.getElementById('tempCastRole').value;
-            const fileInput = document.getElementById('tempCastFile');
-            const btn = document.getElementById('castAddBtn');
-
+            const name = document.getElementById('tempCastName').value.trim(), role = document.getElementById('tempCastRole').value;
+            const fileInput = document.getElementById('tempCastFile'), btn = document.getElementById('castAddBtn');
             if(!name) { alert("Lütfen bir isim girin."); return; }
             btn.innerText = "..."; btn.disabled = true;
 
             let imageUrl = "";
-            if (fileInput.files[0]) {
-                const fd = new FormData(); fd.append("file", fileInput.files[0]); fd.append("upload_preset", CLOUDINARY_PRESET);
-                try { const res = await fetch(CLOUDINARY_URL, { method:"POST", body:fd }); imageUrl = (await res.json()).secure_url; } catch(e) { console.error(e); }
-            }
+            if (fileInput.files[0]) { try { imageUrl = await uploadImageToCloud(fileInput.files[0]); } catch(e) { console.error(e); } }
 
             currentCastArray.push({ id: Date.now().toString(), name, role, imageUrl });
             document.getElementById('tempCastName').value = ''; fileInput.value = '';
-            btn.innerText = "Ekle"; btn.disabled = false;
-            renderCastChips();
+            btn.innerText = "Ekle"; btn.disabled = false; renderCastChips();
         };
 
         const renderCastChips = () => {
-            const cont = document.getElementById('castChipsContainer');
-            cont.innerHTML = currentCastArray.map(c => `
+            document.getElementById('castChipsContainer').innerHTML = currentCastArray.map(c => `
                 <div class="cast-chip">
                     ${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:30px;height:30px;border-radius:50%;background:#444;display:flex;align-items:center;justify-content:center;font-size:10px;">${c.name.substring(0,1)}</div>`}
                     <div class="cast-chip-info"><span class="cast-chip-name">${c.name}</span><span class="cast-chip-role">${c.role}</span></div>
                     <i class="fa-solid fa-xmark cast-chip-del" onclick="window.removeCast('${c.id}')"></i>
-                </div>
-            `).join('');
+                </div>`).join('');
         };
         window.removeCast = (id) => { currentCastArray = currentCastArray.filter(c => c.id !== id); renderCastChips(); };
-
-        window.addDynamicFieldRow = (key = '', val = '') => {
-            const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row';
-            row.innerHTML = `<input type="text" placeholder="Örn: Basım Yılı" value="${key}" class="f-key"><input type="text" placeholder="Değer" value="${val}" class="f-val"><i class="fa-solid fa-trash-can remove-field-btn" onclick="this.parentElement.remove()"></i>`;
-            cont.appendChild(row);
-        };
+        window.addDynamicFieldRow = (key = '', val = '') => { const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row'; row.innerHTML = `<input type="text" placeholder="Örn: Basım Yılı" value="${key}" class="f-key"><input type="text" placeholder="Değer" value="${val}" class="f-val"><i class="fa-solid fa-trash-can remove-field-btn" onclick="this.parentElement.remove()"></i>`; cont.appendChild(row); };
 
         window.saveItem = async () => {
-            const id = document.getElementById('editId').value;
-            const saveBtn = document.getElementById('saveBtn');
-            const title = document.getElementById('in-title').value;
+            const id = document.getElementById('editId').value, saveBtn = document.getElementById('saveBtn'), title = document.getElementById('in-title').value;
             if(!title) { alert("Eser adı zorunlu!"); return; }
 
             saveBtn.innerText = "YÜKLENİYOR..."; saveBtn.disabled = true;
-
             const fields = []; document.querySelectorAll('.field-row').forEach(row => { fields.push({ key: row.querySelector('.f-key').value, val: row.querySelector('.f-val').value }); });
 
             const data = {
@@ -523,10 +532,7 @@
 
             const files = document.getElementById('in-file').files;
             if (files.length > 0) {
-                for(let i = 0; i < files.length; i++) {
-                    const fd = new FormData(); fd.append("file", files[i]); fd.append("upload_preset", CLOUDINARY_PRESET);
-                    try { const res = await fetch(CLOUDINARY_URL, { method:"POST", body:fd }); data.images.push((await res.json()).secure_url); } catch(e) { console.error(e); }
-                }
+                for(let i = 0; i < files.length; i++) { try { data.images.push(await uploadImageToCloud(files[i])); } catch(e) { console.error(e); } }
             }
 
             saveBtn.innerText = "VERİTABANINA YAZILIYOR...";
@@ -534,100 +540,90 @@
             window.closeAll(); saveBtn.innerText = "ARŞİVE KAYDET"; saveBtn.disabled = false;
         };
 
-        // --- DETAY PANELİ ---
         window.openDetail = (id) => {
             activeId = id; const item = allItems.find(i => i.id === id);
-            
-            const visual = document.getElementById('panelVisual');
-            const thumbsCont = document.getElementById('galleryThumbnails');
+            const visual = document.getElementById('panelVisual'), thumbsCont = document.getElementById('galleryThumbnails');
             const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
 
             if(coverUrl) {
                 visual.innerHTML = `<div class="img-container" style="height:450px;"><div class="img-blur" id="mainBlur" style="background-image:url('${coverUrl}')"></div><img src="${coverUrl}" id="mainImg" class="img-front"></div>`;
                 if(item.images && item.images.length > 1) {
-                    thumbsCont.style.display = 'flex';
-                    thumbsCont.innerHTML = item.images.map(img => `<img src="${img}" class="thumb-img" onclick="window.changeMainImg('${img}', this)">`).join('');
+                    thumbsCont.style.display = 'flex'; thumbsCont.innerHTML = item.images.map(img => `<img src="${img}" class="thumb-img" onclick="window.changeMainImg('${img}', this)">`).join('');
                 } else { thumbsCont.style.display = 'none'; }
-            } else {
-                visual.innerHTML = `<div class="text-cover" style="height:400px; font-size:80px;">${item.title.substring(0,2).toUpperCase()}</div>`;
-                thumbsCont.style.display = 'none';
-            }
+            } else { visual.innerHTML = `<div class="text-cover" style="height:400px; font-size:80px;">${item.title.substring(0,2).toUpperCase()}</div>`; thumbsCont.style.display = 'none'; }
 
-            document.getElementById('p-title').innerText = item.title;
-            document.getElementById('p-desc').innerText = item.description || '';
-            
-            const badges = document.getElementById('p-badges');
-            badges.innerHTML = `<span class="badge"><b>KATEGORİ:</b> ${item.subCategory ? item.category + ' / ' + item.subCategory : item.category}</span>`;
+            document.getElementById('p-title').innerText = item.title; document.getElementById('p-desc').innerText = item.description || '';
+            const badges = document.getElementById('p-badges'); badges.innerHTML = `<span class="badge"><b>KATEGORİ:</b> ${item.subCategory ? item.category + ' / ' + item.subCategory : item.category}</span>`;
             if(item.customFields) item.customFields.forEach(f => { if(f.val) badges.innerHTML += `<span class="badge"><b>${f.key.toUpperCase()}:</b> ${f.val}</span>`; });
 
             const castCont = document.getElementById('p-cast');
             if(item.cast && item.cast.length > 0) {
                 castCont.style.display = 'flex';
-                castCont.innerHTML = item.cast.map(c => `
-                    <div class="p-cast-card">
-                        ${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:45px;height:45px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;color:white;">${c.name.substring(0,1)}</div>`}
-                        <div><div style="font-size:13px; font-weight:bold;">${c.name}</div><div style="font-size:11px; color:var(--accent-color);">${c.role}</div></div>
-                    </div>`).join('');
+                castCont.innerHTML = item.cast.map(c => `<div class="p-cast-card">${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:45px;height:45px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;color:white;">${c.name.substring(0,1)}</div>`}<div><div style="font-size:13px; font-weight:bold;">${c.name}</div><div style="font-size:11px; color:var(--accent-color);">${c.role}</div></div></div>`).join('');
             } else { castCont.style.display = 'none'; }
-
             document.getElementById('detailPanel').classList.add('open'); document.getElementById('globalOverlay').classList.add('show');
         };
 
-        window.changeMainImg = (url, el) => {
-            document.getElementById('mainImg').src = url; document.getElementById('mainBlur').style.backgroundImage = `url('${url}')`;
-            document.querySelectorAll('.thumb-img').forEach(i => i.classList.remove('active')); el.classList.add('active');
-        };
+        window.changeMainImg = (url, el) => { document.getElementById('mainImg').src = url; document.getElementById('mainBlur').style.backgroundImage = `url('${url}')`; document.querySelectorAll('.thumb-img').forEach(i => i.classList.remove('active')); el.classList.add('active'); };
 
         window.editCurrentItem = () => {
-            const item = allItems.find(i => i.id === activeId);
-            document.getElementById('editId').value = item.id;
-            
-            document.getElementById('in-title').value = item.title;
-            document.getElementById('in-cat').value = item.category; window.updateSubSelect(); document.getElementById('in-sub').value = item.subCategory || '';
-            document.getElementById('in-desc').value = item.description || '';
-            currentCastArray = item.cast || []; renderCastChips();
-            currentImagesArray = item.images || (item.imageUrl ? [item.imageUrl] : []);
+            const item = allItems.find(i => i.id === activeId); document.getElementById('editId').value = item.id;
+            document.getElementById('in-title').value = item.title; document.getElementById('in-cat').value = item.category; window.updateSubSelect(); document.getElementById('in-sub').value = item.subCategory || ''; document.getElementById('in-desc').value = item.description || '';
+            currentCastArray = item.cast || []; renderCastChips(); currentImagesArray = item.images || (item.imageUrl ? [item.imageUrl] : []);
 
             const cont = document.getElementById('dynamicFieldsContainer'); cont.innerHTML = '';
             if(item.customFields) item.customFields.forEach(f => window.addDynamicFieldRow(f.key, f.val));
 
             window.setFormType(item.itemType || 'ozel');
-            
             if ((item.itemType || 'ozel') === 'ozel') {
                 if (currentImagesArray.length > 0) window.showModule('wrap-images', document.getElementById('btn-mod-images'));
                 if (currentCastArray.length > 0) window.showModule('wrap-cast', document.getElementById('btn-mod-cast'));
                 if (item.description) window.showModule('wrap-desc', document.getElementById('btn-mod-desc'));
                 if (item.customFields && item.customFields.length > 0) window.showModule('wrap-custom', document.getElementById('btn-mod-custom'));
             }
-
-            document.getElementById('detailPanel').classList.remove('open'); 
-            document.getElementById('addModal').classList.add('show');
+            document.getElementById('detailPanel').classList.remove('open'); document.getElementById('addModal').classList.add('show');
         };
 
         window.deleteCurrentItem = async () => { if(confirm("Bu eseri tamamen silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
-
         window.closeAll = () => { document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); document.getElementById('detailPanel').classList.remove('open'); document.getElementById('globalOverlay').classList.remove('show'); };
-        window.closeNewCat = () => { document.getElementById('newCatModal').classList.remove('show'); };
-        window.closeSubCat = () => { document.getElementById('subCatModal').classList.remove('show'); };
-
+        window.closeNewCat = () => { document.getElementById('newCatModal').style.display = 'none'; };
+        window.closeSubCat = () => { document.getElementById('subCatModal').style.display = 'none'; };
         const updateInCatSelect = () => { const s = document.getElementById('in-cat'); s.innerHTML = categoryTree.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); window.updateSubSelect(); };
         window.updateSubSelect = () => { const val = document.getElementById('in-cat').value; const sub = document.getElementById('in-sub'); const cat = categoryTree.find(c => c.name === val); sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? cat.sub.map(s => `<option value="${s.name}">${s.name}</option>`).join('') : ''); };
 
-        // --- KATEGORİ YÖNETİMİ ---
         window.openCatManager = () => { renderCatMan(); document.getElementById('catModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show'); };
         const renderCatMan = () => {
-            const l = document.getElementById('catManList');
-            l.innerHTML = categoryTree.map(c => `
+            document.getElementById('catManList').innerHTML = categoryTree.map(c => `
                 <div style="display:flex; flex-direction:column; background:var(--bg-color); border:1px solid var(--border-color); border-radius:12px; padding:15px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><b style="font-size:15px; color:white;">${c.name}</b><div><button style="background:var(--hover-bg); border:none; color:var(--text-main); padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:5px;" onclick="window.openSubCat('${c.id}')"><i class="fa-solid fa-plus"></i> Alt Kategori Ekle</button><button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px;" onclick="window.delCat('${c.id}')"><i class="fa-solid fa-trash"></i></button></div></div>
-                    ${c.sub.length > 0 ? `<div style="padding-left:15px; border-left:2px solid var(--border-color); display:flex; flex-direction:column; gap:5px;">${c.sub.map(s => `<div style="display:flex; justify-content:space-between; align-items:center; background:var(--sidebar-bg); padding:8px 12px; border-radius:8px;"><span style="font-size:13px; color:var(--text-muted);">↳ ${s.name}</span><button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px;" onclick="window.delSubCat('${c.id}', '${s.id}')"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}</div>` : ''}
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><b style="font-size:15px; color:white; display:flex; align-items:center; gap:8px;">${c.iconUrl ? `<img src="${c.iconUrl}" style="width:20px;height:20px;object-fit:contain;">` : ''} ${c.name}</b><div><button style="background:var(--hover-bg); border:none; color:var(--text-main); padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:5px;" onclick="window.openSubCat('${c.id}')"><i class="fa-solid fa-plus"></i> Alt Kategori Ekle</button><button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px;" onclick="window.delCat('${c.id}')"><i class="fa-solid fa-trash"></i></button></div></div>
+                    ${c.sub.length > 0 ? `<div style="padding-left:15px; border-left:2px solid var(--border-color); display:flex; flex-direction:column; gap:5px;">${c.sub.map(s => `<div style="display:flex; justify-content:space-between; align-items:center; background:var(--sidebar-bg); padding:8px 12px; border-radius:8px;"><span style="font-size:13px; color:var(--text-muted); display:flex; align-items:center; gap:8px;">↳ ${s.iconUrl ? `<img src="${s.iconUrl}" style="width:16px;height:16px;object-fit:contain;">` : ''} ${s.name}</span><button style="background:none; border:none; color:var(--danger-color); cursor:pointer; font-size:14px;" onclick="window.delSubCat('${c.id}', '${s.id}')"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}</div>` : ''}
                 </div>`).join('');
         };
-        window.openNewCat = () => { document.getElementById('newCatInput').value = ''; document.getElementById('newCatModal').classList.add('show'); };
-        window.saveNewCat = async () => { const n = document.getElementById('newCatInput').value.trim(); if(n) { categoryTree.push({id: Date.now().toString(), name: n, sub: []}); await saveTree(); } window.closeNewCat(); };
+        
+        window.openNewCat = () => { document.getElementById('newCatInput').value = ''; document.getElementById('newCatIcon').value = ''; document.getElementById('newCatModal').style.display = 'block'; };
+        window.saveNewCat = async () => { 
+            const n = document.getElementById('newCatInput').value.trim(); const file = document.getElementById('newCatIcon').files[0];
+            if(!n) return;
+            document.getElementById('saveCatBtn').innerText = "Yükleniyor..."; document.getElementById('saveCatBtn').disabled = true;
+            let iconUrl = ""; if(file) { try { iconUrl = await uploadImageToCloud(file); } catch(e){ console.log(e); } }
+            categoryTree.push({id: Date.now().toString(), name: n, sub: [], iconUrl: iconUrl}); 
+            await saveTree(); window.closeNewCat();
+            document.getElementById('saveCatBtn').innerText = "Kategoriyi Yarat"; document.getElementById('saveCatBtn').disabled = false;
+        };
+        
         window.delCat = async (id) => { if(confirm('Silinecek. Emin misin?')) { categoryTree = categoryTree.filter(c => c.id !== id); await saveTree(); } };
-        window.openSubCat = (id) => { document.getElementById('subParentId').value = id; document.getElementById('subCatInput').value = ''; document.getElementById('subCatModal').classList.add('show'); };
-        window.saveSubCat = async () => { const n = document.getElementById('subCatInput').value.trim(); const id = document.getElementById('subParentId').value; if(!n) return; const c = categoryTree.find(x => x.id === id); c.sub.push({id: Date.now().toString(), name: n}); await saveTree(); window.closeSubCat(); };
+        window.openSubCat = (id) => { document.getElementById('subParentId').value = id; document.getElementById('subCatInput').value = ''; document.getElementById('subCatIcon').value = ''; document.getElementById('subCatModal').style.display = 'block'; };
+        
+        window.saveSubCat = async () => { 
+            const n = document.getElementById('subCatInput').value.trim(); const id = document.getElementById('subParentId').value; const file = document.getElementById('subCatIcon').files[0];
+            if(!n) return;
+            document.getElementById('saveSubCatBtn').innerText = "Yükleniyor..."; document.getElementById('saveSubCatBtn').disabled = true;
+            let iconUrl = ""; if(file) { try { iconUrl = await uploadImageToCloud(file); } catch(e){ console.log(e); } }
+            const c = categoryTree.find(x => x.id === id); c.sub.push({id: Date.now().toString(), name: n, iconUrl: iconUrl}); 
+            await saveTree(); window.closeSubCat();
+            document.getElementById('saveSubCatBtn').innerText = "Ekle"; document.getElementById('saveSubCatBtn').disabled = false;
+        };
+        
         window.delSubCat = async (parentId, subId) => { if(confirm('Silinecek. Emin misin?')) { const parent = categoryTree.find(c => c.id === parentId); parent.sub = parent.sub.filter(s => s.id !== subId); await saveTree(); } };
         const saveTree = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); renderSidebar(); renderCatMan(); updateInCatSelect(); };
         const saveTreeSilent = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); updateInCatSelect(); renderCatMan(); };
