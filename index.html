@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksiyoncubirdeli - V7.1 Ultimate CMS</title>
+    <title>Koleksiyoncubirdeli - V7.2 CMS</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -20,12 +20,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        /* Fontu sadece metinlere uygula (İkonları bozmamak için) */
-        body, input, button, textarea, select { 
-            font-family: 'OzelFont', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-        }
-
+        body, input, button, textarea, select { font-family: 'OzelFont', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-main); }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -56,18 +51,18 @@
         .cat-name-click { flex: 1; text-align: left; padding: 12px 5px; font-size: 16px; font-weight: 500; display:flex; align-items:center; gap:8px;}
         .cat-icon-img { width: 18px; height: 18px; object-fit: contain; }
 
-        .toggle-sub { padding: 12px; color: var(--text-muted); font-size: 12px; transition: transform 0.3s ease; display:flex; align-items:center;}
+        .toggle-sub { padding: 12px; color: var(--text-muted); font-size: 12px; transition: transform 0.3s ease; display:flex; align-items:center; cursor:pointer;}
         .toggle-sub.rotated { transform: rotate(180deg); }
 
         .sub-category-list { padding-left: 30px; display: none; margin: 5px 0 15px 0; border-left: 1px solid var(--border-color); }
         .sub-category-list.open { display: block; }
-        .sub-btn-wrapper { display: flex; align-items: center; margin-bottom: 2px; }
+        .sub-item-container { margin-bottom: 2px; }
+        .sub-btn-wrapper { display: flex; align-items: center; }
         .sub-drag-handle { color: #444; cursor: grab; padding: 8px 10px 8px 0; font-size: 12px; }
         .sub-btn { background: none; border: none; color: var(--text-muted); font-size: 14px; padding: 8px 0; flex: 1; text-align: left; cursor: pointer; transition: 0.2s; display:flex; align-items:center; gap:8px;}
         .sub-btn:hover { color: white; padding-left: 5px; }
         .sub-btn.active { color: var(--accent-color); font-weight: bold; }
 
-        /* 3. Seviye Alt-Alt Kategori (Sub-Sub) */
         .sub-sub-category-list { padding-left: 20px; display: none; margin-top: 2px; border-left: 1px dashed #333; }
         .sub-sub-category-list.open { display: block; }
         .sub-sub-btn-wrapper { display: flex; align-items: center; margin-bottom: 2px; }
@@ -110,17 +105,12 @@
         /* --- MODALLAR --- */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; z-index: 999; }
         .overlay.show { display: block; }
-        
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--modal-bg); border-radius: 20px; border: 1px solid var(--border-color); z-index: 1001; box-shadow: 0 30px 60px rgba(0,0,0,0.8); overflow: hidden; }
-        
-        /* EKSİK OLAN KİLİT SATIR BURASIYDI! */
-        .modal.show { display: block; } 
-
+        .modal.show { display: block; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);}
         
         #addModal { width: 950px; height: 680px; padding: 0; }
-        #addModal.show { display: flex; flex-direction: row; } /* AddModal kendi özel flex yapısını kullanır */
-        
+        #addModal.show { display: flex; flex-direction: row; }
         .modal-sidebar { width: 240px; background: #111; border-right: 1px solid var(--border-color); padding: 20px; display: flex; flex-direction: column; overflow-y: auto;}
         .modal-body { flex: 1; padding: 30px 40px; overflow-y: auto; position: relative; background: var(--modal-bg); }
         
@@ -134,6 +124,12 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; color: white; outline: none; font-size: 14px; transition: 0.2s;}
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent-color); }
 
+        /* ESKİ RESİMLERİ GÖSTERME ALANI */
+        .existing-img-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .existing-img-preview .img-box { position: relative; width: 60px; height: 60px; }
+        .existing-img-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color); }
+        .existing-img-preview .del-icon { position: absolute; top: -5px; right: -5px; background: var(--bg-color); color: var(--danger-color); border-radius: 50%; font-size: 14px; cursor: pointer; }
+
         .module-toolbar { display: none; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px dashed var(--border-color); align-items: center;}
         .mod-title { width: 100%; font-size: 12px; font-weight: 800; color: var(--accent-color); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; display:flex; justify-content:space-between; align-items:center;}
         .mod-btn { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 5px;}
@@ -141,12 +137,14 @@
         .mod-btn.added { opacity: 0.5; cursor: not-allowed; border-color: var(--accent-color); color: var(--accent-color); }
 
         .cast-builder { background: var(--sidebar-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px; }
-        .cast-chip { display: inline-flex; align-items: center; background: var(--bg-color); border: 1px solid var(--border-color); padding: 5px 15px 5px 5px; border-radius: 30px; margin: 5px 5px 0 0; gap: 10px; }
+        .cast-chip { display: inline-flex; align-items: center; background: var(--bg-color); border: 1px solid var(--border-color); padding: 5px 15px 5px 5px; border-radius: 30px; margin: 5px 5px 0 0; gap: 8px; }
         .cast-chip img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
         .cast-chip-info { display: flex; flex-direction: column; }
         .cast-chip-name { font-size: 12px; font-weight: bold; }
         .cast-chip-role { font-size: 10px; color: var(--text-muted); }
-        .cast-chip-del { color: var(--danger-color); cursor: pointer; margin-left: 5px; }
+        .cast-chip-actions { display: flex; gap: 8px; margin-left: 5px; }
+        .cast-chip-edit { color: var(--accent-color); cursor: pointer; font-size: 11px; }
+        .cast-chip-del { color: var(--danger-color); cursor: pointer; font-size: 11px;}
 
         .dynamic-fields-title { font-size: 13px; font-weight: 800; margin: 20px 0 10px 0; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 20px; }
         .field-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
@@ -223,7 +221,7 @@
                     <button class="view-btn" id="v-list" onclick="window.changeView('list')"><i class="fa-solid fa-list"></i></button>
                     <button class="view-btn" id="v-masonry" onclick="window.changeView('masonry')"><i class="fa-solid fa-table-cells"></i></button>
                 </div>
-                <button style="padding: 12px 20px; border-radius: 12px; background:white; color:black; border:none; font-weight:800; cursor:pointer; font-size:15px;" onclick="window.openModal()">+ EKLE</button>
+                <button style="padding: 12px 20px; border-radius: 12px; background:white; color:black; border:none; font-weight:800; cursor:pointer; font-size:14px;" onclick="window.openModal()">+ EKLE</button>
             </div>
         </div>
         <div class="content-area"><div id="galleryGrid" class="grid-view"></div></div>
@@ -231,13 +229,13 @@
 
     <div class="modal" id="addModal">
         <div class="modal-sidebar">
-            <div style="font-size:12px; font-weight:bold; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px;">SİSTEM ŞABLONLARI</div>
+            <div style="font-size:11px; font-weight:bold; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px;">SİSTEM ŞABLONLARI</div>
             <div class="tab-btn active" id="tab-film" onclick="window.setFormType('film')"><i class="fa-solid fa-film"></i> Film/Dizi</div>
             <div class="tab-btn" id="tab-kitap" onclick="window.setFormType('kitap')"><i class="fa-solid fa-book"></i> Kitap</div>
             <div class="tab-btn" id="tab-ayrac" onclick="window.setFormType('ayrac')"><i class="fa-solid fa-bookmark"></i> Ayraç/Obje</div>
             <div class="tab-btn" id="tab-ozel" onclick="window.setFormType('ozel')"><i class="fa-solid fa-cube"></i> Özel Kanva</div>
             
-            <div style="font-size:12px; font-weight:bold; color:var(--text-muted); margin:25px 0 15px 0; letter-spacing:1px; border-top:1px solid #333; padding-top:15px;">KAYITLI ŞABLONLARIM</div>
+            <div style="font-size:11px; font-weight:bold; color:var(--text-muted); margin:25px 0 15px 0; letter-spacing:1px; border-top:1px solid #333; padding-top:15px;">KAYITLI ŞABLONLARIM</div>
             <div id="savedTemplatesList"></div>
         </div>
         
@@ -251,7 +249,7 @@
             <div id="moduleToolbar" class="module-toolbar">
                 <div class="mod-title">
                     TUVALE MODÜL EKLE 
-                    <button style="background:none; border:1px solid var(--accent-color); color:var(--accent-color); padding:6px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;" onclick="window.saveCustomTemplate()"><i class="fa-solid fa-star"></i> BU ŞABLONU KAYDET</button>
+                    <button style="background:none; border:1px solid var(--accent-color); color:var(--accent-color); padding:4px 8px; border-radius:6px; font-size:10px; font-weight:bold; cursor:pointer;" onclick="window.saveCustomTemplate()"><i class="fa-solid fa-star"></i> BU ŞABLONU KAYDET</button>
                 </div>
                 <button class="mod-btn" id="btn-mod-images" onclick="window.showModule('wrap-images', this)"><i class="fa-solid fa-image"></i> Görseller</button>
                 <button class="mod-btn" id="btn-mod-cast" onclick="window.showModule('wrap-cast', this)"><i class="fa-solid fa-users"></i> Kişi/Kadro</button>
@@ -267,18 +265,19 @@
             </div>
 
             <div id="wrap-images" class="form-group">
-                <label>Görseller <span style="font-weight:normal; color:#666; font-size:11px;">(Birden Fazla Seçilebilir)</span></label>
+                <label>Yeni Görseller Ekle <span style="font-weight:normal; color:#666; font-size:10px;">(Birden Fazla Seçilebilir)</span></label>
                 <input type="file" id="in-file" accept="image/*" multiple style="padding-top:10px;">
+                <div id="existingImagesPreview" class="existing-img-preview"></div>
             </div>
 
             <div id="wrap-cast" class="cast-builder">
-                <label style="display:block; margin-bottom:10px; font-size:12px; font-weight:bold; color:var(--text-muted);">KİŞİLER / KADRO</label>
+                <label style="display:block; margin-bottom:10px; font-size:11px; font-weight:bold; color:var(--text-muted);">KİŞİLER / KADRO</label>
                 <div style="display:flex; gap:10px; align-items:center;">
-                    <input type="text" id="tempCastName" placeholder="Kişi Adı" style="flex:1; padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white; font-size:14px;">
-                    <select id="tempCastRole" style="padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white; font-size:14px;">
+                    <input type="hidden" id="tempCastImageUrl"> <input type="text" id="tempCastName" placeholder="Kişi Adı" style="flex:1; padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white; font-size:13px;">
+                    <select id="tempCastRole" style="padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white; font-size:13px;">
                         <option>Yönetmen</option><option>Oyuncu</option><option>Yazar</option><option>Çizer</option><option>Karakter</option>
                     </select>
-                    <input type="file" id="tempCastFile" accept="image/*" title="Profil Fotoğrafı" style="width:105px; font-size:11px;">
+                    <input type="file" id="tempCastFile" accept="image/*" title="Yeni Profil Fotoğrafı" style="width:105px; font-size:10px;">
                     <button type="button" id="castAddBtn" style="padding:10px 15px; border-radius:8px; background:var(--accent-color); border:none; color:white; font-weight:bold; cursor:pointer;" onclick="window.addCastMember()">Ekle</button>
                 </div>
                 <div id="castChipsContainer" style="margin-top:10px;"></div>
@@ -287,7 +286,7 @@
             <div id="wrap-desc" class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" style="height:80px;"></textarea></div>
 
             <div id="wrap-custom">
-                <div class="dynamic-fields-title">ÖZEL ALANLAR <button class="manage-cat-btn" onclick="window.addDynamicFieldRow()" style="font-size:13px; color:var(--accent-color); font-weight:bold;">+ Özellik Ekle</button></div>
+                <div class="dynamic-fields-title">ÖZEL ALANLAR <button class="manage-cat-btn" onclick="window.addDynamicFieldRow()" style="font-size:11px; color:var(--accent-color); font-weight:bold;">+ Özellik Ekle</button></div>
                 <div id="dynamicFieldsContainer"></div>
             </div>
 
@@ -311,14 +310,14 @@
         </div>
     </div>
 
-    <div class="modal" id="catModal" style="width:700px; padding:35px;">
-        <div class="modal-header"><h3 style="font-size:24px;">Kategorileri Yönet</h3><i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px;" onclick="window.closeAll()"></i></div>
+    <div class="modal" id="catModal" style="width:650px; padding:35px;">
+        <div class="modal-header"><h3>Kategorileri Yönet</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
         <div id="catManList" style="margin-bottom:20px; max-height: 450px; overflow-y: auto; padding-right:10px;"></div>
         <button class="submit-btn" style="background:#333; color:white; border:1px dashed #666;" onclick="window.openEditCatModal(null, null, null)">+ Yeni Ana Kategori Yarat</button>
     </div>
     
-    <div class="modal" id="editCatModal" style="width:450px; padding:35px; z-index:1003;">
-        <div class="modal-header"><h3 id="editCatTitle" style="font-size:22px;">Kategori Düzenle</h3><i class="fa-solid fa-xmark" style="cursor:pointer; font-size:20px;" onclick="window.closeEditCatModal()"></i></div>
+    <div class="modal" id="editCatModal" style="width:400px; padding:35px; z-index:1003;">
+        <div class="modal-header"><h3 id="editCatTitle">Kategori Düzenle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeEditCatModal()"></i></div>
         <input type="hidden" id="ec-mId"> <input type="hidden" id="ec-sId"> <input type="hidden" id="ec-ssId">
         <div class="form-group"><label>Kategori İsmi</label><input type="text" id="ec-name" placeholder="Örn: 90'lar Rock" required></div>
         <div class="form-group"><label>İkon (Opsiyonel)</label><input type="file" id="ec-icon" accept="image/*" style="padding-top:10px;"></div>
@@ -360,10 +359,8 @@
                 appSettings = snapSet.data(); document.getElementById('logoPlaceholder').style.display = 'none';
                 document.getElementById('brandLogoImg').src = appSettings.logoUrl; document.getElementById('brandLogoImg').style.display = 'block';
             }
-            
             categoryTree = snapCat.exists() ? snapCat.data().tree : [];
             savedTemplates = snapTemp.exists() ? snapTemp.data().list || [] : [];
-            
             renderSidebar(); updateInCatSelect(); renderTemplateTabs();
         };
 
@@ -391,24 +388,42 @@
                         ${(cat.sub || []).map(s => {
                             const subIconHtml = s.iconUrl ? `<img src="${s.iconUrl}" class="cat-icon-img">` : `<span style="opacity:0.5;">↳</span>`;
                             const hasSS = s.sub && s.sub.length > 0;
+                            // Sortable hatasını önlemek için container eklendi:
                             return `
-                            <div class="sub-btn-wrapper" id="swrap-${s.id}">
-                                <i class="fa-solid fa-grip-vertical sub-drag-handle"></i>
-                                <button class="sub-btn" id="sbtn-${s.id}" onclick="window.selectSub('${cat.name}', '${s.name}', '${cat.id}', '${s.id}')">${subIconHtml} <span>${s.name}</span></button>
-                                ${hasSS ? `<div class="toggle-sub" id="toggle-${s.id}" onclick="window.toggleSubMenu('sslist-${s.id}', 'toggle-${s.id}', event)"><i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></div>` : ''}
-                            </div>
-                            <div class="sub-sub-category-list" id="sslist-${s.id}">
-                                ${(s.sub || []).map(ss => {
-                                    const ssIcon = ss.iconUrl ? `<img src="${ss.iconUrl}" class="cat-icon-img" style="width:14px;height:14px;">` : `<span style="opacity:0.3; font-size:10px;">•</span>`;
-                                    return `<button class="sub-sub-btn" id="ssbtn-${ss.id}" onclick="window.selectSubSub('${cat.name}', '${s.name}', '${ss.name}', '${cat.id}', '${s.id}', '${ss.id}')">${ssIcon} <span>${ss.name}</span></button>`;
-                                }).join('')}
+                            <div class="sub-item-container" data-id="${s.id}">
+                                <div class="sub-btn-wrapper" id="swrap-${s.id}">
+                                    <i class="fa-solid fa-grip-vertical sub-drag-handle"></i>
+                                    <button class="sub-btn" id="sbtn-${s.id}" onclick="window.selectSub('${cat.name}', '${s.name}', '${cat.id}', '${s.id}')">${subIconHtml} <span>${s.name}</span></button>
+                                    ${hasSS ? `<div class="toggle-sub" id="toggle-${s.id}" onclick="window.toggleSubMenu('sslist-${s.id}', 'toggle-${s.id}', event)"><i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></div>` : ''}
+                                </div>
+                                <div class="sub-sub-category-list" id="sslist-${s.id}">
+                                    ${(s.sub || []).map(ss => {
+                                        const ssIcon = ss.iconUrl ? `<img src="${ss.iconUrl}" class="cat-icon-img" style="width:14px;height:14px;">` : `<span style="opacity:0.3; font-size:10px;">•</span>`;
+                                        return `<button class="sub-sub-btn" id="ssbtn-${ss.id}" onclick="window.selectSubSub('${cat.name}', '${s.name}', '${ss.name}', '${cat.id}', '${s.id}', '${ss.id}')">${ssIcon} <span>${ss.name}</span></button>`;
+                                    }).join('')}
+                                </div>
                             </div>`
                         }).join('')}
                     </div>`;
                 cont.appendChild(wrap);
             });
             Sortable.create(cont, { handle: '.drag-handle', animation: 150, onEnd: async (evt) => { const item = categoryTree.splice(evt.oldIndex, 1)[0]; categoryTree.splice(evt.newIndex, 0, item); await saveTreeSilent(); } });
-            document.querySelectorAll('.sub-category-list').forEach(list => { Sortable.create(list, { handle: '.sub-drag-handle', animation: 150, onEnd: async (evt) => { const p = categoryTree.find(c => c.id === list.getAttribute('data-parent-id')); if(p) { const item = p.sub.splice(evt.oldIndex, 1)[0]; p.sub.splice(evt.newIndex, 0, item); await saveTreeSilent(); } }}); });
+            
+            // Alt Kategori Sürükleme Onarımı
+            document.querySelectorAll('.sub-category-list').forEach(list => { 
+                Sortable.create(list, { 
+                    handle: '.sub-drag-handle', 
+                    animation: 150, 
+                    onEnd: async (evt) => { 
+                        const p = categoryTree.find(c => c.id === list.getAttribute('data-parent-id')); 
+                        if(p) { 
+                            const item = p.sub.splice(evt.oldIndex, 1)[0]; 
+                            p.sub.splice(evt.newIndex, 0, item); 
+                            await saveTreeSilent(); 
+                        } 
+                    }
+                }); 
+            });
         };
 
         window.selectMain = (name, id) => { currentMain = name; currentSub = null; currentSubSub = null; document.getElementById('viewTitle').innerText = name; clearSidebarActive(); document.getElementById(`cbtn-${id}`).classList.add('active'); const slist = document.getElementById(`slist-${id}`); if(slist && !slist.classList.contains('open')) { slist.classList.add('open'); document.getElementById(`toggle-${id}`)?.classList.add('rotated'); } window.renderGallery(); };
@@ -447,7 +462,7 @@
 
         // --- ŞABLON VE KANVA ---
         const renderTemplateTabs = () => {
-            document.getElementById('savedTemplatesList').innerHTML = savedTemplates.map(t => `<div class="tab-btn" id="tab-${t.id}" onclick="window.loadCustomTemplate('${t.id}')"><i class="fa-solid fa-star" style="color:var(--accent-color)"></i> ${t.name} <i class="fa-solid fa-trash" style="margin-left:auto; font-size:14px; color:var(--text-muted);" onclick="window.delTemplate('${t.id}', event)"></i></div>`).join('');
+            document.getElementById('savedTemplatesList').innerHTML = savedTemplates.map(t => `<div class="tab-btn" id="tab-${t.id}" onclick="window.loadCustomTemplate('${t.id}')"><i class="fa-solid fa-star" style="color:var(--accent-color)"></i> ${t.name} <i class="fa-solid fa-trash" style="margin-left:auto; font-size:12px; color:var(--text-muted);" onclick="window.delTemplate('${t.id}', event)"></i></div>`).join('');
         };
 
         window.saveCustomTemplate = async () => {
@@ -468,7 +483,7 @@
 
         window.loadCustomTemplate = (id) => {
             const t = savedTemplates.find(x => x.id === id); if(!t) return;
-            document.getElementById('currentItemType').value = t.id; // Type as Template ID
+            document.getElementById('currentItemType').value = t.id; 
             document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active')); document.getElementById(`tab-${id}`).classList.add('active');
             
             document.getElementById('moduleToolbar').style.display = 'flex';
@@ -481,36 +496,85 @@
             t.fields.forEach(fKey => window.addDynamicFieldRow(fKey, ''));
         };
 
+        // --- ESKİ RESİMLERİ GÖSTERME (EDIT MODU İÇİN) ---
+        const renderExistingImagesPreview = () => {
+            const cont = document.getElementById('existingImagesPreview');
+            if(currentImagesArray.length === 0) { cont.innerHTML = ''; return; }
+            cont.innerHTML = currentImagesArray.map((url, idx) => `
+                <div class="img-box">
+                    <img src="${url}">
+                    <i class="fa-solid fa-circle-xmark del-icon" onclick="window.removeExistingImage(${idx})"></i>
+                </div>
+            `).join('');
+        };
+
+        window.removeExistingImage = (idx) => {
+            currentImagesArray.splice(idx, 1);
+            renderExistingImagesPreview();
+        };
+
         window.openModal = () => {
             document.getElementById('editId').value = ''; document.getElementById('modalHeaderTitle').innerText = "Yeni Eser Ekle";
             document.getElementById('in-title').value = ''; document.getElementById('in-desc').value = ''; document.getElementById('in-file').value = '';
-            currentCastArray = []; currentImagesArray = []; renderCastChips(); document.getElementById('dynamicFieldsContainer').innerHTML = '';
+            currentCastArray = []; currentImagesArray = []; renderCastChips(); renderExistingImagesPreview(); document.getElementById('dynamicFieldsContainer').innerHTML = '';
             document.getElementById('addModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show');
             window.setFormType('film');
         };
 
         window.setFormType = (type) => {
             document.getElementById('currentItemType').value = type;
-            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active')); document.getElementById(`tab-${type}`).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active')); 
+            if(document.getElementById(`tab-${type}`)) document.getElementById(`tab-${type}`).classList.add('active');
+            
             const tBar = document.getElementById('moduleToolbar'), wImg = document.getElementById('wrap-images'), wCast = document.getElementById('wrap-cast'), wDesc = document.getElementById('wrap-desc'), wCus = document.getElementById('wrap-custom');
             document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('added'));
 
             if (type === 'ozel') { tBar.style.display = 'flex'; wImg.style.display = 'none'; wCast.style.display = 'none'; wDesc.style.display = 'none'; wCus.style.display = 'none'; } 
             else { tBar.style.display = 'none'; wImg.style.display = 'block'; wDesc.style.display = 'block'; wCus.style.display = 'block'; if (type === 'ayrac') { wCast.style.display = 'none'; } else { wCast.style.display = 'block'; } }
-            if(!document.getElementById('editId').value && type !== 'ozel') { document.getElementById('dynamicFieldsContainer').innerHTML = ''; if(type === 'film') window.addDynamicFieldRow('IMDB Puanı', ''); if(type === 'kitap') window.addDynamicFieldRow('Sayfa Sayısı', ''); }
+            if(!document.getElementById('editId').value && type !== 'ozel' && !savedTemplates.some(t=>t.id===type)) { document.getElementById('dynamicFieldsContainer').innerHTML = ''; if(type === 'film') window.addDynamicFieldRow('IMDB Puanı', ''); if(type === 'kitap') window.addDynamicFieldRow('Sayfa Sayısı', ''); }
         };
 
         window.showModule = (wrapId, btnEl) => { document.getElementById(wrapId).style.display = 'block'; btnEl.classList.add('added'); };
 
+        // KİŞİ (CAST) SİSTEMİ DÜZENLEME ONARIMI
         window.addCastMember = async () => {
             const name = document.getElementById('tempCastName').value.trim(), role = document.getElementById('tempCastRole').value, fileInput = document.getElementById('tempCastFile'), btn = document.getElementById('castAddBtn');
+            const editingId = btn.getAttribute('data-editing-id');
+            const hiddenImg = document.getElementById('tempCastImageUrl').value;
+            
             if(!name) return; btn.innerText = "..."; btn.disabled = true;
-            let imageUrl = ""; if (fileInput.files[0]) { try { imageUrl = await uploadImageToCloud(fileInput.files[0]); } catch(e) {} }
-            currentCastArray.push({ id: Date.now().toString(), name, role, imageUrl });
-            document.getElementById('tempCastName').value = ''; fileInput.value = ''; btn.innerText = "Ekle"; btn.disabled = false; renderCastChips();
+            let imageUrl = hiddenImg; // Eski resmi koru
+            if (fileInput.files[0]) { try { imageUrl = await uploadImageToCloud(fileInput.files[0]); } catch(e) {} }
+
+            if(editingId) {
+                const idx = currentCastArray.findIndex(x => x.id === editingId);
+                if(idx > -1) currentCastArray[idx] = { id: editingId, name, role, imageUrl };
+                btn.removeAttribute('data-editing-id');
+            } else {
+                currentCastArray.push({ id: Date.now().toString(), name, role, imageUrl });
+            }
+
+            document.getElementById('tempCastName').value = ''; fileInput.value = ''; document.getElementById('tempCastImageUrl').value = ''; btn.innerText = "Ekle"; btn.disabled = false; renderCastChips();
         };
 
-        const renderCastChips = () => { document.getElementById('castChipsContainer').innerHTML = currentCastArray.map(c => `<div class="cast-chip">${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:30px;height:30px;border-radius:50%;background:#444;display:flex;align-items:center;justify-content:center;font-size:10px;">${c.name.substring(0,1)}</div>`}<div class="cast-chip-info"><span class="cast-chip-name">${c.name}</span><span class="cast-chip-role">${c.role}</span></div><i class="fa-solid fa-xmark cast-chip-del" onclick="window.removeCast('${c.id}')"></i></div>`).join(''); };
+        const renderCastChips = () => {
+            document.getElementById('castChipsContainer').innerHTML = currentCastArray.map(c => `
+                <div class="cast-chip">
+                    ${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:30px;height:30px;border-radius:50%;background:#444;display:flex;align-items:center;justify-content:center;font-size:10px;">${c.name.substring(0,1)}</div>`}
+                    <div class="cast-chip-info"><span class="cast-chip-name">${c.name}</span><span class="cast-chip-role">${c.role}</span></div>
+                    <div class="cast-chip-actions">
+                        <i class="fa-solid fa-pen cast-chip-edit" onclick="window.editCast('${c.id}')" title="Düzenle"></i>
+                        <i class="fa-solid fa-xmark cast-chip-del" onclick="window.removeCast('${c.id}')" title="Sil"></i>
+                    </div>
+                </div>`).join('');
+        };
+        
+        window.editCast = (id) => {
+            const c = currentCastArray.find(x => x.id === id); if(!c) return;
+            document.getElementById('tempCastName').value = c.name; document.getElementById('tempCastRole').value = c.role; document.getElementById('tempCastImageUrl').value = c.imageUrl || '';
+            const btn = document.getElementById('castAddBtn'); btn.innerText = "Güncelle"; btn.setAttribute('data-editing-id', id);
+        };
+        
         window.removeCast = (id) => { currentCastArray = currentCastArray.filter(c => c.id !== id); renderCastChips(); };
         window.addDynamicFieldRow = (key = '', val = '') => { const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row'; row.innerHTML = `<input type="text" placeholder="Örn: Basım Yılı" value="${key}" class="f-key"><input type="text" placeholder="Değer" value="${val}" class="f-val"><i class="fa-solid fa-trash-can remove-field-btn" onclick="this.parentElement.remove()"></i>`; cont.appendChild(row); };
 
@@ -523,11 +587,16 @@
             const data = {
                 title: title, category: document.getElementById('in-cat').value, subCategory: document.getElementById('in-sub').value, subSubCategory: document.getElementById('in-sub-sub').value,
                 description: document.getElementById('in-desc').value, itemType: document.getElementById('currentItemType').value,
-                customFields: fields, cast: currentCastArray, timestamp: Date.now(), images: currentImagesArray
+                customFields: fields, cast: currentCastArray, timestamp: Date.now(), 
+                images: currentImagesArray // Eski resimleri de veriye dahil et
             };
 
             const files = document.getElementById('in-file').files;
-            if (files.length > 0) { for(let i = 0; i < files.length; i++) { try { data.images.push(await uploadImageToCloud(files[i])); } catch(e) {} } }
+            if (files.length > 0) { 
+                for(let i = 0; i < files.length; i++) { 
+                    try { data.images.push(await uploadImageToCloud(files[i])); } catch(e) {} 
+                } 
+            }
 
             saveBtn.innerText = "YAZILIYOR...";
             id ? await updateDoc(doc(db, "arsiv", id), data) : await addDoc(collection(db, "arsiv"), data);
@@ -564,11 +633,13 @@
             document.getElementById('in-sub').value = item.subCategory || ''; window.updateSubSubSelect();
             document.getElementById('in-sub-sub').value = item.subSubCategory || '';
             document.getElementById('in-desc').value = item.description || '';
-            currentCastArray = item.cast || []; renderCastChips(); currentImagesArray = item.images || (item.imageUrl ? [item.imageUrl] : []);
+            currentCastArray = item.cast || []; renderCastChips(); 
+            currentImagesArray = item.images || (item.imageUrl ? [item.imageUrl] : []); renderExistingImagesPreview();
+            
             document.getElementById('dynamicFieldsContainer').innerHTML = ''; if(item.customFields) item.customFields.forEach(f => window.addDynamicFieldRow(f.key, f.val));
 
             const type = item.itemType || 'ozel';
-            if(['film','kitap','ayrac','ozel'].includes(type)) window.setFormType(type); else window.loadCustomTemplate(type);
+            if(['film','kitap','ayrac','ozel'].includes(type) || savedTemplates.some(t=>t.id===type)) window.setFormType(type); else window.setFormType('ozel');
             
             if (type === 'ozel' || savedTemplates.some(t=>t.id===type)) {
                 if (currentImagesArray.length > 0) window.showModule('wrap-images', document.getElementById('btn-mod-images'));
@@ -582,7 +653,7 @@
         window.deleteCurrentItem = async () => { if(confirm("Bu eseri silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
         
         window.closeAll = () => { 
-            document.querySelectorAll('.modal').forEach(m => { m.classList.remove('show'); m.style.display = ''; }); 
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); 
             document.getElementById('detailPanel').classList.remove('open'); 
             document.getElementById('globalOverlay').classList.remove('show'); 
         };
@@ -596,12 +667,12 @@
         const renderCatMan = () => {
             document.getElementById('catManList').innerHTML = categoryTree.map(c => `
                 <div style="background:var(--bg-color); border:1px solid var(--border-color); border-radius:12px; padding:15px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><b style="font-size:15px; color:white; display:flex; align-items:center; gap:8px;">${c.iconUrl ? `<img src="${c.iconUrl}" style="width:20px;height:20px;object-fit:contain;">` : ''} ${c.name}</b><div><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', null, null)" title="Düzenle"><i class="fa-solid fa-pen"></i></button><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', 'NEW_SUB', null)"><i class="fa-solid fa-plus"></i> Alt Ekle</button><button class="action-icon-btn" style="color:var(--danger-color);" onclick="window.delCat('${c.id}', null, null)"><i class="fa-solid fa-trash"></i></button></div></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><b style="font-size:14px; color:white; display:flex; align-items:center; gap:8px;">${c.iconUrl ? `<img src="${c.iconUrl}" style="width:20px;height:20px;object-fit:contain;">` : ''} ${c.name}</b><div><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', null, null)" title="Düzenle"><i class="fa-solid fa-pen"></i></button><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', 'NEW_SUB', null)"><i class="fa-solid fa-plus"></i> Alt Ekle</button><button class="action-icon-btn" style="color:var(--danger-color);" onclick="window.delCat('${c.id}', null, null)"><i class="fa-solid fa-trash"></i></button></div></div>
                     ${(c.sub||[]).map(s => `
                         <div style="margin-left:15px; border-left:2px solid var(--border-color); padding-left:10px; margin-bottom:5px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--sidebar-bg); padding:6px 10px; border-radius:8px; margin-bottom:2px;"><span style="font-size:13px; color:var(--text-muted); display:flex; align-items:center; gap:8px;">↳ ${s.iconUrl ? `<img src="${s.iconUrl}" style="width:16px;height:16px;object-fit:contain;">` : ''} ${s.name}</span><div><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', '${s.id}', null)" title="Düzenle"><i class="fa-solid fa-pen"></i></button><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', '${s.id}', 'NEW_SUB_SUB')"><i class="fa-solid fa-plus"></i> Alt Ekle</button><button class="action-icon-btn" style="color:var(--danger-color);" onclick="window.delCat('${c.id}', '${s.id}', null)"><i class="fa-solid fa-xmark"></i></button></div></div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--sidebar-bg); padding:6px 10px; border-radius:8px; margin-bottom:2px;"><span style="font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:8px;">↳ ${s.iconUrl ? `<img src="${s.iconUrl}" style="width:16px;height:16px;object-fit:contain;">` : ''} ${s.name}</span><div><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', '${s.id}', null)" title="Düzenle"><i class="fa-solid fa-pen"></i></button><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', '${s.id}', 'NEW_SUB_SUB')"><i class="fa-solid fa-plus"></i> Alt Ekle</button><button class="action-icon-btn" style="color:var(--danger-color);" onclick="window.delCat('${c.id}', '${s.id}', null)"><i class="fa-solid fa-xmark"></i></button></div></div>
                             ${(s.sub||[]).map(ss => `
-                                <div style="margin-left:20px; display:flex; justify-content:space-between; align-items:center; background:#111; padding:4px 10px; border-radius:6px; margin-bottom:2px;"><span style="font-size:12px; color:#777; display:flex; align-items:center; gap:8px;">- ${ss.iconUrl ? `<img src="${ss.iconUrl}" style="width:12px;height:12px;object-fit:contain;">` : ''} ${ss.name}</span><div><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', '${s.id}', '${ss.id}')" title="Düzenle"><i class="fa-solid fa-pen"></i></button><button class="action-icon-btn" style="color:var(--danger-color);" onclick="window.delCat('${c.id}', '${s.id}', '${ss.id}')"><i class="fa-solid fa-xmark"></i></button></div></div>
+                                <div style="margin-left:20px; display:flex; justify-content:space-between; align-items:center; background:#111; padding:4px 10px; border-radius:6px; margin-bottom:2px;"><span style="font-size:11px; color:#777; display:flex; align-items:center; gap:8px;">- ${ss.iconUrl ? `<img src="${ss.iconUrl}" style="width:12px;height:12px;object-fit:contain;">` : ''} ${ss.name}</span><div><button class="action-icon-btn" onclick="window.openEditCatModal('${c.id}', '${s.id}', '${ss.id}')" title="Düzenle"><i class="fa-solid fa-pen"></i></button><button class="action-icon-btn" style="color:var(--danger-color);" onclick="window.delCat('${c.id}', '${s.id}', '${ss.id}')"><i class="fa-solid fa-xmark"></i></button></div></div>
                             `).join('')}
                         </div>`).join('')}
                 </div>`).join('');
