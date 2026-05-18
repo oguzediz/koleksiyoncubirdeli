@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksiyoncubirdeli - Oguz Ediz</title>
+    <title>Koleksiyoncubirdeli - V7.3 CMS</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -263,7 +263,9 @@
             <div id="wrap-cast" class="cast-builder">
                 <label style="display:block; margin-bottom:10px; font-size:11px; font-weight:bold; color:var(--text-muted);">KİŞİLER / KADRO</label>
                 <div style="display:flex; gap:10px; align-items:center;">
-                    <input type="hidden" id="tempCastImageUrl"> <div id="castExistingImgPreview" style="display:none; position:relative; width:40px; height:40px; margin-right:5px;">
+                    <input type="hidden" id="tempCastImageUrl"> 
+                    
+                    <div id="castExistingImgPreview" style="display:none; position:relative; width:40px; height:40px; margin-right:5px;">
                         <img id="castExistingImg" src="" style="width:100%;height:100%;object-fit:cover;border-radius:50%; border:1px solid #555;">
                         <i class="fa-solid fa-circle-xmark" style="position:absolute; top:-5px; right:-5px; color:var(--danger-color); cursor:pointer; background:var(--bg-color); border-radius:50%;" onclick="window.removeTempCastImg()"></i>
                     </div>
@@ -372,7 +374,6 @@
             try { appSettings.logoUrl = await uploadImageToCloud(file); await setDoc(doc(db, "settings", "general"), appSettings); p.style.display = 'none'; i.src = appSettings.logoUrl; i.style.display = 'block'; } catch(err) { p.innerHTML = 'Hata!'; }
         };
 
-        // --- 3. SEVİYE SİDEBAR RENDER ---
         const renderSidebar = () => {
             const cont = document.getElementById('dynamicCategories'); cont.innerHTML = '';
             categoryTree.forEach(cat => {
@@ -447,13 +448,12 @@
             });
         };
 
-        // --- ŞABLON VE KANVA ---
         const renderTemplateTabs = () => {
             document.getElementById('savedTemplatesList').innerHTML = savedTemplates.map(t => `<div class="tab-btn" id="tab-${t.id}" onclick="window.loadCustomTemplate('${t.id}')"><i class="fa-solid fa-star" style="color:var(--accent-color)"></i> ${t.name} <i class="fa-solid fa-trash" style="margin-left:auto; font-size:12px; color:var(--text-muted);" onclick="window.delTemplate('${t.id}', event)"></i></div>`).join('');
         };
 
         window.saveCustomTemplate = async () => {
-            const name = prompt("Bu şablona bir isim ver (Aman İsimsiz Kalmasın (^.^)):"); if(!name) return;
+            const name = prompt("Bu şablona bir isim ver:"); if(!name) return;
             const activeMods = [];
             if(document.getElementById('wrap-images').style.display === 'block') activeMods.push('images');
             if(document.getElementById('wrap-cast').style.display === 'block') activeMods.push('cast');
@@ -496,7 +496,6 @@
 
         window.removeExistingImage = (idx) => { currentImagesArray.splice(idx, 1); renderExistingImagesPreview(); };
 
-        // MODAL STATE SIFIRLAMA
         const resetFormState = () => {
             document.getElementById('editId').value = '';
             document.getElementById('modalHeaderTitle').innerText = "Yeni Eser Ekle";
@@ -504,9 +503,7 @@
             
             document.getElementById('castAddBtn').innerText = "Ekle";
             document.getElementById('castAddBtn').removeAttribute('data-editing-id');
-            document.getElementById('tempCastName').value = '';
-            document.getElementById('tempCastFile').value = '';
-            document.getElementById('tempCastImageUrl').value = '';
+            document.getElementById('tempCastName').value = ''; document.getElementById('tempCastFile').value = ''; document.getElementById('tempCastImageUrl').value = '';
             document.getElementById('castExistingImgPreview').style.display = 'none';
 
             currentCastArray = []; currentImagesArray = []; renderCastChips(); renderExistingImagesPreview(); 
@@ -515,8 +512,7 @@
 
         window.openModal = () => {
             resetFormState();
-            document.getElementById('addModal').classList.add('show'); 
-            document.getElementById('globalOverlay').classList.add('show');
+            document.getElementById('addModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show');
             window.setFormType('film');
         };
 
@@ -533,30 +529,26 @@
             
             if(!document.getElementById('editId').value && type !== 'ozel' && !savedTemplates.some(t=>t.id===type)) { 
                 document.getElementById('dynamicFieldsContainer').innerHTML = ''; 
-                if(type === 'film') window.addDynamicFieldRow('Puanı Var Mı?', '', 'Varsa Bakma Yaz!'); 
-                if(type === 'kitap') window.addDynamicFieldRow('Kaç Sayfa Ki ?', '', 'Okudun mu? :)'); 
+                if(type === 'film') window.addDynamicFieldRow('IMDB Puanı', '', 'text'); 
+                if(type === 'kitap') window.addDynamicFieldRow('Sayfa Sayısı', '', 'text'); 
             }
         };
 
         window.showModule = (wrapId, btnEl) => { document.getElementById(wrapId).style.display = 'block'; btnEl.classList.add('added'); };
 
-        // KİŞİ (CAST) SİSTEMİ
         window.addCastMember = async () => {
             const name = document.getElementById('tempCastName').value.trim(), role = document.getElementById('tempCastRole').value, fileInput = document.getElementById('tempCastFile'), btn = document.getElementById('castAddBtn');
-            const editingId = btn.getAttribute('data-editing-id');
-            const hiddenImg = document.getElementById('tempCastImageUrl').value;
+            const editingId = btn.getAttribute('data-editing-id'); const hiddenImg = document.getElementById('tempCastImageUrl').value;
             
             if(!name) return; btn.innerText = "..."; btn.disabled = true;
-            let imageUrl = hiddenImg; // Eski resmi koru
+            let imageUrl = hiddenImg; 
             if (fileInput.files[0]) { try { imageUrl = await uploadImageToCloud(fileInput.files[0]); } catch(e) {} }
 
             if(editingId) {
                 const idx = currentCastArray.findIndex(x => x.id === editingId);
                 if(idx > -1) currentCastArray[idx] = { id: editingId, name, role, imageUrl };
                 btn.removeAttribute('data-editing-id');
-            } else {
-                currentCastArray.push({ id: Date.now().toString(), name, role, imageUrl });
-            }
+            } else { currentCastArray.push({ id: Date.now().toString(), name, role, imageUrl }); }
 
             document.getElementById('tempCastName').value = ''; fileInput.value = ''; document.getElementById('tempCastImageUrl').value = ''; 
             document.getElementById('castExistingImgPreview').style.display = 'none';
@@ -583,7 +575,6 @@
         
         window.removeCast = (id) => { currentCastArray = currentCastArray.filter(c => c.id !== id); renderCastChips(); };
 
-        // ÖZEL ALANLAR (METİN VE GÖRSEL)
         window.addDynamicFieldRow = (key = '', val = '', type = 'text') => { 
             const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row'; row.dataset.type = type;
             if (type === 'text') {
@@ -683,7 +674,7 @@
         window.deleteCurrentItem = async () => { if(confirm("Bu eseri silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
         
         window.closeAll = () => { 
-            resetFormState(); // Kapanırken de hafızayı sil
+            resetFormState(); 
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); 
             document.getElementById('detailPanel').classList.remove('open'); 
             document.getElementById('globalOverlay').classList.remove('show'); 
@@ -693,7 +684,6 @@
         window.updateSubSelect = () => { const val = document.getElementById('in-cat').value; const sub = document.getElementById('in-sub'); const cat = categoryTree.find(c => c.name === val); sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? (cat.sub||[]).map(s => `<option value="${s.name}">${s.name}</option>`).join('') : ''); window.updateSubSubSelect(); };
         window.updateSubSubSelect = () => { const mVal = document.getElementById('in-cat').value; const sVal = document.getElementById('in-sub').value; const ss = document.getElementById('in-sub-sub'); const mCat = categoryTree.find(c => c.name === mVal); const sCat = mCat ? (mCat.sub||[]).find(s => s.name === sVal) : null; ss.innerHTML = '<option value="">-- Yok --</option>' + (sCat ? (sCat.sub||[]).map(x => `<option value="${x.name}">${x.name}</option>`).join('') : ''); };
 
-        // --- KATEGORİ YÖNETİMİ ---
         window.openCatManager = () => { renderCatMan(); document.getElementById('catModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show'); };
         const renderCatMan = () => {
             document.getElementById('catManList').innerHTML = categoryTree.map(c => `
