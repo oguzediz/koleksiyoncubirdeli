@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksiyoncubirdeli - V7.5 Kota Dostu CMS</title>
+    <title>Koleksiyoncubirdeli - V7.6 CMS</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,7 +21,6 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* Fontu sadece metinlere uygula (İkonları bozmamak için) */
         body, input, button, textarea, select { 
             font-family: 'OzelFont', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
         }
@@ -32,6 +31,13 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        /* --- SİNEMATİK YÜKLEME EKRANI --- */
+        .global-loader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .global-loader.show { display: flex; }
+        .spinner { width: 60px; height: 60px; border: 4px solid var(--border-color); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loader-text { font-size: 18px; font-weight: bold; color: white; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 
         /* --- SOL MENÜ --- */
         .sidebar { width: 300px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 10; transition: margin-left 0.3s; }
@@ -132,7 +138,6 @@
         .existing-img-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .existing-img-preview .img-box { position: relative; width: 60px; height: 60px; }
         .existing-img-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color); }
-        /* Yeni (Local) eklenen resimlerin çerçevesi farklı olsun */
         .existing-img-preview .img-box.pending img { border: 2px dashed #ffa500; opacity: 0.8;}
         .existing-img-preview .del-icon { position: absolute; top: -5px; right: -5px; background: var(--bg-color); border-radius: 50%; font-size: 14px; cursor: pointer; }
 
@@ -161,7 +166,6 @@
 
         .submit-btn { width: 100%; padding: 15px; background: var(--text-main); color: #000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 16px;}
         .submit-btn:hover { background: #fff; transform: translateY(-2px); }
-        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* --- DETAY PANELİ --- */
         .slide-panel { position: fixed; top: 0; right: -650px; width: 650px; height: 100vh; background: var(--sidebar-bg); z-index: 1000; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; }
@@ -187,6 +191,11 @@
 </head>
 <body>
     <div class="overlay" id="globalOverlay" onclick="window.closeAll()"></div>
+
+    <div class="global-loader" id="globalLoader">
+        <div class="spinner"></div>
+        <div class="loader-text" id="loaderText">İşlem başlatılıyor...</div>
+    </div>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -265,7 +274,7 @@
                 <button class="mod-btn" id="btn-mod-custom" onclick="window.showModule('wrap-custom', this)"><i class="fa-solid fa-sliders"></i> Özel Veri</button>
             </div>
 
-            <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" placeholder="Eserse Tabii (^.^)" required></div>
+            <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" required></div>
             <div class="form-row">
                 <div class="form-group"><label>Ana Kategori</label><select id="in-cat" onchange="window.updateSubSelect()"></select></div>
                 <div class="form-group"><label>Alt Kategori</label><select id="in-sub" onchange="window.updateSubSubSelect()"></select></div>
@@ -298,7 +307,7 @@
                 <div id="castChipsContainer" style="margin-top:10px;"></div>
             </div>
 
-            <div id="wrap-desc" class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" placeholder="Yaz İşte Birşeyler (^.^)" style="height:80px;"></textarea></div>
+            <div id="wrap-desc" class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" style="height:80px;"></textarea></div>
 
             <div id="wrap-custom">
                 <div class="dynamic-fields-title">
@@ -340,7 +349,7 @@
     <div class="modal" id="editCatModal" style="width:400px; padding:35px; z-index:1003;">
         <div class="modal-header"><h3 id="editCatTitle">Kategori Düzenle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeEditCatModal()"></i></div>
         <input type="hidden" id="ec-mId"> <input type="hidden" id="ec-sId"> <input type="hidden" id="ec-ssId">
-        <div class="form-group"><label>Kategori İsmi</label><input type="text" id="ec-name" placeholder="Ne Dersen de BANA NE! (^.^)" required></div>
+        <div class="form-group"><label>Kategori İsmi</label><input type="text" id="ec-name" required></div>
         <div class="form-group"><label>İkon (Opsiyonel)</label><input type="file" id="ec-icon" accept="image/*" style="padding-top:10px;"></div>
         <button class="submit-btn" id="saveEditCatBtn" onclick="window.saveEditCat()">Kaydet</button>
     </div>
@@ -367,10 +376,9 @@
         let allItems = [], categoryTree = [], appSettings = { logoUrl: '' }, savedTemplates = [];
         let currentMain = 'Tümü', currentSub = null, currentSubSub = null, viewMode = 'grid', activeId = null;
         
-        // --- YENİ KOTA DOSTU HAFIZA SİSTEMİ ---
         let currentCastArray = []; 
-        let currentImagesArray = []; // Bulutta olan (kaydedilmiş) eski resimler
-        let pendingImageFiles = []; // Dosyadan yeni seçilen ama YÜKLENMEMİŞ resimler
+        let currentImagesArray = []; 
+        let pendingImageFiles = []; 
 
         const uploadImageToCloud = async (file) => {
             const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", CLOUDINARY_PRESET);
@@ -396,7 +404,7 @@
             try { appSettings.logoUrl = await uploadImageToCloud(file); await setDoc(doc(db, "settings", "general"), appSettings); p.style.display = 'none'; i.src = appSettings.logoUrl; i.style.display = 'block'; } catch(err) { p.innerHTML = 'Hata!'; }
         };
 
-        // --- SİDEBAR ---
+        // --- SİDEBAR RENDER ---
         const renderSidebar = () => {
             const cont = document.getElementById('dynamicCategories'); cont.innerHTML = '';
             categoryTree.forEach(cat => {
@@ -471,13 +479,13 @@
             });
         };
 
-        // --- ŞABLON VE KANVA ---
+        // --- ŞABLON KAYIT SİSTEMİ ---
         const renderTemplateTabs = () => {
             document.getElementById('savedTemplatesList').innerHTML = savedTemplates.map(t => `<div class="tab-btn" id="tab-${t.id}" onclick="window.loadCustomTemplate('${t.id}')"><i class="fa-solid fa-star" style="color:var(--accent-color)"></i> ${t.name} <i class="fa-solid fa-trash" style="margin-left:auto; font-size:12px; color:var(--text-muted);" onclick="window.delTemplate('${t.id}', event)"></i></div>`).join('');
         };
 
         window.saveCustomTemplate = async () => {
-            const name = prompt("Bu şablona bir isim ver (Aman İsimsiz Kalmasın (^.^)):"); if(!name) return;
+            const name = prompt("Şablon Adı:"); if(!name) return;
             const activeMods = [];
             if(document.getElementById('wrap-images').style.display === 'block') activeMods.push('images');
             if(document.getElementById('wrap-cast').style.display === 'block') activeMods.push('cast');
@@ -507,24 +515,20 @@
             t.fields.forEach(f => window.addDynamicFieldRow(f.key, '', f.type));
         };
 
-        // --- YEREL ÖNİZLEME (LOCAL PREVIEW) MANTIĞI ---
+        // --- YEREL ÖNİZLEME (LOCAL PREVIEW) ---
         window.handleLocalImageSelect = (e) => {
             const files = e.target.files; if (!files || files.length === 0) return;
             for(let i=0; i<files.length; i++) { pendingImageFiles.push(files[i]); }
-            e.target.value = ''; // Inputu sıfırla ki aynı dosyayı tekrar seçebilsin
+            e.target.value = ''; 
             renderExistingImagesPreview();
         };
 
         const renderExistingImagesPreview = () => {
             const cont = document.getElementById('existingImagesPreview');
             cont.innerHTML = ''; 
-            
-            // 1. Buluttaki (Kayıtlı) Eski Resimler
             currentImagesArray.forEach((url, idx) => {
                 cont.innerHTML += `<div class="img-box"><img src="${url}"><i class="fa-solid fa-circle-xmark del-icon" onclick="window.removeExistingImage(${idx})"></i></div>`;
             });
-
-            // 2. Yeni Seçilen (Bekleyen) Resimler (Sarı Çerçeveli)
             pendingImageFiles.forEach((file, idx) => {
                 const localUrl = URL.createObjectURL(file);
                 cont.innerHTML += `<div class="img-box pending"><img src="${localUrl}"><i class="fa-solid fa-circle-xmark del-icon" style="color:#ffa500;" onclick="window.removePendingImage(${idx})" title="İptal Et"></i></div>`;
@@ -534,7 +538,7 @@
         window.removeExistingImage = (idx) => { currentImagesArray.splice(idx, 1); renderExistingImagesPreview(); };
         window.removePendingImage = (idx) => { pendingImageFiles.splice(idx, 1); renderExistingImagesPreview(); };
 
-        // MODAL STATE KESİN SIFIRLAMA
+        // --- MODAL STATE SIFIRLAMA ---
         const resetFormState = () => {
             document.getElementById('editId').value = '';
             document.getElementById('modalHeaderTitle').innerText = "Yeni Eser Ekle";
@@ -548,9 +552,6 @@
             currentCastArray = []; currentImagesArray = []; pendingImageFiles = []; 
             renderCastChips(); renderExistingImagesPreview(); 
             document.getElementById('dynamicFieldsContainer').innerHTML = '';
-
-            const saveBtn = document.getElementById('saveBtn');
-            if(saveBtn) { saveBtn.innerText = "ARŞİVE KAYDET"; saveBtn.disabled = false; }
         };
 
         window.openModal = () => {
@@ -579,7 +580,7 @@
 
         window.showModule = (wrapId, btnEl) => { document.getElementById(wrapId).style.display = 'block'; btnEl.classList.add('added'); };
 
-        // KİŞİ (CAST) SİSTEMİ - YEREL ÖNİZLEME ONARIMI
+        // --- KİŞİ (CAST) SİSTEMİ ---
         window.addCastMember = async () => {
             const name = document.getElementById('tempCastName').value.trim(), role = document.getElementById('tempCastRole').value, fileInput = document.getElementById('tempCastFile'), btn = document.getElementById('castAddBtn');
             const editingId = btn.getAttribute('data-editing-id'); const hiddenImg = document.getElementById('tempCastImageUrl').value;
@@ -590,14 +591,14 @@
             let localFile = null;
             if (fileInput.files[0]) { 
                 localFile = fileInput.files[0];
-                imageUrl = URL.createObjectURL(localFile); // Anında yerel gösterim (Kotadan yemez)
+                imageUrl = URL.createObjectURL(localFile); 
             }
 
             if(editingId) {
                 const idx = currentCastArray.findIndex(x => x.id === editingId);
                 if(idx > -1) {
                     currentCastArray[idx].name = name; currentCastArray[idx].role = role; currentCastArray[idx].imageUrl = imageUrl;
-                    if(localFile) currentCastArray[idx].localFile = localFile; // Yeni dosya seçildiyse bekleme listesine al
+                    if(localFile) currentCastArray[idx].localFile = localFile; 
                 }
                 btn.removeAttribute('data-editing-id');
             } else { 
@@ -629,7 +630,7 @@
         
         window.removeCast = (id) => { currentCastArray = currentCastArray.filter(c => c.id !== id); renderCastChips(); };
 
-        // ÖZEL ALANLAR (METİN VE GÖRSEL)
+        // --- ÖZEL ALANLAR ---
         window.addDynamicFieldRow = (key = '', val = '', type = 'text') => { 
             const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row'; row.dataset.type = type;
             if (type === 'text') {
@@ -641,28 +642,35 @@
             cont.appendChild(row); 
         };
 
-        // KUSURSUZ KAYIT MOTORU (TÜM YÜKLEMELER BURADA YAPILIR)
+        // --- SİNEMATİK KAYIT MOTORU ---
         window.saveItem = async () => {
-            const id = document.getElementById('editId').value, saveBtn = document.getElementById('saveBtn'), title = document.getElementById('in-title').value;
+            const id = document.getElementById('editId').value, title = document.getElementById('in-title').value;
             if(!title) { alert("Eser adı zorunlu!"); return; }
-            saveBtn.innerText = "GÖRSELLER YÜKLENİYOR..."; saveBtn.disabled = true;
+
+            const loader = document.getElementById('globalLoader');
+            const loaderText = document.getElementById('loaderText');
+            loader.classList.add('show');
+            loaderText.innerText = "Güvenli bağlantı kuruluyor...";
 
             try {
-                // 1. Bekleyen Ana Resimleri Toplu Yükle
+                // 1. Bekleyen Ana Resimleri Yükle
                 if (pendingImageFiles.length > 0) {
+                    loaderText.innerText = `Ana görseller buluta aktarılıyor (0/${pendingImageFiles.length})...`;
                     const uploadedUrls = await Promise.all(pendingImageFiles.map(f => uploadImageToCloud(f)));
                     currentImagesArray.push(...uploadedUrls);
                 }
 
                 // 2. Bekleyen Oyuncu/Kadro Resimlerini Yükle
-                for (let c of currentCastArray) {
-                    if (c.localFile) {
-                        c.imageUrl = await uploadImageToCloud(c.localFile);
-                        delete c.localFile; // Veritabanına gereksiz dosya objesi gitmesin diye sil
+                let hasCastImages = currentCastArray.some(c => c.localFile);
+                if (hasCastImages) {
+                    loaderText.innerText = "Kişi/Kadro görselleri senkronize ediliyor...";
+                    for (let c of currentCastArray) {
+                        if (c.localFile) { c.imageUrl = await uploadImageToCloud(c.localFile); delete c.localFile; }
                     }
                 }
 
                 // 3. Özel Alanlardaki Resimleri Bekle ve Yükle
+                loaderText.innerText = "Özel veri alanları işleniyor...";
                 const fields = []; 
                 const rows = document.querySelectorAll('.field-row');
                 const customFieldPromises = Array.from(rows).map(async (row) => {
@@ -680,22 +688,31 @@
                 const resolvedFields = await Promise.all(customFieldPromises);
                 resolvedFields.forEach(f => { if(f) fields.push(f); });
 
-                // 4. Tüm Veriyi Paketle ve Veritabanına Fırlat
+                // 4. Veritabanına Yaz
+                loaderText.innerText = "Veritabanı güncelleniyor...";
                 const data = {
                     title: title, category: document.getElementById('in-cat').value, subCategory: document.getElementById('in-sub').value, subSubCategory: document.getElementById('in-sub-sub').value,
                     description: document.getElementById('in-desc').value, itemType: document.getElementById('currentItemType').value,
                     customFields: fields, cast: currentCastArray, timestamp: Date.now(), images: currentImagesArray
                 };
 
-                saveBtn.innerText = "ARŞİVE YAZILIYOR...";
                 id ? await updateDoc(doc(db, "arsiv", id), data) : await addDoc(collection(db, "arsiv"), data);
-                window.closeAll(); 
+                
+                // 5. Başarılı Kapanış
+                loaderText.innerText = "Mühürlendi! Arşive eklendi.";
+                setTimeout(() => {
+                    loader.classList.remove('show');
+                    window.closeAll(); 
+                }, 800);
+
             } catch(e) {
-                console.error(e); alert("Kaydedilirken bir hata oluştu! İnternetini kontrol et.");
-                saveBtn.innerText = "ARŞİVE KAYDET"; saveBtn.disabled = false;
+                console.error(e); 
+                loaderText.innerText = "HATA: İşlem başarısız oldu!";
+                setTimeout(() => { loader.classList.remove('show'); }, 2000);
             }
         };
 
+        // --- DETAY PANELİ VE DÜZENLEME ---
         window.openDetail = (id) => {
             activeId = id; const item = allItems.find(i => i.id === id);
             const visual = document.getElementById('panelVisual'), thumbsCont = document.getElementById('galleryThumbnails');
@@ -732,7 +749,11 @@
             document.getElementById('in-sub').value = item.subCategory || ''; window.updateSubSubSelect();
             document.getElementById('in-sub-sub').value = item.subSubCategory || '';
             document.getElementById('in-desc').value = item.description || '';
-            currentCastArray = item.cast || []; renderCastChips(); 
+            
+            // Eğer JSON'dan eski localFile (hatalı veri) kalmışsa temizleyelim ki bug yapmasın
+            currentCastArray = (item.cast || []).map(c => { delete c.localFile; return c; }); 
+            renderCastChips(); 
+            
             currentImagesArray = item.images || (item.imageUrl ? [item.imageUrl] : []); renderExistingImagesPreview();
             
             document.getElementById('dynamicFieldsContainer').innerHTML = ''; if(item.customFields) item.customFields.forEach(f => window.addDynamicFieldRow(f.key, f.val, f.type));
@@ -752,7 +773,7 @@
         window.deleteCurrentItem = async () => { if(confirm("Bu eseri silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
         
         window.closeAll = () => { 
-            resetFormState(); // Kapanırken de hafızayı sil
+            resetFormState(); 
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); 
             document.getElementById('detailPanel').classList.remove('open'); 
             document.getElementById('globalOverlay').classList.remove('show'); 
@@ -762,6 +783,7 @@
         window.updateSubSelect = () => { const val = document.getElementById('in-cat').value; const sub = document.getElementById('in-sub'); const cat = categoryTree.find(c => c.name === val); sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? (cat.sub||[]).map(s => `<option value="${s.name}">${s.name}</option>`).join('') : ''); window.updateSubSubSelect(); };
         window.updateSubSubSelect = () => { const mVal = document.getElementById('in-cat').value; const sVal = document.getElementById('in-sub').value; const ss = document.getElementById('in-sub-sub'); const mCat = categoryTree.find(c => c.name === mVal); const sCat = mCat ? (mCat.sub||[]).find(s => s.name === sVal) : null; ss.innerHTML = '<option value="">-- Yok --</option>' + (sCat ? (sCat.sub||[]).map(x => `<option value="${x.name}">${x.name}</option>`).join('') : ''); };
 
+        // --- KATEGORİ YÖNETİMİ ---
         window.openCatManager = () => { renderCatMan(); document.getElementById('catModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show'); };
         const renderCatMan = () => {
             document.getElementById('catManList').innerHTML = categoryTree.map(c => `
