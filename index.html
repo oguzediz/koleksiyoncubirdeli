@@ -3,15 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksiyoncubirdeli - V7.3 CMS</title>
+    <title>Koleksiyoncubirdeli - V7.5 Kota Dostu CMS</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @font-face { font-family: 'OzelFont'; src: url('./fonts/DJB%20Chalk%20It%20Up.ttf') format('truetype'); }
-        :root { --bg-color: #0f0f0f; --sidebar-bg: #161616; --text-main: #efefef; --text-muted: #a0a0a0; --border-color: #2a2a2a; --hover-bg: #222222; --accent-color: #2ea043; --modal-bg: #1c1c1c; --input-bg: #0a0a0a; --danger-color: #cf6679; }
+        /* === KENDİ FONTUNU KULLANMAK İÇİN === */
+        @font-face {
+            font-family: 'OzelFont';
+            src: url('./fonts/DJB%20Chalk%20It%20Up.ttf') format('truetype');
+        }
+
+        :root {
+            --bg-color: #0f0f0f; --sidebar-bg: #161616; --text-main: #efefef; --text-muted: #a0a0a0;
+            --border-color: #2a2a2a; --hover-bg: #222222; --accent-color: #2ea043;
+            --modal-bg: #1c1c1c; --input-bg: #0a0a0a; --danger-color: #cf6679;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, input, button, textarea, select { font-family: 'OzelFont', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        
+        /* Fontu sadece metinlere uygula (İkonları bozmamak için) */
+        body, input, button, textarea, select { 
+            font-family: 'OzelFont', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+        }
+
         body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-main); }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
@@ -116,7 +132,9 @@
         .existing-img-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .existing-img-preview .img-box { position: relative; width: 60px; height: 60px; }
         .existing-img-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color); }
-        .existing-img-preview .del-icon { position: absolute; top: -5px; right: -5px; background: var(--bg-color); color: var(--danger-color); border-radius: 50%; font-size: 14px; cursor: pointer; }
+        /* Yeni (Local) eklenen resimlerin çerçevesi farklı olsun */
+        .existing-img-preview .img-box.pending img { border: 2px dashed #ffa500; opacity: 0.8;}
+        .existing-img-preview .del-icon { position: absolute; top: -5px; right: -5px; background: var(--bg-color); border-radius: 50%; font-size: 14px; cursor: pointer; }
 
         .module-toolbar { display: none; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px dashed var(--border-color); align-items: center;}
         .mod-title { width: 100%; font-size: 11px; font-weight: 800; color: var(--accent-color); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; display:flex; justify-content:space-between; align-items:center;}
@@ -255,8 +273,8 @@
             </div>
 
             <div id="wrap-images" class="form-group">
-                <label>Görseller Ekle <span style="font-weight:normal; color:#666; font-size:10px;">(Birden Fazla Seçilebilir)</span></label>
-                <input type="file" id="in-file" accept="image/*" multiple style="padding-top:10px;">
+                <label>Görseller Ekle <span style="font-weight:normal; color:#666; font-size:10px;">(Yerel Önizleme - Kotadan Yemez!)</span></label>
+                <input type="file" id="in-file" accept="image/*" multiple style="padding-top:10px;" onchange="window.handleLocalImageSelect(event)">
                 <div id="existingImagesPreview" class="existing-img-preview"></div>
             </div>
 
@@ -348,7 +366,11 @@
 
         let allItems = [], categoryTree = [], appSettings = { logoUrl: '' }, savedTemplates = [];
         let currentMain = 'Tümü', currentSub = null, currentSubSub = null, viewMode = 'grid', activeId = null;
-        let currentCastArray = [], currentImagesArray = []; 
+        
+        // --- YENİ KOTA DOSTU HAFIZA SİSTEMİ ---
+        let currentCastArray = []; 
+        let currentImagesArray = []; // Bulutta olan (kaydedilmiş) eski resimler
+        let pendingImageFiles = []; // Dosyadan yeni seçilen ama YÜKLENMEMİŞ resimler
 
         const uploadImageToCloud = async (file) => {
             const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", CLOUDINARY_PRESET);
@@ -374,6 +396,7 @@
             try { appSettings.logoUrl = await uploadImageToCloud(file); await setDoc(doc(db, "settings", "general"), appSettings); p.style.display = 'none'; i.src = appSettings.logoUrl; i.style.display = 'block'; } catch(err) { p.innerHTML = 'Hata!'; }
         };
 
+        // --- SİDEBAR ---
         const renderSidebar = () => {
             const cont = document.getElementById('dynamicCategories'); cont.innerHTML = '';
             categoryTree.forEach(cat => {
@@ -448,12 +471,13 @@
             });
         };
 
+        // --- ŞABLON VE KANVA ---
         const renderTemplateTabs = () => {
             document.getElementById('savedTemplatesList').innerHTML = savedTemplates.map(t => `<div class="tab-btn" id="tab-${t.id}" onclick="window.loadCustomTemplate('${t.id}')"><i class="fa-solid fa-star" style="color:var(--accent-color)"></i> ${t.name} <i class="fa-solid fa-trash" style="margin-left:auto; font-size:12px; color:var(--text-muted);" onclick="window.delTemplate('${t.id}', event)"></i></div>`).join('');
         };
 
         window.saveCustomTemplate = async () => {
-            const name = prompt("Bu şablona bir isim ver:"); if(!name) return;
+            const name = prompt("Bu şablona bir isim ver (Aman İsimsiz Kalmasın (^.^)):"); if(!name) return;
             const activeMods = [];
             if(document.getElementById('wrap-images').style.display === 'block') activeMods.push('images');
             if(document.getElementById('wrap-cast').style.display === 'block') activeMods.push('cast');
@@ -483,19 +507,34 @@
             t.fields.forEach(f => window.addDynamicFieldRow(f.key, '', f.type));
         };
 
+        // --- YEREL ÖNİZLEME (LOCAL PREVIEW) MANTIĞI ---
+        window.handleLocalImageSelect = (e) => {
+            const files = e.target.files; if (!files || files.length === 0) return;
+            for(let i=0; i<files.length; i++) { pendingImageFiles.push(files[i]); }
+            e.target.value = ''; // Inputu sıfırla ki aynı dosyayı tekrar seçebilsin
+            renderExistingImagesPreview();
+        };
+
         const renderExistingImagesPreview = () => {
             const cont = document.getElementById('existingImagesPreview');
-            if(currentImagesArray.length === 0) { cont.innerHTML = ''; return; }
-            cont.innerHTML = currentImagesArray.map((url, idx) => `
-                <div class="img-box">
-                    <img src="${url}">
-                    <i class="fa-solid fa-circle-xmark del-icon" onclick="window.removeExistingImage(${idx})"></i>
-                </div>
-            `).join('');
+            cont.innerHTML = ''; 
+            
+            // 1. Buluttaki (Kayıtlı) Eski Resimler
+            currentImagesArray.forEach((url, idx) => {
+                cont.innerHTML += `<div class="img-box"><img src="${url}"><i class="fa-solid fa-circle-xmark del-icon" onclick="window.removeExistingImage(${idx})"></i></div>`;
+            });
+
+            // 2. Yeni Seçilen (Bekleyen) Resimler (Sarı Çerçeveli)
+            pendingImageFiles.forEach((file, idx) => {
+                const localUrl = URL.createObjectURL(file);
+                cont.innerHTML += `<div class="img-box pending"><img src="${localUrl}"><i class="fa-solid fa-circle-xmark del-icon" style="color:#ffa500;" onclick="window.removePendingImage(${idx})" title="İptal Et"></i></div>`;
+            });
         };
 
         window.removeExistingImage = (idx) => { currentImagesArray.splice(idx, 1); renderExistingImagesPreview(); };
+        window.removePendingImage = (idx) => { pendingImageFiles.splice(idx, 1); renderExistingImagesPreview(); };
 
+        // MODAL STATE KESİN SIFIRLAMA
         const resetFormState = () => {
             document.getElementById('editId').value = '';
             document.getElementById('modalHeaderTitle').innerText = "Yeni Eser Ekle";
@@ -506,8 +545,12 @@
             document.getElementById('tempCastName').value = ''; document.getElementById('tempCastFile').value = ''; document.getElementById('tempCastImageUrl').value = '';
             document.getElementById('castExistingImgPreview').style.display = 'none';
 
-            currentCastArray = []; currentImagesArray = []; renderCastChips(); renderExistingImagesPreview(); 
+            currentCastArray = []; currentImagesArray = []; pendingImageFiles = []; 
+            renderCastChips(); renderExistingImagesPreview(); 
             document.getElementById('dynamicFieldsContainer').innerHTML = '';
+
+            const saveBtn = document.getElementById('saveBtn');
+            if(saveBtn) { saveBtn.innerText = "ARŞİVE KAYDET"; saveBtn.disabled = false; }
         };
 
         window.openModal = () => {
@@ -536,23 +579,34 @@
 
         window.showModule = (wrapId, btnEl) => { document.getElementById(wrapId).style.display = 'block'; btnEl.classList.add('added'); };
 
+        // KİŞİ (CAST) SİSTEMİ - YEREL ÖNİZLEME ONARIMI
         window.addCastMember = async () => {
             const name = document.getElementById('tempCastName').value.trim(), role = document.getElementById('tempCastRole').value, fileInput = document.getElementById('tempCastFile'), btn = document.getElementById('castAddBtn');
             const editingId = btn.getAttribute('data-editing-id'); const hiddenImg = document.getElementById('tempCastImageUrl').value;
             
-            if(!name) return; btn.innerText = "..."; btn.disabled = true;
+            if(!name) return; 
+
             let imageUrl = hiddenImg; 
-            if (fileInput.files[0]) { try { imageUrl = await uploadImageToCloud(fileInput.files[0]); } catch(e) {} }
+            let localFile = null;
+            if (fileInput.files[0]) { 
+                localFile = fileInput.files[0];
+                imageUrl = URL.createObjectURL(localFile); // Anında yerel gösterim (Kotadan yemez)
+            }
 
             if(editingId) {
                 const idx = currentCastArray.findIndex(x => x.id === editingId);
-                if(idx > -1) currentCastArray[idx] = { id: editingId, name, role, imageUrl };
+                if(idx > -1) {
+                    currentCastArray[idx].name = name; currentCastArray[idx].role = role; currentCastArray[idx].imageUrl = imageUrl;
+                    if(localFile) currentCastArray[idx].localFile = localFile; // Yeni dosya seçildiyse bekleme listesine al
+                }
                 btn.removeAttribute('data-editing-id');
-            } else { currentCastArray.push({ id: Date.now().toString(), name, role, imageUrl }); }
+            } else { 
+                currentCastArray.push({ id: Date.now().toString(), name, role, imageUrl, localFile }); 
+            }
 
             document.getElementById('tempCastName').value = ''; fileInput.value = ''; document.getElementById('tempCastImageUrl').value = ''; 
             document.getElementById('castExistingImgPreview').style.display = 'none';
-            btn.innerText = "Ekle"; btn.disabled = false; renderCastChips();
+            btn.innerText = "Ekle"; renderCastChips();
         };
 
         window.removeTempCastImg = () => { document.getElementById('tempCastImageUrl').value = ''; document.getElementById('castExistingImgPreview').style.display = 'none'; };
@@ -575,6 +629,7 @@
         
         window.removeCast = (id) => { currentCastArray = currentCastArray.filter(c => c.id !== id); renderCastChips(); };
 
+        // ÖZEL ALANLAR (METİN VE GÖRSEL)
         window.addDynamicFieldRow = (key = '', val = '', type = 'text') => { 
             const cont = document.getElementById('dynamicFieldsContainer'); const row = document.createElement('div'); row.className = 'field-row'; row.dataset.type = type;
             if (type === 'text') {
@@ -586,36 +641,59 @@
             cont.appendChild(row); 
         };
 
+        // KUSURSUZ KAYIT MOTORU (TÜM YÜKLEMELER BURADA YAPILIR)
         window.saveItem = async () => {
             const id = document.getElementById('editId').value, saveBtn = document.getElementById('saveBtn'), title = document.getElementById('in-title').value;
             if(!title) { alert("Eser adı zorunlu!"); return; }
-            saveBtn.innerText = "YÜKLENİYOR..."; saveBtn.disabled = true;
+            saveBtn.innerText = "GÖRSELLER YÜKLENİYOR..."; saveBtn.disabled = true;
 
-            const fields = []; 
-            const rows = document.querySelectorAll('.field-row');
-            for (const row of Array.from(rows)) { 
-                const type = row.dataset.type || 'text'; const key = row.querySelector('.f-key').value;
-                if(type === 'text') { fields.push({ key, val: row.querySelector('.f-val').value, type: 'text' }); }
-                else if(type === 'image') {
-                    const fileInput = row.querySelector('.f-file'); const hiddenVal = row.querySelector('.f-val-hidden').value;
-                    let finalUrl = hiddenVal;
-                    if(fileInput && fileInput.files.length > 0) { try { finalUrl = await uploadImageToCloud(fileInput.files[0]); } catch(e){} }
-                    if(finalUrl || key) fields.push({ key, val: finalUrl, type: 'image' });
+            try {
+                // 1. Bekleyen Ana Resimleri Toplu Yükle
+                if (pendingImageFiles.length > 0) {
+                    const uploadedUrls = await Promise.all(pendingImageFiles.map(f => uploadImageToCloud(f)));
+                    currentImagesArray.push(...uploadedUrls);
                 }
+
+                // 2. Bekleyen Oyuncu/Kadro Resimlerini Yükle
+                for (let c of currentCastArray) {
+                    if (c.localFile) {
+                        c.imageUrl = await uploadImageToCloud(c.localFile);
+                        delete c.localFile; // Veritabanına gereksiz dosya objesi gitmesin diye sil
+                    }
+                }
+
+                // 3. Özel Alanlardaki Resimleri Bekle ve Yükle
+                const fields = []; 
+                const rows = document.querySelectorAll('.field-row');
+                const customFieldPromises = Array.from(rows).map(async (row) => {
+                    const type = row.dataset.type || 'text'; const key = row.querySelector('.f-key').value;
+                    if(type === 'text') { return { key, val: row.querySelector('.f-val').value, type: 'text' }; }
+                    else if(type === 'image') {
+                        const fileInput = row.querySelector('.f-file'); const hiddenVal = row.querySelector('.f-val-hidden').value;
+                        let finalUrl = hiddenVal;
+                        if(fileInput && fileInput.files.length > 0) { finalUrl = await uploadImageToCloud(fileInput.files[0]); }
+                        if(finalUrl || key) return { key, val: finalUrl, type: 'image' };
+                    }
+                    return null;
+                });
+
+                const resolvedFields = await Promise.all(customFieldPromises);
+                resolvedFields.forEach(f => { if(f) fields.push(f); });
+
+                // 4. Tüm Veriyi Paketle ve Veritabanına Fırlat
+                const data = {
+                    title: title, category: document.getElementById('in-cat').value, subCategory: document.getElementById('in-sub').value, subSubCategory: document.getElementById('in-sub-sub').value,
+                    description: document.getElementById('in-desc').value, itemType: document.getElementById('currentItemType').value,
+                    customFields: fields, cast: currentCastArray, timestamp: Date.now(), images: currentImagesArray
+                };
+
+                saveBtn.innerText = "ARŞİVE YAZILIYOR...";
+                id ? await updateDoc(doc(db, "arsiv", id), data) : await addDoc(collection(db, "arsiv"), data);
+                window.closeAll(); 
+            } catch(e) {
+                console.error(e); alert("Kaydedilirken bir hata oluştu! İnternetini kontrol et.");
+                saveBtn.innerText = "ARŞİVE KAYDET"; saveBtn.disabled = false;
             }
-
-            const data = {
-                title: title, category: document.getElementById('in-cat').value, subCategory: document.getElementById('in-sub').value, subSubCategory: document.getElementById('in-sub-sub').value,
-                description: document.getElementById('in-desc').value, itemType: document.getElementById('currentItemType').value,
-                customFields: fields, cast: currentCastArray, timestamp: Date.now(), images: currentImagesArray
-            };
-
-            const files = document.getElementById('in-file').files;
-            if (files.length > 0) { for(let i = 0; i < files.length; i++) { try { data.images.push(await uploadImageToCloud(files[i])); } catch(e) {} } }
-
-            saveBtn.innerText = "YAZILIYOR...";
-            id ? await updateDoc(doc(db, "arsiv", id), data) : await addDoc(collection(db, "arsiv"), data);
-            window.closeAll(); saveBtn.innerText = "ARŞİVE KAYDET"; saveBtn.disabled = false;
         };
 
         window.openDetail = (id) => {
@@ -674,7 +752,7 @@
         window.deleteCurrentItem = async () => { if(confirm("Bu eseri silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
         
         window.closeAll = () => { 
-            resetFormState(); 
+            resetFormState(); // Kapanırken de hafızayı sil
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); 
             document.getElementById('detailPanel').classList.remove('open'); 
             document.getElementById('globalOverlay').classList.remove('show'); 
