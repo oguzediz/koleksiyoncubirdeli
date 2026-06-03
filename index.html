@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koleksiyoncubirdeli - Oğuz Ediz</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="overlay" id="globalOverlay" onclick="window.closeAll()"></div>
+
+    <div class="global-loader" id="globalLoader">
+        <div class="spinner"></div>
+        <div class="loader-text" id="loaderText">İşlem başlatılıyor...</div>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div id="brandLogoContainer" title="Logoyu Değiştir" onclick="document.getElementById('logoInput').click()">
+                <div id="logoPlaceholder"><i class="fa-solid fa-image"></i> Logo Yükle</div>
+                <img id="brandLogoImg" src="" style="display:none; max-width: 100%; max-height: 50px; object-fit: contain;">
+            </div>
+            <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="window.uploadLogo(event)">
+            <i class="fa-solid fa-bars-staggered menu-toggle-icon" onclick="document.getElementById('sidebar').classList.toggle('hidden')"></i>
+        </div>
+        <div class="sidebar-content">
+            <div class="cat-section-header">
+                ARŞİV KATMANLARI
+                <button class="manage-cat-btn" onclick="window.openCatManager()" title="Kategorileri Düzenle"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div class="cat-wrapper">
+                <div class="category-btn active" id="btn-all" onclick="window.selectAll()">
+                    <span class="cat-name-click" style="padding-left: 15px;">
+                        <i class="fa-solid fa-folder-open" style="margin-right:8px; color:var(--accent-color)"></i> Tüm Arşiv
+                    </span>
+                </div>
+            </div>
+            <div id="dynamicCategories"></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div style="display:flex; align-items:center;">
+                <button class="view-btn" style="margin-right:15px; font-size:18px;" onclick="document.getElementById('sidebar').classList.toggle('hidden')"><i class="fa-solid fa-indent"></i></button>
+                <h2 id="viewTitle" style="font-size: 18px; font-weight: 700;">Tüm Arşiv</h2>
+            </div>
+            <div class="search-area">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Eser, oyuncu, yazar veya not ara..." oninput="window.renderGallery()">
+            </div>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <div class="auth-controls">
+                    <span id="userInfo" style="font-size:12px; color:var(--text-muted);"></span>
+                    <button id="loginBtn" class="auth-btn" onclick="window.openLoginModal()">Giriş Yap</button>
+                    <button id="logoutBtn" class="auth-btn" style="display:none;" onclick="window.logoutUser()">Çıkış Yap</button>
+                </div>
+                <button id="addNewItemBtn" class="admin-only" style="padding: 12px 20px; border-radius: 12px; background:white; color:black; border:none; font-weight:800; cursor:pointer; font-size:14px;">+ EKLE</button>
+            </div>
+        </div>
+        <div class="content-area"><div id="galleryGrid" class="grid-view"></div></div>
+    </div>
+
+    <div class="modal" id="addModal">
+        <div class="modal-sidebar">
+            <div style="font-size:11px; font-weight:bold; color:var(--text-muted); margin-bottom:15px; letter-spacing:1px;">SİSTEM ŞABLONLARI</div>
+            <div class="tab-btn active" id="tab-film" onclick="window.setFormType('film')"><i class="fa-solid fa-film"></i> Film/Dizi</div>
+            <div class="tab-btn" id="tab-kitap" onclick="window.setFormType('kitap')"><i class="fa-solid fa-book"></i> Kitap</div>
+            <div class="tab-btn" id="tab-ayrac" onclick="window.setFormType('ayrac')"><i class="fa-solid fa-bookmark"></i> Ayraç/Obje</div>
+            <div class="tab-btn" id="tab-ozel" onclick="window.setFormType('ozel')"><i class="fa-solid fa-cube"></i> Özel Kanva</div>
+            
+            <div style="font-size:11px; font-weight:bold; color:var(--text-muted); margin:25px 0 15px 0; letter-spacing:1px; border-top:1px solid #333; padding-top:15px;">KAYITLI ŞABLONLARIM</div>
+            <div id="savedTemplatesList"></div>
+        </div>
+        
+        <div class="modal-body">
+            <i class="fa-solid fa-xmark" style="position:absolute; top:20px; right:25px; cursor:pointer; font-size:24px; color:var(--text-muted);" onclick="window.closeAll()"></i>
+            <h3 id="modalHeaderTitle" style="margin-bottom: 25px; font-weight: 900; font-size: 26px;">Yeni Eser Ekle</h3>
+            
+            <input type="hidden" id="editId">
+            <input type="hidden" id="currentItemType" value="film">
+
+            <div id="moduleToolbar" class="module-toolbar">
+                <div class="mod-title">
+                    TUVALE MODÜL EKLE 
+                    <button style="background:none; border:1px solid var(--accent-color); color:var(--accent-color); padding:4px 8px; border-radius:6px; font-size:10px; font-weight:bold; cursor:pointer;" onclick="window.saveCustomTemplate()"><i class="fa-solid fa-star"></i> BU ŞABLONU KAYDET</button>
+                </div>
+                <button class="mod-btn" id="btn-mod-images" onclick="window.showModule('wrap-images', this)"><i class="fa-solid fa-image"></i> Görseller</button>
+                <button class="mod-btn" id="btn-mod-cast" onclick="window.showModule('wrap-cast', this)"><i class="fa-solid fa-users"></i> Kişi/Kadro</button>
+                <button class="mod-btn" id="btn-mod-desc" onclick="window.showModule('wrap-desc', this)"><i class="fa-solid fa-align-left"></i> Açıklama</button>
+                <button class="mod-btn" id="btn-mod-custom" onclick="window.showModule('wrap-custom', this)"><i class="fa-solid fa-sliders"></i> Özel Veri</button>
+            </div>
+
+            <div class="form-group"><label>Eser Adı</label><input type="text" id="in-title" required></div>
+            <div class="form-row">
+                <div class="form-group"><label>Ana Kategori</label><select id="in-cat" onchange="window.updateSubSelect()"></select></div>
+                <div class="form-group"><label>Alt Kategori</label><select id="in-sub" onchange="window.updateSubSubSelect()"></select></div>
+                <div class="form-group"><label>3. Seviye Alt</label><select id="in-sub-sub"></select></div>
+            </div>
+
+            <div id="wrap-images" class="form-group">
+                <label>Görseller Ekle <span style="font-weight:normal; color:#666; font-size:10px;">(Yerel Önizleme - Kotadan Yemez!)</span></label>
+                <input type="file" id="in-file" accept="image/*" multiple style="padding-top:10px;" onchange="window.handleLocalImageSelect(event)">
+                <div id="existingImagesPreview" class="existing-img-preview"></div>
+            </div>
+
+            <div id="wrap-cast" class="cast-builder">
+                <label style="display:block; margin-bottom:10px; font-size:11px; font-weight:bold; color:var(--text-muted);">KİŞİLER / KADRO</label>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <input type="hidden" id="tempCastImageUrl"> 
+                    
+                    <div id="castExistingImgPreview" style="display:none; position:relative; width:40px; height:40px; margin-right:5px;">
+                        <img id="castExistingImg" src="" style="width:100%;height:100%;object-fit:cover;border-radius:50%; border:1px solid #555;">
+                        <i class="fa-solid fa-circle-xmark" style="position:absolute; top:-5px; right:-5px; color:var(--danger-color); cursor:pointer; background:var(--bg-color); border-radius:50%;" onclick="window.removeTempCastImg()"></i>
+                    </div>
+
+                    <input type="text" id="tempCastName" placeholder="Kişi Adı" style="flex:1; padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white; font-size:13px;">
+                    <select id="tempCastRole" style="padding:10px; border-radius:8px; background:var(--bg-color); border:1px solid var(--border-color); color:white; font-size:13px;">
+                        <option>Yönetmen</option><option>Oyuncu</option><option>Yazar</option><option>Çizer</option><option>Karakter</option>
+                    </select>
+                    <input type="file" id="tempCastFile" accept="image/*" title="Yeni Profil Fotoğrafı" style="width:105px; font-size:10px;">
+                    <button type="button" id="castAddBtn" style="padding:10px 15px; border-radius:8px; background:var(--accent-color); border:none; color:white; font-weight:bold; cursor:pointer;" onclick="window.addCastMember()">Ekle</button>
+                </div>
+                <div id="castChipsContainer" style="margin-top:10px;"></div>
+            </div>
+
+            <div id="wrap-desc" class="form-group"><label>Açıklama & Notlar</label><textarea id="in-desc" style="height:80px;"></textarea></div>
+
+            <div id="wrap-custom">
+                <div class="dynamic-fields-title">
+                    ÖZEL ALANLAR 
+                    <div>
+                        <button class="manage-cat-btn" onclick="window.addDynamicFieldRow('','','text')" style="font-size:11px; color:var(--text-main); font-weight:bold; margin-right:10px; background:var(--hover-bg); padding:4px 8px; border-radius:4px;">+ Metin</button>
+                        <button class="manage-cat-btn" onclick="window.addDynamicFieldRow('','','image')" style="font-size:11px; color:var(--accent-color); font-weight:bold; background:var(--hover-bg); padding:4px 8px; border-radius:4px;">+ Görsel</button>
+                    </div>
+                </div>
+                <div id="dynamicFieldsContainer"></div>
+            </div>
+
+            <button class="submit-btn" id="saveBtn" onclick="window.saveItem()">ARŞİVE KAYDET</button>
+        </div>
+    </div>
+
+    <div class="slide-panel" id="detailPanel">
+        <div class="panel-actions">
+            <div class="p-btn admin-only" onclick="window.editCurrentItem()"><i class="fa-solid fa-pen"></i></div>
+            <div class="p-btn admin-only" style="color:var(--danger-color)" onclick="window.deleteCurrentItem()"><i class="fa-solid fa-trash"></i></div>
+            <div class="p-btn" onclick="window.closeAll()" style="margin-left:auto;"><i class="fa-solid fa-xmark"></i></div>
+        </div>
+        <div id="panelVisual"></div>
+        <div id="galleryThumbnails" class="gallery-thumbnails" style="display:none;"></div>
+        <div class="panel-content">
+            <h1 class="panel-title" id="p-title">Başlık</h1>
+            <div id="p-badges"></div>
+            <p class="panel-desc" id="p-desc"></p>
+            <div id="p-cast" class="p-cast-list"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="catModal" style="width:650px; padding:35px;">
+        <div class="modal-header"><h3>Kategorileri Yönet</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
+        <div id="catManList" style="margin-bottom:20px; max-height: 450px; overflow-y: auto; padding-right:10px;"></div>
+        <button class="submit-btn admin-only" style="background:#333; color:white; border:1px dashed #666;" onclick="window.openEditCatModal(null, null, null)">+ Yeni Ana Kategori Yarat</button>
+    </div>
+    
+    <div class="modal" id="editCatModal" style="width:400px; padding:35px; z-index:1003;">
+        <div class="modal-header"><h3 id="editCatTitle">Kategori Düzenle</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeEditCatModal()"></i></div>
+        <input type="hidden" id="ec-mId"> <input type="hidden" id="ec-sId"> <input type="hidden" id="ec-ssId">
+        <div class="form-group"><label>Kategori İsmi</label><input type="text" id="ec-name" required></div>
+        <div class="form-group"><label>İkon (Opsiyonel)</label><input type="file" id="ec-icon" accept="image/*" style="padding-top:10px;"></div>
+        <button class="submit-btn" id="saveEditCatBtn" onclick="window.saveEditCat()">Kaydet</button>
+    </div>
+
+    <div class="modal" id="loginModal" style="width:350px; padding:35px;">
+        <div class="modal-header"><h3>Yönetici Girişi</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
+        <div class="form-group"><label>E-posta</label><input type="email" id="loginEmail"></div>
+        <div class="form-group"><label>Şifre</label><input type="password" id="loginPassword"></div>
+        <div id="loginError" style="color:var(--danger-color); font-size:13px; margin-bottom:15px; text-align:center; display:none;"></div>
+        <button class="submit-btn" onclick="window.loginUser()">Giriş Yap</button>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
