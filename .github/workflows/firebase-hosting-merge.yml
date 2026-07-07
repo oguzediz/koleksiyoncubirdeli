@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Create config.js
+        env:
+          CONFIG_CONTENT: ${{ secrets.FIREBASE_CONFIG_JS }}
+        run: echo "$CONFIG_CONTENT" > config.js
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
