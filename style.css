@@ -43,8 +43,6 @@ body { display: flex; height: 100vh; overflow: hidden; background-color: var(--b
 #brandLogoContainer { flex: 1; cursor: pointer; display: flex; justify-content: flex-start; align-items: center; min-height: 40px; }
 #logoPlaceholder { border: 2px dashed var(--border-color); border-radius: 8px; width: 100%; text-align: center; color: var(--text-muted); font-size: 12px; font-weight: bold; padding: 10px; transition: 0.2s; }
 #logoPlaceholder:hover { border-color: var(--text-muted); color: white; }
-.menu-toggle-icon { cursor: pointer; color: var(--text-muted); font-size: 18px; transition: 0.2s; }
-.menu-toggle-icon:hover { color: white; }
 
 .sidebar-content { padding: 20px 15px; flex: 1; overflow-y: auto; }
 .cat-section-header { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 15px; padding-left: 5px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;}
@@ -79,7 +77,7 @@ body { display: flex; height: 100vh; overflow: hidden; background-color: var(--b
 .sub-sub-btn.active { color: var(--accent-color); font-weight: bold; }
 
 /* --- ANA İÇERİK --- */
-.main-content { flex: 1; display: flex; flex-direction: column; }
+.main-content { flex: 1; display: flex; flex-direction: column; overflow-x: hidden; }
 .top-bar { height: 75px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; border-bottom: 1px solid var(--border-color); background: var(--bg-color); }
 .search-area { flex: 1; max-width: 450px; position: relative; margin: 0 20px; }
 .search-area input { width: 100%; padding: 12px 15px 12px 40px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 12px; color: white; outline: none; transition: 0.3s; font-size: 16px;}
@@ -92,11 +90,15 @@ body { display: flex; height: 100vh; overflow: hidden; background-color: var(--b
 /* --- GALERİ MODLARI --- */
 .content-area { flex: 1; padding: 30px; overflow-y: auto; }
 .grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-.list-view { display: flex; flex-direction: column; gap: 15px; max-width: 900px; margin: 0 auto; }
-.list-view .card { flex-direction: row; height: 120px; }
-.list-view .img-container, .list-view .text-cover { width: 100px; height: 120px; border-right: 1px solid var(--border-color); font-size: 24px; }
-.masonry-view { column-count: 4; column-gap: 20px; }
-.masonry-view .card { break-inside: avoid; margin-bottom: 20px; }
+.list-view { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 900px; margin: 0 auto; }
+.list-view .card { flex-direction: row; height: auto; min-height: 120px; }
+.list-view .img-container, .list-view .text-cover { width: 100px; height: 120px; border-right: 1px solid var(--border-color); font-size: 24px; flex-shrink: 0; }
+.list-view .card-info { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: center;}
+.masonry-view { column-count: 4; column-gap: 20px; width: 100%; }
+@media (max-width: 1200px) { .masonry-view { column-count: 3; } }
+@media (max-width: 900px) { .masonry-view { column-count: 2; } }
+@media (max-width: 600px) { .masonry-view { column-count: 1; } }
+.masonry-view .card { break-inside: avoid; margin-bottom: 20px; display: inline-block; width: 100%; }
 .masonry-view .img-container { height: auto; min-height: 150px; }
 .masonry-view .img-front { position: relative; width: 100%; height: auto; max-height: none; }
 
@@ -106,7 +108,7 @@ body { display: flex; height: 100vh; overflow: hidden; background-color: var(--b
 .img-blur { position: absolute; width: 120%; height: 120%; background-size: cover; background-position: center; filter: blur(20px); opacity: 0.4; }
 .img-front { position: relative; max-width: 100%; max-height: 100%; object-fit: contain; z-index: 2; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
 .text-cover { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #1a1a1a, #333); color: var(--text-muted); font-size: 40px; font-weight: 900; }
-.card-info { padding: 15px; flex: 1; }
+.card-info { padding: 15px; flex: 1; min-width: 0; }
 .card-title { font-size: 16px; font-weight: 700; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-meta { font-size: 13px; color: var(--text-muted); display: flex; justify-content: space-between; }
 

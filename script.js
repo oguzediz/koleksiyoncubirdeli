@@ -128,32 +128,86 @@ window.toggleSubMenu = (listId, iconId, e) => {
         document.getElementById(listId)?.classList.toggle('open'); document.getElementById(iconId)?.classList.toggle('rotated'); 
     }
 };
-window.changeView = (mode) => { viewMode = mode; document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); document.getElementById(`v-${mode}`).classList.add('active'); window.renderGallery(); };
+window.changeView = (mode) => { viewMode = mode; document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); document.getElementById(`v-${mode}`)?.classList.add('active'); window.renderGallery(); };
 
-const loadData = () => { onSnapshot(query(collection(db, "arsiv"), orderBy("timestamp", "desc")), (s) => { allItems = s.docs.map(d => ({ id: d.id, ...d.data() })); window.renderGallery(); }); };
+window.toggleViewMode = () => {
+    const modes = ['grid', 'list', 'masonry'];
+    let idx = modes.indexOf(viewMode);
+    viewMode = modes[(idx + 1) % modes.length];
+    
+    const iconMap = {
+        'grid': 'fa-table-cells-large',
+        'list': 'fa-list',
+        'masonry': 'fa-cubes-stacked'
+    };
+    
+    document.getElementById('viewToggleBtn').innerHTML = `<i class="fa-solid ${iconMap[viewMode]}"></i>`;
+    window.renderGallery();
+};
+
+let galleryDOMNodes = {};
+
+window.initGalleryNodes = () => {
+    const grid = document.getElementById('galleryGrid');
+    grid.innerHTML = '';
+    galleryDOMNodes = {};
+    allItems.forEach(item => {
+        const card = document.createElement('div'); 
+        card.className = 'card'; 
+        card.onclick = () => window.openDetail(item.id);
+        const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
+        let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${coverUrl}')"></div><img src="${coverUrl}" class="img-front" loading="lazy"></div>` : `<div class="text-cover">${item.title.substring(0,2).toUpperCase()}</div>`;
+        card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta"><span>${item.category} ${item.subCategory ? '> '+item.subCategory : ''}</span></div></div>`;
+        grid.appendChild(card);
+        galleryDOMNodes[item.id] = card;
+    });
+};
+
+const loadData = () => { onSnapshot(query(collection(db, "arsiv"), orderBy("timestamp", "desc")), (s) => { 
+    allItems = s.docs.map(d => ({ id: d.id, ...d.data() })); 
+    window.initGalleryNodes(); 
+    window.renderGallery(); 
+}); };
 
 window.renderGallery = () => {
-    const grid = document.getElementById('galleryGrid'); grid.className = `${viewMode}-view`; grid.innerHTML = '';
-    const search = document.getElementById('searchInput').value.toLowerCase().trim();
+    const grid = document.getElementById('galleryGrid'); 
+    grid.className = `${viewMode}-view`; 
     
-    let filtered = allItems.filter(item => {
+    if (Object.keys(galleryDOMNodes).length !== allItems.length) {
+        window.initGalleryNodes();
+    }
+
+    const search = document.getElementById('searchInput').value.toLowerCase().trim();
+    let visibleCount = 0;
+
+    allItems.forEach(item => {
         const matchMain = currentMain === 'Tümü' || item.category === currentMain;
         const matchSub = !currentSub || item.subCategory === currentSub;
         const matchSubSub = !currentSubSub || item.subSubCategory === currentSubSub;
         let matchSearch = !search || item.title.toLowerCase().includes(search) || (item.description && item.description.toLowerCase().includes(search));
         if (item.cast && !matchSearch) { matchSearch = item.cast.some(c => c.name.toLowerCase().includes(search) || c.role.toLowerCase().includes(search)); }
-        return matchMain && matchSub && matchSubSub && matchSearch;
+        
+        const isVisible = matchMain && matchSub && matchSubSub && matchSearch;
+        const node = galleryDOMNodes[item.id];
+        if (node) {
+            node.style.display = isVisible ? '' : 'none';
+        }
+        if (isVisible) visibleCount++;
     });
 
-    if(filtered.length === 0) { grid.innerHTML = '<div style="grid-column:1/-1; padding:50px; text-align:center; color:#888;">Eser bulunamadı.</div>'; return; }
-
-    filtered.forEach(item => {
-        const card = document.createElement('div'); card.className = 'card'; card.onclick = () => window.openDetail(item.id);
-        const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
-        let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${coverUrl}')"></div><img src="${coverUrl}" class="img-front"></div>` : `<div class="text-cover">${item.title.substring(0,2).toUpperCase()}</div>`;
-        card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta"><span>${item.category} ${item.subCategory ? '> '+item.subCategory : ''}</span></div></div>`;
-        grid.appendChild(card);
-    });
+    let emptyMsg = document.getElementById('emptyMsg');
+    if(visibleCount === 0) { 
+        if (!emptyMsg) {
+            emptyMsg = document.createElement('div');
+            emptyMsg.id = 'emptyMsg';
+            emptyMsg.style = 'grid-column:1/-1; padding:50px; text-align:center; color:#888;';
+            emptyMsg.innerText = 'Eser bulunamadı.';
+            grid.appendChild(emptyMsg);
+        }
+        emptyMsg.style.display = 'block';
+    } else {
+        if (emptyMsg) emptyMsg.style.display = 'none';
+    }
 };
 
 // --- ŞABLON KAYIT SİSTEMİ ---
