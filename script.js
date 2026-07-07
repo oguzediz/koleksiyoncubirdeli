@@ -521,9 +521,4 @@ window.delCat = async (mId, sId, ssId) => {
 const saveTree = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); renderSidebar(); renderCatMan(); updateInCatSelect(); };
 const saveTreeSilent = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); updateInCatSelect(); renderCatMan(); };
 
-// --- EVENT LISTENERS ---
-const initializeEventListeners = () => {
-    document.getElementById('addNewItemBtn').addEventListener('click', window.openModal);
-};
-
-loadSystemData(); loadData(); // initializeEventListeners(); // Artık onAuthStateChanged içinde yönetiliyor.
+loadSystemData(); loadData();
