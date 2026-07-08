@@ -14,6 +14,20 @@ let currentCastArray = [];
 let currentImagesArray = [];
 let pendingImageFiles = [];
 
+// --- GÖRSEL OPTİMİZASYONU (Cloudinary) ---
+// Kart önizlemeleri artık orijinal boyutta değil, ekranda gösterileceği boyuta göre
+// küçültülmüş + otomatik formatlı (webp/avif) + kaliteli sıkıştırılmış olarak çekiliyor.
+// Blur arka planlar çok daha küçük (w_40) bir versiyon üzerinden üretiliyor; aynı görsel
+// iki kere tam boyutta inmiyor.
+const cld = (url, transform) => {
+    if (!url || typeof url !== 'string' || !url.includes('/upload/')) return url;
+    return url.replace('/upload/', `/upload/${transform}/`);
+};
+const cldThumb = (url) => cld(url, 'w_500,h_500,c_fill,q_auto,f_auto');
+const cldBlur  = (url) => cld(url, 'w_40,q_auto,f_auto,e_blur:400');
+const cldFull  = (url) => cld(url, 'w_1200,q_auto,f_auto');
+const cldMini  = (url) => cld(url, 'w_100,h_100,c_fill,q_auto,f_auto');
+
 // --- AUTHENTICATION ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -156,7 +170,7 @@ window.initGalleryNodes = () => {
         card.className = 'card'; 
         card.onclick = () => window.openDetail(item.id);
         const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
-        let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${coverUrl}')"></div><img src="${coverUrl}" class="img-front" loading="lazy"></div>` : `<div class="text-cover">${item.title.substring(0,2).toUpperCase()}</div>`;
+        let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${cldBlur(coverUrl)}')"></div><img src="${cldThumb(coverUrl)}" class="img-front" loading="lazy" decoding="async"></div>` : `<div class="text-cover">${item.title.substring(0,2).toUpperCase()}</div>`;
         card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta"><span>${item.category} ${item.subCategory ? '> '+item.subCategory : ''}</span></div></div>`;
         grid.appendChild(card);
         galleryDOMNodes[item.id] = card;
@@ -167,6 +181,9 @@ const loadData = () => { onSnapshot(query(collection(db, "arsiv"), orderBy("time
     allItems = s.docs.map(d => ({ id: d.id, ...d.data() })); 
     window.initGalleryNodes(); 
     window.renderGallery(); 
+
+    // Veri ilk geldiğinde, tarayıcıda ?item=ID varsa (sayfa yenilendi ya da paylaşılan link açıldı) paneli otomatik aç
+    if (!deepLinkChecked) { deepLinkChecked = true; checkDeepLink(); }
 }); };
 
 window.renderGallery = () => {
@@ -258,7 +275,7 @@ const renderExistingImagesPreview = () => {
     const cont = document.getElementById('existingImagesPreview');
     cont.innerHTML = ''; 
     currentImagesArray.forEach((url, idx) => {
-        cont.innerHTML += `<div class="img-box"><img src="${url}"><i class="fa-solid fa-circle-xmark del-icon" onclick="window.removeExistingImage(${idx})"></i></div>`;
+        cont.innerHTML += `<div class="img-box"><img src="${cldMini(url)}"><i class="fa-solid fa-circle-xmark del-icon" onclick="window.removeExistingImage(${idx})"></i></div>`;
     });
     pendingImageFiles.forEach((file, idx) => {
         const localUrl = URL.createObjectURL(file);
@@ -444,14 +461,18 @@ window.saveItem = async () => {
 };
 
 // --- DETAY PANELİ VE DÜZENLEME ---
-window.openDetail = (id) => {
-    activeId = id; const item = allItems.find(i => i.id === id);
+// updateUrl=false: sadece geri/ileri (popstate) ya da sayfa ilk açılışındaki deep-link durumunda kullanılır,
+// URL zaten doğru olduğu için tekrar history'e yazmaya gerek yoktur.
+window.openDetail = (id, updateUrl = true) => {
+    const item = allItems.find(i => i.id === id);
+    if (!item) return; // deep-link ile gelinen id henüz veride yoksa veya silinmişse sessizce yok say
+    activeId = id;
     const visual = document.getElementById('panelVisual'), thumbsCont = document.getElementById('galleryThumbnails');
     const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
 
     if(coverUrl) {
-        visual.innerHTML = `<div class="img-container" style="height:450px;"><div class="img-blur" id="mainBlur" style="background-image:url('${coverUrl}')"></div><img src="${coverUrl}" id="mainImg" class="img-front"></div>`;
-        if(item.images && item.images.length > 1) { thumbsCont.style.display = 'flex'; thumbsCont.innerHTML = item.images.map(img => `<img src="${img}" class="thumb-img" onclick="window.changeMainImg('${img}', this)">`).join(''); } else { thumbsCont.style.display = 'none'; }
+        visual.innerHTML = `<div class="img-container" style="height:450px;"><div class="img-blur" id="mainBlur" style="background-image:url('${cldBlur(coverUrl)}')"></div><img src="${cldFull(coverUrl)}" id="mainImg" class="img-front"></div>`;
+        if(item.images && item.images.length > 1) { thumbsCont.style.display = 'flex'; thumbsCont.innerHTML = item.images.map(img => `<img src="${cldMini(img)}" data-full="${img}" class="thumb-img" onclick="window.changeMainImg('${img}', this)">`).join(''); } else { thumbsCont.style.display = 'none'; }
     } else { visual.innerHTML = `<div class="text-cover" style="height:400px; font-size:80px;">${item.title.substring(0,2).toUpperCase()}</div>`; thumbsCont.style.display = 'none'; }
 
     document.getElementById('p-title').innerText = item.title; document.getElementById('p-desc').innerText = item.description || '';
@@ -468,9 +489,15 @@ window.openDetail = (id) => {
     const castCont = document.getElementById('p-cast');
     if(item.cast && item.cast.length > 0) { castCont.style.display = 'flex'; castCont.innerHTML = item.cast.map(c => `<div class="p-cast-card">${c.imageUrl ? `<img src="${c.imageUrl}">` : `<div style="width:45px;height:45px;border-radius:50%;background:#333;display:flex;align-items:center;justify-content:center;color:white;">${c.name.substring(0,1)}</div>`}<div><div style="font-size:13px; font-weight:bold;">${c.name}</div><div style="font-size:11px; color:var(--accent-color);">${c.role}</div></div></div>`).join(''); } else { castCont.style.display = 'none'; }
     document.getElementById('detailPanel').classList.add('open'); document.getElementById('globalOverlay').classList.add('show');
+
+    if (updateUrl) {
+        const url = new URL(window.location);
+        url.searchParams.set('item', id);
+        history.pushState({ itemId: id }, '', url);
+    }
 };
 
-window.changeMainImg = (url, el) => { document.getElementById('mainImg').src = url; document.getElementById('mainBlur').style.backgroundImage = `url('${url}')`; document.querySelectorAll('.thumb-img').forEach(i => i.classList.remove('active')); el.classList.add('active'); };
+window.changeMainImg = (url, el) => { document.getElementById('mainImg').src = cldFull(url); document.getElementById('mainBlur').style.backgroundImage = `url('${cldBlur(url)}')`; document.querySelectorAll('.thumb-img').forEach(i => i.classList.remove('active')); el.classList.add('active'); };
 
 window.editCurrentItem = () => {
     const item = allItems.find(i => i.id === activeId); resetFormState(); document.getElementById('editId').value = item.id;
@@ -503,12 +530,32 @@ window.editCurrentItem = () => {
 
 window.deleteCurrentItem = async () => { if(confirm("Bu eseri silmek istediğine emin misin?")) { await deleteDoc(doc(db, "arsiv", activeId)); window.closeAll(); } };
 
-window.closeAll = () => { 
+// updateUrl=false: geri tuşuyla (popstate) tetiklendiğinde URL zaten güncel olduğundan tekrar dokunmuyoruz.
+window.closeAll = (updateUrl = true) => { 
     resetFormState(); 
     document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); 
     document.getElementById('detailPanel').classList.remove('open'); 
     document.getElementById('globalOverlay').classList.remove('show'); 
+    activeId = null;
+
+    if (updateUrl && new URLSearchParams(location.search).has('item')) {
+        const url = new URL(window.location);
+        url.searchParams.delete('item');
+        history.pushState({}, '', url);
+    }
 };
+
+// --- DEEP LINK: URL'deki ?item=ID'yi dinle (geri/ileri tuşları + ilk açılış) ---
+let deepLinkChecked = false;
+const checkDeepLink = () => {
+    const id = new URLSearchParams(location.search).get('item');
+    if (id) { window.openDetail(id, false); }
+};
+
+window.addEventListener('popstate', () => {
+    const id = new URLSearchParams(location.search).get('item');
+    if (id) window.openDetail(id, false); else window.closeAll(false);
+});
 
 const updateInCatSelect = () => { const s = document.getElementById('in-cat'); s.innerHTML = categoryTree.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); window.updateSubSelect(); };
 window.updateSubSelect = () => { const val = document.getElementById('in-cat').value; const sub = document.getElementById('in-sub'); const cat = categoryTree.find(c => c.name === val); sub.innerHTML = '<option value="">-- Yok --</option>' + (cat ? (cat.sub||[]).map(s => `<option value="${s.name}">${s.name}</option>`).join('') : ''); window.updateSubSubSelect(); };
