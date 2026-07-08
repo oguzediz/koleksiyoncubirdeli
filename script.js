@@ -576,6 +576,9 @@ const renderCatMan = () => {
                     `).join('')}
                 </div>`).join('')}
         </div>`).join('');
+    if (auth.currentUser) {
+        document.querySelectorAll('#catManList .admin-only').forEach(el => el.style.display = 'flex');
+    }
 };
 
 window.openEditCatModal = (mId, sId, ssId) => {
