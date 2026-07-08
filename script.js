@@ -23,7 +23,7 @@ const cld = (url, transform) => {
     if (!url || typeof url !== 'string' || !url.includes('/upload/')) return url;
     return url.replace('/upload/', `/upload/${transform}/`);
 };
-const cldThumb = (url) => cld(url, 'w_500,h_500,c_limit,q_auto,f_auto');
+const cldThumb = (url) => cld(url, 'w_500,h_500,c_fill,q_auto,f_auto');
 const cldBlur  = (url) => cld(url, 'w_40,q_auto,f_auto,e_blur:400');
 const cldFull  = (url) => cld(url, 'w_1200,q_auto,f_auto');
 const cldMini  = (url) => cld(url, 'w_100,h_100,c_fill,q_auto,f_auto');
@@ -45,7 +45,6 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('userInfo').innerText = '';
         document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
     }
-    renderSidebar();
 });
 
 window.openLoginModal = () => { document.getElementById('loginModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show'); };
@@ -99,6 +98,7 @@ const renderSidebar = () => {
                 ${cat.sub && cat.sub.length > 0 ? `<div class="toggle-sub" id="toggle-${cat.id}" onclick="window.toggleSubMenu('slist-${cat.id}', 'toggle-${cat.id}', event)"><i class="fa-solid fa-chevron-down"></i></div>` : ''}
             </div>
             <div class="sub-category-list" id="slist-${cat.id}" data-parent-id="${cat.id}">
+                <div class="flyout-header">${iconHtml} <span>${cat.name}</span></div>
                 ${(cat.sub || []).map(s => {
                     const subIconHtml = s.iconUrl ? `<img src="${s.iconUrl}" class="cat-icon-img">` : `<span style="opacity:0.5;">↳</span>`;
                     const hasSS = s.sub && s.sub.length > 0;
@@ -119,6 +119,7 @@ const renderSidebar = () => {
                 }).join('')}
             </div>`;
         cont.appendChild(wrap);
+        window.wireFlyout(wrap, cat.id);
     });
     // Sadece admin giriş yapmışsa sürükle-bırak aktif olsun
     if (auth.currentUser) {
@@ -131,11 +132,12 @@ const renderSidebar = () => {
     }
 };
 
-window.selectMain = (name, id) => { currentMain = name; currentSub = null; currentSubSub = null; document.getElementById('viewTitle').innerText = name; clearSidebarActive(); document.getElementById(`cbtn-${id}`).classList.add('active'); const slist = document.getElementById(`slist-${id}`); if(slist && !slist.classList.contains('open')) { slist.classList.add('open'); document.getElementById(`toggle-${id}`)?.classList.add('rotated'); } window.renderGallery(); };
-window.selectSub = (mName, sName, mId, sId) => { currentMain = mName; currentSub = sName; currentSubSub = null; document.getElementById('viewTitle').innerText = `${mName} / ${sName}`; clearSidebarActive(); document.getElementById(`cbtn-${mId}`).classList.add('active'); document.getElementById(`sbtn-${sId}`).classList.add('active'); const sslist = document.getElementById(`sslist-${sId}`); if(sslist && !sslist.classList.contains('open')) { sslist.classList.add('open'); document.getElementById(`toggle-${sId}`)?.classList.add('rotated'); } window.renderGallery(); };
-window.selectSubSub = (mName, sName, ssName, mId, sId, ssId) => { currentMain = mName; currentSub = sName; currentSubSub = ssName; document.getElementById('viewTitle').innerText = `${mName} / ${sName} / ${ssName}`; clearSidebarActive(); document.getElementById(`cbtn-${mId}`).classList.add('active'); document.getElementById(`sbtn-${sId}`).classList.add('active'); document.getElementById(`ssbtn-${ssId}`).classList.add('active'); window.renderGallery(); };
-window.selectAll = () => { currentMain = 'Tümü'; currentSub = null; currentSubSub = null; document.getElementById('viewTitle').innerText = 'Tüm Arşiv'; clearSidebarActive(); document.getElementById('btn-all').classList.add('active'); window.renderGallery(); };
+window.selectMain = (name, id) => { currentMain = name; currentSub = null; currentSubSub = null; document.getElementById('viewTitle').innerText = name; clearSidebarActive(); document.getElementById(`cbtn-${id}`).classList.add('active'); const slist = document.getElementById(`slist-${id}`); if(slist && !slist.classList.contains('open')) { slist.classList.add('open'); document.getElementById(`toggle-${id}`)?.classList.add('rotated'); } window.renderGallery(); window.closeMobileDrawer(); };
+window.selectSub = (mName, sName, mId, sId) => { currentMain = mName; currentSub = sName; currentSubSub = null; document.getElementById('viewTitle').innerText = `${mName} / ${sName}`; clearSidebarActive(); document.getElementById(`cbtn-${mId}`).classList.add('active'); document.getElementById(`sbtn-${sId}`).classList.add('active'); const sslist = document.getElementById(`sslist-${sId}`); if(sslist && !sslist.classList.contains('open')) { sslist.classList.add('open'); document.getElementById(`toggle-${sId}`)?.classList.add('rotated'); } window.renderGallery(); window.closeMobileDrawer(); };
+window.selectSubSub = (mName, sName, ssName, mId, sId, ssId) => { currentMain = mName; currentSub = sName; currentSubSub = ssName; document.getElementById('viewTitle').innerText = `${mName} / ${sName} / ${ssName}`; clearSidebarActive(); document.getElementById(`cbtn-${mId}`).classList.add('active'); document.getElementById(`sbtn-${sId}`).classList.add('active'); document.getElementById(`ssbtn-${ssId}`).classList.add('active'); window.renderGallery(); window.closeMobileDrawer(); };
+window.selectAll = () => { currentMain = 'Tümü'; currentSub = null; currentSubSub = null; document.getElementById('viewTitle').innerText = 'Tüm Arşiv'; clearSidebarActive(); document.getElementById('btn-all').classList.add('active'); window.renderGallery(); window.closeMobileDrawer(); };
 const clearSidebarActive = () => { document.querySelectorAll('.category-btn, .sub-btn, .sub-sub-btn').forEach(b => b.classList.remove('active')); };
+window.closeMobileDrawer = () => { if (window.innerWidth <= MOBILE_BREAKPOINT) { document.getElementById('sidebar')?.classList.remove('mobile-open'); document.getElementById('globalOverlay').classList.remove('show'); } };
 window.toggleSubMenu = (listId, iconId, e) => { 
     e.stopPropagation(); 
     // Eğer tıklanan yer kategori adı değilse (yani sadece ok ise) menüyü aç/kapa
@@ -143,22 +145,73 @@ window.toggleSubMenu = (listId, iconId, e) => {
         document.getElementById(listId)?.classList.toggle('open'); document.getElementById(iconId)?.classList.toggle('rotated'); 
     }
 };
-window.changeView = (mode) => { viewMode = mode; document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); document.getElementById(`v-${mode}`)?.classList.add('active'); window.renderGallery(); };
 
-window.toggleViewMode = () => {
-    const modes = ['grid', 'list', 'masonry'];
-    let idx = modes.indexOf(viewMode);
-    viewMode = modes[(idx + 1) % modes.length];
-    
-    const iconMap = {
-        'grid': 'fa-table-cells-large',
-        'list': 'fa-list',
-        'masonry': 'fa-cubes-stacked'
-    };
-    
-    document.getElementById('viewToggleBtn').innerHTML = `<i class="fa-solid ${iconMap[viewMode]}"></i>`;
-    window.renderGallery();
+// --- SOL PANEL: DARALT/GENİŞLET (masaüstü) + AÇ/KAPA (mobil) ---
+// Masaüstünde sidebar ince bir "rail"e daralır, sadece kategori ikonları kalır; üzerine gelince
+// (hover) o kategorinin alt kategorilerini gösteren yüzen bir panel (flyout) açılır.
+// Mobilde (dar ekran) aynı buton yerine tam ekran kaplayan bir çekmece (drawer) açar/kapatır.
+const MOBILE_BREAKPOINT = 860;
+window.toggleSidebar = () => {
+    const sb = document.getElementById('sidebar');
+    const overlay = document.getElementById('globalOverlay');
+    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+        const opening = !sb.classList.contains('mobile-open');
+        sb.classList.toggle('mobile-open', opening);
+        overlay.classList.toggle('show', opening);
+    } else {
+        const collapsed = sb.classList.toggle('collapsed');
+        localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+        window.hideAllFlyouts();
+    }
 };
+
+window.hideAllFlyouts = () => document.querySelectorAll('.sub-category-list.flyout-visible').forEach(el => el.classList.remove('flyout-visible'));
+
+// Sayfa yüklendiğinde masaüstünde önceki tercihi hatırla
+(() => {
+    if (window.innerWidth > MOBILE_BREAKPOINT && localStorage.getItem('sidebarCollapsed') === '1') {
+        document.getElementById('sidebar')?.classList.add('collapsed');
+    }
+})();
+
+// Pencere mobil<->masaüstü sınırını geçerse, önceki modun durumu kalıp garip görünmesin diye sıfırla
+window.addEventListener('resize', () => {
+    const sb = document.getElementById('sidebar');
+    if (!sb) return;
+    if (window.innerWidth > MOBILE_BREAKPOINT) {
+        sb.classList.remove('mobile-open');
+        document.getElementById('globalOverlay').classList.remove('show');
+    } else {
+        sb.classList.remove('collapsed');
+        window.hideAllFlyouts();
+    }
+});
+
+// Rail (daraltılmış) modda kategori üzerine gelince alt kategori panelini konumlandırıp göster
+window.wireFlyout = (wrapEl, catId) => {
+    const btn = wrapEl.querySelector(`#cbtn-${catId}`);
+    const list = wrapEl.querySelector(`#slist-${catId}`);
+    if (!btn || !list) return;
+    let hideTimer;
+    const place = () => {
+        const r = btn.getBoundingClientRect();
+        list.style.top = `${Math.min(r.top, window.innerHeight - list.offsetHeight - 12)}px`;
+        list.style.left = `${r.right + 10}px`;
+    };
+    const show = () => {
+        if (!document.getElementById('sidebar').classList.contains('collapsed')) return;
+        clearTimeout(hideTimer);
+        window.hideAllFlyouts();
+        list.classList.add('flyout-visible');
+        place();
+    };
+    const scheduleHide = () => { hideTimer = setTimeout(() => list.classList.remove('flyout-visible'), 180); };
+    wrapEl.addEventListener('mouseenter', show);
+    wrapEl.addEventListener('mouseleave', scheduleHide);
+    list.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+    list.addEventListener('mouseleave', scheduleHide);
+};
+window.changeView = (mode) => { viewMode = mode; document.querySelectorAll('.view-switch-btn').forEach(b => b.classList.remove('active')); document.getElementById(`v-${mode}`)?.classList.add('active'); window.renderGallery(); };
 
 let galleryDOMNodes = {};
 
@@ -171,7 +224,8 @@ window.initGalleryNodes = () => {
         card.className = 'card'; 
         card.onclick = () => window.openDetail(item.id);
         const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
-        let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${cldBlur(coverUrl)}')"></div><img src="${cldThumb(coverUrl)}" class="img-front" loading="lazy" decoding="async"></div>` : `<div class="text-cover">${item.title.substring(0,2).toUpperCase()}</div>`;
+        const catTag = (item.category || '').substring(0, 3).toUpperCase();
+        let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${cldBlur(coverUrl)}')"></div><img src="${cldThumb(coverUrl)}" class="img-front" loading="lazy" decoding="async">${catTag ? `<span class="card-tag">${catTag}</span>` : ''}</div>` : `<div class="text-cover">${catTag ? `<span class="card-tag">${catTag}</span>` : ''}${item.title.substring(0,2).toUpperCase()}</div>`;
         card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta"><span>${item.category} ${item.subCategory ? '> '+item.subCategory : ''}</span></div></div>`;
         grid.appendChild(card);
         galleryDOMNodes[item.id] = card;
@@ -537,6 +591,7 @@ window.closeAll = (updateUrl = true) => {
     document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); 
     document.getElementById('detailPanel').classList.remove('open'); 
     document.getElementById('globalOverlay').classList.remove('show'); 
+    document.getElementById('sidebar')?.classList.remove('mobile-open');
     activeId = null;
 
     if (updateUrl && new URLSearchParams(location.search).has('item')) {

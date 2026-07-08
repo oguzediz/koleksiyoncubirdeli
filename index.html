@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Koleksiyoncubirdeli - Oğuz Ediz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -19,45 +22,52 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div id="brandLogoContainer" title="Logoyu Değiştir" onclick="document.getElementById('logoInput').click()">
-                <div id="logoPlaceholder"><i class="fa-solid fa-image"></i> Logo Yükle</div>
+                <div id="logoPlaceholder"><i class="fa-solid fa-image"></i> <span class="cat-text-name">Logo Yükle</span></div>
                 <img id="brandLogoImg" src="" style="display:none; max-width: 100%; max-height: 50px; object-fit: contain;">
             </div>
             <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="window.uploadLogo(event)">
+            <button class="sidebar-collapse-btn" onclick="window.toggleSidebar()" title="Kenar Çubuğunu Daralt/Genişlet"><i class="fa-solid fa-angles-left"></i></button>
         </div>
         <div class="sidebar-content">
             <div class="cat-section-header">
-                ARŞİV KATMANLARI
+                <span class="cat-text-name">ARŞİV KATMANLARI</span>
                 <button class="manage-cat-btn admin-only" onclick="window.openCatManager()" title="Kategorileri Düzenle"><i class="fa-solid fa-plus"></i></button>
             </div>
             <div class="cat-wrapper">
-                <div class="category-btn active" id="btn-all" onclick="window.selectAll()">
+                <div class="category-btn active" id="btn-all" onclick="window.selectAll()" title="Tüm Arşiv">
                     <span class="cat-name-click" style="padding-left: 15px;">
-                        <i class="fa-solid fa-folder-open" style="margin-right:8px; color:var(--accent-color)"></i> Tüm Arşiv
+                        <i class="fa-solid fa-folder-open" style="margin-right:8px; color:var(--accent-color)"></i> <span class="cat-text-name">Tüm Arşiv</span>
                     </span>
                 </div>
             </div>
             <div id="dynamicCategories"></div>
         </div>
+        <div class="sidebar-footer"><span class="cat-text-name">koleksiyoncubirdeli</span></div>
     </div>
 
     <div class="main-content">
         <div class="top-bar">
             <div style="display:flex; align-items:center;">
-                <button class="view-btn" style="margin-right:15px; font-size:18px;" onclick="document.getElementById('sidebar').classList.toggle('hidden')"><i class="fa-solid fa-indent"></i></button>
+                <button class="view-btn" id="sidebarToggleBtn" style="margin-right:15px; font-size:18px;" onclick="window.toggleSidebar()"><i class="fa-solid fa-indent"></i></button>
                 <h2 id="viewTitle" style="font-size: 18px; font-weight: 700;">Tüm Arşiv</h2>
+
             </div>
             <div class="search-area">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="searchInput" placeholder="Eser, oyuncu, yazar veya not ara..." oninput="window.renderGallery()">
             </div>
-            <div style="display:flex; gap:15px; align-items:center;">
-                <button class="view-btn" id="viewToggleBtn" onclick="window.toggleViewMode()" title="Görünümü Değiştir" style="font-size:18px; padding: 10px;"><i class="fa-solid fa-table-cells-large"></i></button>
+            <div class="top-bar-actions">
+                <div class="view-switch">
+                    <button class="view-switch-btn active" id="v-grid" onclick="window.changeView('grid')" title="Izgara Görünüm"><i class="fa-solid fa-table-cells-large"></i></button>
+                    <button class="view-switch-btn" id="v-list" onclick="window.changeView('list')" title="Liste Görünüm"><i class="fa-solid fa-list"></i></button>
+                    <button class="view-switch-btn" id="v-masonry" onclick="window.changeView('masonry')" title="Mozaik Görünüm"><i class="fa-solid fa-cubes-stacked"></i></button>
+                </div>
                 <div class="auth-controls">
                     <span id="userInfo" style="font-size:12px; color:var(--text-muted);"></span>
                     <button id="loginBtn" class="auth-btn" onclick="window.openLoginModal()">Giriş Yap</button>
                     <button id="logoutBtn" class="auth-btn" style="display:none;" onclick="window.logoutUser()">Çıkış Yap</button>
                 </div>
-                <button id="addNewItemBtn" class="admin-only" onclick="window.openModal()" style="padding: 12px 20px; border-radius: 12px; background:white; color:black; border:none; font-weight:800; cursor:pointer; font-size:14px;">+ EKLE</button>
+                <button id="addNewItemBtn" class="admin-only add-btn" onclick="window.openModal()">+ EKLE</button>
             </div>
         </div>
         <div class="content-area"><div id="galleryGrid" class="grid-view"></div></div>
