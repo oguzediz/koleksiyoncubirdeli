@@ -226,7 +226,7 @@ window.initGalleryNodes = () => {
         const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
         const catTag = (item.category || '').substring(0, 3).toUpperCase();
         let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${cldBlur(coverUrl)}')"></div><img src="${cldThumb(coverUrl)}" class="img-front" loading="lazy" decoding="async">${catTag ? `<span class="card-tag">${catTag}</span>` : ''}</div>` : `<div class="text-cover">${catTag ? `<span class="card-tag">${catTag}</span>` : ''}${item.title.substring(0,2).toUpperCase()}</div>`;
-        card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div><div class="card-meta"><span>${item.category} ${item.subCategory ? '> '+item.subCategory : ''}</span></div></div>`;
+        card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div></div>`;
         grid.appendChild(card);
         galleryDOMNodes[item.id] = card;
     });
