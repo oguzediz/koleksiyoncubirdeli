@@ -23,7 +23,7 @@ const cld = (url, transform) => {
     if (!url || typeof url !== 'string' || !url.includes('/upload/')) return url;
     return url.replace('/upload/', `/upload/${transform}/`);
 };
-const cldThumb = (url) => cld(url, 'w_500,h_500,c_fill,q_auto,f_auto');
+const cldThumb = (url) => cld(url, 'w_500,h_500,c_limit,q_auto,f_auto');
 const cldBlur  = (url) => cld(url, 'w_40,q_auto,f_auto,e_blur:400');
 const cldFull  = (url) => cld(url, 'w_1200,q_auto,f_auto');
 const cldMini  = (url) => cld(url, 'w_100,h_100,c_fill,q_auto,f_auto');
@@ -45,6 +45,7 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('userInfo').innerText = '';
         document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
     }
+    renderSidebar();
 });
 
 window.openLoginModal = () => { document.getElementById('loginModal').classList.add('show'); document.getElementById('globalOverlay').classList.add('show'); };
