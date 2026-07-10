@@ -177,6 +177,15 @@ body { display: flex; height: 100vh; overflow: hidden; background-color: var(--b
 .netflix-scroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; padding: 10px; scroll-behavior: smooth; scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none; }
 .netflix-scroll::-webkit-scrollbar { display: none; }
 .netflix-scroll .card { flex: 0 0 auto; width: 220px; scroll-snap-align: start; }
+.netflix-scroll-wrap { position: relative; }
+.netflix-arrow { position: absolute; top: 0; bottom: 20px; width: 40px; background: rgba(0,0,0,0.5); color: white; border: none; font-size: 24px; cursor: pointer; opacity: 0; transition: 0.3s; z-index: 10; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.netflix-scroll-wrap:hover .netflix-arrow { opacity: 1; }
+.netflix-arrow:hover { background: rgba(0,0,0,0.8); color: var(--accent-color); }
+.netflix-arrow.left-arrow { left: 0; border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+.netflix-arrow.right-arrow { right: 0; border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+@media (max-width: 760px) {
+    .netflix-arrow { display: none; }
+}
 .masonry-view { column-count: 4; column-gap: 20px; width: 100%; }
 @media (max-width: 1200px) { .masonry-view { column-count: 3; } }
 @media (max-width: 900px) { .masonry-view { column-count: 2; } }

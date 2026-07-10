@@ -222,7 +222,7 @@ window.initGalleryNodes = () => {
     allItems.forEach(item => {
         const card = document.createElement('div'); 
         card.className = 'card'; 
-        card.onclick = () => window.openDetail(item.id);
+        card.onclick = () => { if(!window.isDraggingCard) window.openDetail(item.id); };
         const coverUrl = (item.images && item.images.length > 0) ? item.images[0] : item.imageUrl;
         let visual = coverUrl ? `<div class="img-container"><div class="img-blur" style="background-image:url('${cldBlur(coverUrl)}')"></div><img src="${cldThumb(coverUrl)}" class="img-front" loading="lazy" decoding="async"></div>` : `<div class="text-cover">${item.title.substring(0,2).toUpperCase()}</div>`;
         card.innerHTML = `${visual}<div class="card-info"><div class="card-title">${item.title}</div></div>`;
@@ -287,14 +287,44 @@ window.renderGallery = () => {
                 <i class="fa-solid fa-grip-vertical netflix-drag-handle admin-only" title="Sıralamayı Değiştir" style="display: ${auth.currentUser ? 'inline-block' : 'none'};"></i>
             `;
             
+            const scrollWrap = document.createElement('div');
+            scrollWrap.className = 'netflix-scroll-wrap';
+            
             const scroll = document.createElement('div');
             scroll.className = 'netflix-scroll';
             catItems.forEach(item => {
                 scroll.appendChild(galleryDOMNodes[item.id]);
             });
             
+            const leftBtn = document.createElement('button');
+            leftBtn.className = 'netflix-arrow left-arrow';
+            leftBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            leftBtn.onclick = () => {
+                if (scroll.scrollLeft <= 10) {
+                    scroll.scrollTo({ left: scroll.scrollWidth, behavior: 'smooth' });
+                } else {
+                    scroll.scrollBy({ left: -scroll.clientWidth * 0.8, behavior: 'smooth' });
+                }
+            };
+            
+            const rightBtn = document.createElement('button');
+            rightBtn.className = 'netflix-arrow right-arrow';
+            rightBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            rightBtn.onclick = () => {
+                const max = scroll.scrollWidth - scroll.clientWidth;
+                if (scroll.scrollLeft >= max - 10) {
+                    scroll.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    scroll.scrollBy({ left: scroll.clientWidth * 0.8, behavior: 'smooth' });
+                }
+            };
+
+            scrollWrap.appendChild(leftBtn);
+            scrollWrap.appendChild(scroll);
+            scrollWrap.appendChild(rightBtn);
+            
             row.appendChild(header);
-            row.appendChild(scroll);
+            row.appendChild(scrollWrap);
             grid.appendChild(row);
         });
 
@@ -746,3 +776,11 @@ const saveTree = async () => { await setDoc(doc(db, "settings", "categories"), {
 const saveTreeSilent = async () => { await setDoc(doc(db, "settings", "categories"), { tree: categoryTree }); updateInCatSelect(); renderCatMan(); };
 
 loadSystemData(); loadData();
+
+// --- NETFLIX DRAG TO SCROLL ---
+window.isDraggingCard = false;
+let isDown = false, startX, scrollLeft, slider = null;
+document.addEventListener('mousedown', (e) => { slider = e.target.closest('.netflix-scroll'); if(!slider) return; isDown = true; slider.classList.add('active'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; window.isDraggingCard = false; });
+document.addEventListener('mouseleave', () => { isDown = false; if(slider) slider.classList.remove('active'); });
+document.addEventListener('mouseup', () => { isDown = false; if(slider) slider.classList.remove('active'); setTimeout(() => { window.isDraggingCard = false; }, 0); });
+document.addEventListener('mousemove', (e) => { if(!isDown || !slider) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; if (Math.abs(walk) > 5) window.isDraggingCard = true; slider.scrollLeft = scrollLeft - walk; });
