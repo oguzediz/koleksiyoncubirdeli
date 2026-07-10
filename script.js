@@ -250,6 +250,7 @@ window.renderGallery = () => {
 
     const search = document.getElementById('searchInput').value.toLowerCase().trim();
     let visibleCount = 0;
+    const visibleItems = [];
 
     allItems.forEach(item => {
         const matchMain = currentMain === 'Tümü' || item.category === currentMain;
@@ -263,15 +264,79 @@ window.renderGallery = () => {
         if (node) {
             node.style.display = isVisible ? '' : 'none';
         }
-        if (isVisible) visibleCount++;
+        if (isVisible) {
+            visibleCount++;
+            visibleItems.push(item);
+        }
     });
+
+    if (viewMode === 'list') {
+        grid.innerHTML = '';
+        categoryTree.forEach(cat => {
+            const catItems = visibleItems.filter(i => i.category === cat.name);
+            if (catItems.length === 0) return;
+            
+            const row = document.createElement('div');
+            row.className = 'netflix-row';
+            row.setAttribute('data-id', cat.id);
+            
+            const header = document.createElement('div');
+            header.className = 'netflix-row-header';
+            header.innerHTML = `
+                <h3 class="netflix-row-title">${cat.name}</h3>
+                <i class="fa-solid fa-grip-vertical netflix-drag-handle admin-only" title="Sıralamayı Değiştir" style="display: ${auth.currentUser ? 'inline-block' : 'none'};"></i>
+            `;
+            
+            const scroll = document.createElement('div');
+            scroll.className = 'netflix-scroll';
+            catItems.forEach(item => {
+                scroll.appendChild(galleryDOMNodes[item.id]);
+            });
+            
+            row.appendChild(header);
+            row.appendChild(scroll);
+            grid.appendChild(row);
+        });
+
+        if (auth.currentUser && currentMain === 'Tümü' && !search && !currentSub) {
+            if (window.netflixSortable) window.netflixSortable.destroy();
+            window.netflixSortable = Sortable.create(grid, {
+                handle: '.netflix-drag-handle',
+                animation: 150,
+                onEnd: async (evt) => {
+                    const draggedId = evt.item.getAttribute('data-id');
+                    const nextNode = evt.item.nextElementSibling;
+                    const nextId = nextNode ? nextNode.getAttribute('data-id') : null;
+
+                    const oldIdx = categoryTree.findIndex(c => c.id === draggedId);
+                    if (oldIdx > -1) {
+                        const item = categoryTree.splice(oldIdx, 1)[0];
+                        if (nextId) {
+                            const newIdx = Math.max(0, categoryTree.findIndex(c => c.id === nextId));
+                            categoryTree.splice(newIdx, 0, item);
+                        } else {
+                            categoryTree.push(item);
+                        }
+                        await saveTreeSilent();
+                    }
+                }
+            });
+        }
+    } else {
+        if (grid.querySelector('.netflix-row') || grid.innerHTML === '') {
+            grid.innerHTML = '';
+            allItems.forEach(item => {
+                grid.appendChild(galleryDOMNodes[item.id]);
+            });
+        }
+    }
 
     let emptyMsg = document.getElementById('emptyMsg');
     if(visibleCount === 0) { 
         if (!emptyMsg) {
             emptyMsg = document.createElement('div');
             emptyMsg.id = 'emptyMsg';
-            emptyMsg.style = 'grid-column:1/-1; padding:50px; text-align:center; color:#888;';
+            emptyMsg.style = 'grid-column:1/-1; padding:50px; text-align:center; color:#888; width:100%;';
             emptyMsg.innerText = 'Eser bulunamadı.';
             grid.appendChild(emptyMsg);
         }
