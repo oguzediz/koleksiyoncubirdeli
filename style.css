@@ -193,7 +193,8 @@ body { display: flex; height: 100vh; overflow: hidden; background-color: var(--b
 .card-tag { position: absolute; top: 10px; left: 10px; z-index: 3; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; background: rgba(10, 8, 6, 0.65); backdrop-filter: blur(6px); color: var(--accent-color); border: 1px solid rgba(255,255,255,0.08); }
 .img-container { position: relative; width: 100%; height: 300px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; }
 .img-blur { position: absolute; width: 120%; height: 120%; background-size: cover; background-position: center; filter: blur(20px); opacity: 0.4; }
-.img-front { position: relative; max-width: 100%; max-height: 100%; object-fit: contain; z-index: 2; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+.img-front { position: relative; max-width: 100%; max-height: 100%; object-fit: contain; z-index: 2; box-shadow: 0 0 20px rgba(0,0,0,0.5); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.card:hover .img-front { transform: scale(1.06); }
 .text-cover { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; background: linear-gradient(150deg, #201a13, #2c2013); color: var(--accent-color); font-family: var(--font-display); font-size: 46px; font-weight: 400; letter-spacing: 1px; position: relative; }
 .card-info { padding: 15px; flex: 1; min-width: 0; }
 .card-title { font-family: var(--font-serif); font-size: 17px; font-weight: 600; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.2px; }
