@@ -185,10 +185,12 @@
 
     <div class="modal" id="loginModal" style="width:350px; padding:35px;">
         <div class="modal-header"><h3>Yönetici Girişi</h3><i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.closeAll()"></i></div>
-        <div class="form-group"><label>E-posta</label><input type="email" id="loginEmail"></div>
-        <div class="form-group"><label>Şifre</label><input type="password" id="loginPassword"></div>
-        <div id="loginError" style="color:var(--danger-color); font-size:13px; margin-bottom:15px; text-align:center; display:none;"></div>
-        <button class="submit-btn" onclick="window.loginUser()">Giriş Yap</button>
+        <form onsubmit="event.preventDefault(); window.loginUser();">
+            <div class="form-group"><label>E-posta</label><input type="email" id="loginEmail" autocomplete="username"></div>
+            <div class="form-group"><label>Şifre</label><input type="password" id="loginPassword" autocomplete="current-password"></div>
+            <div id="loginError" style="color:var(--danger-color); font-size:13px; margin-bottom:15px; text-align:center; display:none;"></div>
+            <button type="submit" class="submit-btn">Giriş Yap</button>
+        </form>
     </div>
 
     <script type="module" src="script.js"></script>
