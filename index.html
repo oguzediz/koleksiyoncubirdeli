@@ -89,7 +89,11 @@
         <div class="modal-body" style="position:relative;">
             <i class="fa-solid fa-xmark" style="position:absolute; top:20px; right:25px; cursor:pointer; font-size:24px; color:var(--text-muted); z-index:100;" onclick="window.closeAll()"></i>
             <button id="emojiToggleBtn" onclick="window.toggleEmojiPicker(event)" class="floating-emoji-btn" title="Emoji Ekle" style="position:absolute; top:16px; right:65px; background:none; border:none; color:var(--accent-color); font-size:24px; cursor:pointer; z-index:100; transition:0.2s;"><i class="fa-regular fa-face-smile"></i></button>
-            <div id="emojiPickerContainer" style="display:none; position:absolute; top:50px; right:65px; z-index:9999; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border-radius:8px;">
+            <div id="emojiPickerContainer" style="display:none; position:absolute; top:50px; right:65px; z-index:9999; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border-radius:8px; background:var(--modal-bg); border: 1px solid var(--border-color); overflow:hidden; display:flex; flex-direction:column;">
+                <div id="customEmojiBar" style="padding:10px; border-bottom:1px solid #333; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <div id="customEmojiList" style="display:flex; gap:8px;"></div>
+                    <input type="text" id="newCustomEmojiInput" placeholder="+ Ekle" style="width:50px; padding:4px; font-size:14px; background:#111; color:#fff; border:1px solid #333; border-radius:4px; text-align:center;">
+                </div>
                 <emoji-picker class="dark"></emoji-picker>
             </div>
             

@@ -799,29 +799,100 @@ if(addModalBody) {
 window.toggleEmojiPicker = (e) => {
     e.preventDefault();
     const container = document.getElementById('emojiPickerContainer');
-    if(container) container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    if(container) {
+        // Toggle the picker properly
+        const isHidden = container.style.display === 'none' || container.style.display === '';
+        container.style.display = isHidden ? 'flex' : 'none';
+    }
 };
+
+function insertEmojiToFocused(emoji) {
+    if (lastFocusedInput) {
+        const start = lastFocusedInput.selectionStart || 0;
+        const end = lastFocusedInput.selectionEnd || 0;
+        const text = lastFocusedInput.value;
+        lastFocusedInput.value = text.slice(0, start) + emoji + text.slice(end);
+        lastFocusedInput.selectionStart = lastFocusedInput.selectionEnd = start + emoji.length;
+        lastFocusedInput.focus();
+        lastFocusedInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+}
+
+const customEmojiList = document.getElementById('customEmojiList');
+const newCustomEmojiInput = document.getElementById('newCustomEmojiInput');
+
+const loadCustomEmojis = () => {
+    const emojis = JSON.parse(localStorage.getItem('customEmojis') || '["✅","❌","👁️","🕶️","⭐","🍿"]');
+    if(customEmojiList) {
+        customEmojiList.innerHTML = '';
+        emojis.forEach(emoji => {
+            const span = document.createElement('span');
+            span.innerText = emoji;
+            span.style.cursor = 'pointer';
+            span.style.fontSize = '22px';
+            span.style.transition = 'transform 0.2s';
+            span.onmouseenter = () => span.style.transform = 'scale(1.2)';
+            span.onmouseleave = () => span.style.transform = 'scale(1)';
+            span.onclick = () => insertEmojiToFocused(emoji);
+            span.oncontextmenu = (e) => {
+                e.preventDefault();
+                if(confirm(emoji + ' emojisini favorilerden silmek istiyor musun?')) {
+                    const newEmojis = emojis.filter(ex => ex !== emoji);
+                    localStorage.setItem('customEmojis', JSON.stringify(newEmojis));
+                    loadCustomEmojis();
+                }
+            };
+            customEmojiList.appendChild(span);
+        });
+    }
+};
+loadCustomEmojis();
+
+if(newCustomEmojiInput) {
+    newCustomEmojiInput.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter' && newCustomEmojiInput.value.trim() !== '') {
+            const emoji = newCustomEmojiInput.value.trim();
+            const emojis = JSON.parse(localStorage.getItem('customEmojis') || '["✅","❌","👁️","🕶️","⭐","🍿"]');
+            if(!emojis.includes(emoji)) {
+                emojis.push(emoji);
+                localStorage.setItem('customEmojis', JSON.stringify(emojis));
+                loadCustomEmojis();
+            }
+            newCustomEmojiInput.value = '';
+        }
+    });
+}
 
 const emojiPicker = document.querySelector('emoji-picker');
 if(emojiPicker) {
-    emojiPicker.addEventListener('emoji-click', event => {
-        if (lastFocusedInput) {
-            const start = lastFocusedInput.selectionStart || 0;
-            const end = lastFocusedInput.selectionEnd || 0;
-            const text = lastFocusedInput.value;
-            const emoji = event.detail.unicode;
-            lastFocusedInput.value = text.slice(0, start) + emoji + text.slice(end);
-            lastFocusedInput.selectionStart = lastFocusedInput.selectionEnd = start + emoji.length;
-            lastFocusedInput.focus();
-            lastFocusedInput.dispatchEvent(new Event('input', { bubbles: true }));
+    emojiPicker.i18n = {
+        search: 'Emoji Ara (İngilizce)...',
+        clearSearch: 'Aramayı temizle',
+        notFound: 'Emoji bulunamadı',
+        skinTone: 'Ten rengi seç',
+        categories: {
+            custom: 'Özel',
+            'recent': 'Sık Kullanılanlar',
+            'smileys-emotion': 'Yüzler ve Duygular',
+            'people-body': 'Kişiler ve Vücut',
+            'animals-nature': 'Hayvanlar ve Doğa',
+            'food-drink': 'Yiyecek ve İçecek',
+            'travel-places': 'Seyahat ve Yerler',
+            'activities': 'Aktiviteler',
+            'objects': 'Nesneler',
+            'symbols': 'Semboller',
+            'flags': 'Bayraklar'
         }
+    };
+    emojiPicker.addEventListener('emoji-click', event => {
+        insertEmojiToFocused(event.detail.unicode);
     });
 }
 
 document.addEventListener('click', (e) => {
     const container = document.getElementById('emojiPickerContainer');
     const btn = document.getElementById('emojiToggleBtn');
-    if (container && btn && container.style.display === 'block' && !container.contains(e.target) && !btn.contains(e.target)) {
+    if (container && btn && (container.style.display === 'block' || container.style.display === 'flex') && !container.contains(e.target) && !btn.contains(e.target)) {
         container.style.display = 'none';
     }
 });
