@@ -224,6 +224,60 @@ body { display: flex; height: 100vh; overflow: hidden; background-color: var(--b
 #addModal { width: 950px; height: 680px; padding: 0; overflow: hidden; resize: both; min-width: 600px; min-height: 400px; }
 .floating-emoji-btn:hover { transform: scale(1.1); color: white !important; }
 #addModal.show { display: flex; flex-direction: row; }
+
+/* --- CUSTOM EMOJI PICKER STYLES --- */
+.emoji-tab-btn {
+    background: none;
+    border: none;
+    padding: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--text-muted);
+    outline: none;
+    transition: 0.2s;
+    border-bottom: 2px solid transparent;
+}
+.emoji-tab-btn:hover {
+    color: white;
+}
+.emoji-tab-btn.active {
+    border-bottom: 2px solid var(--accent-color) !important;
+    color: var(--accent-color) !important;
+}
+.custom-emoji-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 6px;
+    transition: background 0.15s, transform 0.1s;
+}
+.custom-emoji-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+.custom-emoji-item.delete-mode::after {
+    content: "×";
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background: var(--danger-color);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
 .modal-sidebar { width: 240px; background: #111; border-right: 1px solid var(--border-color); padding: 20px; display: flex; flex-direction: column; overflow-y: auto;}
 .modal-body { flex: 1; padding: 30px 40px; overflow-y: auto; position: relative; background: var(--modal-bg); }
 

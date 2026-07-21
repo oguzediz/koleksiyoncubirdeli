@@ -785,8 +785,331 @@ document.addEventListener('mouseleave', () => { isDown = false; if(slider) slide
 document.addEventListener('mouseup', () => { isDown = false; if(slider) slider.classList.remove('active'); setTimeout(() => { window.isDraggingCard = false; }, 0); });
 document.addEventListener('mousemove', (e) => { if(!isDown || !slider) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; if (Math.abs(walk) > 5) window.isDraggingCard = true; slider.scrollLeft = scrollLeft - walk; });
 
-// --- EMOJI PICKER LOGIC ---
+// --- CUSTOM TAILORED TURKISH EMOJI PICKER ---
+const emojiCategories = {
+  smileys: {
+    icon: '😊',
+    name: 'Yüzler & Duygular',
+    emojis: [
+      { char: '😀', keywords: 'gülen neşeli mutlu sırıtan smiley' },
+      { char: '😃', keywords: 'gülen mutlu neşeli gözleri açık' },
+      { char: '😄', keywords: 'gülen mutlu ağzı açık gözleri kısık' },
+      { char: '😁', keywords: 'sırıtan dişlerini gösteren mutlu' },
+      { char: '😆', keywords: 'kahkaha gülen gözleri kapalı' },
+      { char: '😅', keywords: 'soğuk ter döken gülen rahatlamış' },
+      { char: '😂', keywords: 'gülmekten ağlayan komik kahkaha' },
+      { char: '🤣', keywords: 'yerde yuvarlanarak gülen çok komik' },
+      { char: '😊', keywords: 'utangaç gülen yanakları kızarmış mutlu' },
+      { char: '😇', keywords: 'melek masum iyi' },
+      { char: '🙂', keywords: 'hafif gülen sakin' },
+      { char: '🙃', keywords: 'baş aşağı dönmüş şaka espri' },
+      { char: '😉', keywords: 'göz kırpan muzip şakacı' },
+      { char: '😌', keywords: 'rahatlamış huzurlu sakin' },
+      { char: '😍', keywords: 'gözleri kalpli aşık sevgi beğeni' },
+      { char: '🥰', keywords: 'kalplerle çevrili aşık sevgi dolu' },
+      { char: '😘', keywords: 'öpücük gönderen aşk sevgi' },
+      { char: '😋', keywords: 'dili dışarıda lezzetli leziz şaka' },
+      { char: '😛', keywords: 'dil çıkaran muzip şaka' },
+      { char: '😜', keywords: 'göz kırpıp dil çıkaran muzip' },
+      { char: '🤪', keywords: 'çılgın deli komik' },
+      { char: '😝', keywords: 'gözleri kapalı dil çıkaran şaka' },
+      { char: '🤑', keywords: 'para gözlü zengin dolar' },
+      { char: '🤗', keywords: 'sarılmak kucaklaşmak dost' },
+      { char: '🤭', keywords: 'elini ağzına götüren kıkırdayan sır' },
+      { char: '🤫', keywords: 'sus sessiz şşşt sakin' },
+      { char: '🤔', keywords: 'düşünen akıl fikir soru' },
+      { char: '🤐', keywords: 'ağzı fermuarlı sessiz sır' },
+      { char: '🤨', keywords: 'tek kaşı kalkmış şüphe sorgulama' },
+      { char: '😐', keywords: 'nötr ifadesiz tepkisiz' },
+      { char: '😑', keywords: 'ifadesiz ciddi memnuniyetsiz' },
+      { char: '😶', keywords: 'ağızsız sessiz şaşkın' },
+      { char: '😏', keywords: 'alaycı gülen kendinden emin havalı' },
+      { char: '😒', keywords: 'memnuniyetsiz sıkılmış somurtan' },
+      { char: '🙄', keywords: 'gözlerini deviren bıkkın sıkılmış' },
+      { char: '😬', keywords: 'dişlerini sıkan gergin endişeli' },
+      { char: '🤥', keywords: 'burnu uzamış yalancı yalan pinokyo' },
+      { char: '😔', keywords: 'üzgün dalgın düşünceli somurtkan' },
+      { char: '😪', keywords: 'uykulu yorgun sümük salyalı' },
+      { char: '🤤', keywords: 'ağzının suyu akan iştahlı hayran' },
+      { char: '😴', keywords: 'uyuyan horlayan zzz' },
+      { char: '😷', keywords: 'maskeli hasta korona' },
+      { char: '🤒', keywords: 'dereceli ateşli hasta' },
+      { char: '🤕', keywords: 'kafası sarılı yaralı kazalı' },
+      { char: '🤢', keywords: 'midesi bulanan iğrenen yeşil' },
+      { char: '🤮', keywords: 'kuskan iğrenç hasta' },
+      { char: '🤧', keywords: 'hapşıran mendilli nezle grip' },
+      { char: '🥵', keywords: 'sıcaklamış terlemiş kırmızı' },
+      { char: '🥶', keywords: 'üşümüş donmuş mavi buz' },
+      { char: '🥴', keywords: 'sarhoş başı dönmüş sersem' },
+      { char: '😵', keywords: 'gözleri çarpı olmuş ölü baygın' },
+      { char: '🤯', keywords: 'kafası patlamış şaşkın şok' },
+      { char: '🤠', keywords: 'kovboy şapkalı macera' },
+      { char: '🥳', keywords: 'parti kutlama şapkalı eğlence' },
+      { char: '😎', keywords: 'havalı güneş gözlüklü tarz karizma' },
+      { char: '🤓', keywords: 'gözlüklü inek dahi zeki bilgin' },
+      { char: '🧐', keywords: 'monokllü inceleyen dedektif' },
+      { char: '😕', keywords: 'kafası karışık kararsız' },
+      { char: '😟', keywords: 'endişeli üzgün' },
+      { char: '🙁', keywords: 'hafif somurtan üzgün' },
+      { char: '☹️', keywords: 'somurtan üzgün' },
+      { char: '😮', keywords: 'ağzı açık şaşırmış şok' },
+      { char: '😯', keywords: 'sessiz şaşkın şok' },
+      { char: '😲', keywords: 'çok şaşırmış şok hayret' },
+      { char: '😳', keywords: 'utanmış gözleri büyümüş kızarmış' },
+      { char: '🥺', keywords: 'yalvaran gözler kıyamam masum duyusal' },
+      { char: '😦', keywords: 'endişeli şaşkın ağzı açık' },
+      { char: '😧', keywords: 'korkmuş şaşkın' },
+      { char: '😨', keywords: 'korkmuş endişeli tırsmış' },
+      { char: '😰', keywords: 'soğuk ter döken endişeli korkmuş' },
+      { char: '😥', keywords: 'üzgün ama rahatlamış terli' },
+      { char: '😢', keywords: 'ağlayan üzgün gözü yaşlı' },
+      { char: '😭', keywords: 'hıçkıra hıçkıra ağlayan çok üzgün' },
+      { char: '😱', keywords: 'korkudan çığlık atan çığlık şok' },
+      { char: '😖', keywords: 'acı çeken rahatsız gergin' },
+      { char: '😣', keywords: 'zorlanan çabalayan sabreden' },
+      { char: '😞', keywords: 'hayal kırıklığına uğramış üzgün' },
+      { char: '😓', keywords: 'soğuk terli üzgün stresli' },
+      { char: '😩', keywords: 'tükenmiş bıkmış yorulmuş' },
+      { char: '😫', keywords: 'yorgun bıkkın yıpranmış' },
+      { char: '🥱', keywords: 'esneyen uykulu' },
+      { char: '😤', keywords: 'burnundan soluyan öfkeli gururlu' },
+      { char: '😡', keywords: 'kızgın öfkeli kırmızı sinirli' },
+      { char: '😠', keywords: 'kızgın sinirli somurtan' },
+      { char: '🤬', keywords: 'küfreden ağzı sansürlü çok kızgın' },
+      { char: '😈', keywords: 'şeytani gülen mor yaramaz' },
+      { char: '👿', keywords: 'şeytan sinirli mor kızgın' },
+      { char: '💀', keywords: 'kurukafa ölüm tehlike korsan' },
+      { char: '☠️', keywords: 'korsan ölüm tehlike' },
+      { char: '💩', keywords: 'kaka pislik sevimli komik' },
+      { char: '🤡', keywords: 'palyaço komik şaka' },
+      { char: '👻', keywords: 'hayalet korku sevimli' },
+      { char: '👽', keywords: 'uzaylı yabancı' },
+      { char: '🤖', keywords: 'robot yapay zeka teknoloji' }
+    ]
+  },
+  animals: {
+    icon: '🐱',
+    name: 'Hayvanlar & Doğa',
+    emojis: [
+      { char: '🐶', keywords: 'köpek enik sadık' },
+      { char: '🐱', keywords: 'kedi miyav pisi' },
+      { char: '🐭', keywords: 'fare kemirgen mini' },
+      { char: '🐹', keywords: 'hamster sevimli' },
+      { char: '🐰', keywords: 'tavşan havuç hızlı' },
+      { char: '🦊', keywords: 'tilki kurnaz turuncu' },
+      { char: '🐻', keywords: 'ayı kahverengi orman' },
+      { char: '🐼', keywords: 'panda bambu siyah beyaz' },
+      { char: '🐨', keywords: 'koala okaliptüs uykulu' },
+      { char: '🐯', keywords: 'kaplan vahşi çizgili' },
+      { char: '🦁', keywords: 'aslan kral vahşi' },
+      { char: '🐮', keywords: 'inek süt boğa' },
+      { char: '🐷', keywords: 'domuz pembe sevimli' },
+      { char: '🐸', keywords: 'kurbağa yeşil göl vırak' },
+      { char: '🐵', keywords: 'maymun muz komik' },
+      { char: '🐔', keywords: 'tavuk gıdak kümes' },
+      { char: '🐧', keywords: 'penguen kutup buz soğuk' },
+      { char: '🐦', keywords: 'kuş kanat ötücü' },
+      { char: '🐤', keywords: 'civciv sarı küçük' },
+      { char: '🦆', keywords: 'ördek vak göl' },
+      { char: '🦅', keywords: 'kartal yırtıcı uçan' },
+      { char: '🦉', keywords: 'baykuş gece zeki bilge' },
+      { char: '🐺', keywords: 'kurt vahşi uluyan' },
+      { char: '🐴', keywords: 'at nal koşan yele' },
+      { char: '🦄', keywords: 'tek boynuzlu at masal büyü' },
+      { char: '🐝', keywords: 'arı bal vız sokan' },
+      { char: '🦋', keywords: 'kelebek renkli kanat' },
+      { char: '🐌', keywords: 'salyangoz yavaş kabuklu' },
+      { char: '🐞', keywords: 'uğur böceği benekli kırmızı şans' },
+      { char: '🐜', keywords: 'karınca çalışkan küçük' },
+      { char: '🕸️', keywords: 'örümcek ağı sekiz bacak' },
+      { char: '🐢', keywords: 'kaplumbağa yavaş kabuk yeşil' },
+      { char: '蛇', keywords: 'yılan zehirli tıslayan' },
+      { char: '🐙', keywords: 'ahtapot deniz vantuz kollu' },
+      { char: '🐠', keywords: 'tropikal balık akvaryum renkli' },
+      { char: '🐟', keywords: 'balık deniz göl olta' },
+      { char: '🐬', keywords: 'yunus zeki deniz memeli' },
+      { char: '🐳', keywords: 'balina dev su fışkırtan' },
+      { char: '🦈', keywords: 'köpekbalığı yırtıcı dişli deniz' },
+      { char: '🐊', keywords: 'timsah nehir yırtıcı sürüngen' },
+      { char: '🐘', keywords: 'fil hortum dev gri' },
+      { char: '🦒', keywords: 'zürafa uzun boyun afrika' },
+      { char: '🕊️', keywords: 'güvercin barış beyaz kanat' },
+      { char: '🐾', keywords: 'pati izi ayak izi köpek kedi' },
+      { char: '🌵', keywords: 'kaktüs çöl dikenli yeşil' },
+      { char: '🎄', keywords: 'yılbaşı ağacı çam süslü noel' },
+      { char: '🌲', keywords: 'çam ağacı orman doğa' },
+      { char: '🌳', keywords: 'ağaç yapraklı doğa park' },
+      { char: '🌴', keywords: 'palmiye yaz plaj ada sıcak' },
+      { char: '🌱', keywords: 'filiz yaprak bitki yeni başlangıç' },
+      { char: '🍀', keywords: 'dört yapraklı yonca şans yeşil' },
+      { char: '🍁', keywords: 'akçaağaç yaprağı sonbahar kırmızı kanada' },
+      { char: '🍂', keywords: 'dökülmüş yapraklar sonbahar kuru' },
+      { char: '🌸', keywords: 'kiraz çiçeği sakura pembe bahar' },
+      { char: '🌹', keywords: 'gül kırmızı çiçek aşk sevgi' },
+      { char: '🌻', keywords: 'ayçiçeği günebakın sarı yaz' },
+      { char: '🌼', keywords: 'papatya sarı beyaz çiçek' },
+      { char: '🌷', keywords: 'lale bahar çiçek renkli' },
+      { char: '🍄', keywords: 'mantar orman zehirli kırmızı' },
+      { char: '🌾', keywords: 'pirinç başağı buğday tarım ekin' },
+      { char: '💐', keywords: 'çiçek buketi hediye tebrik kutlama' },
+      { char: '☀️', keywords: 'güneş sıcak parlak hava yaz' },
+      { char: '🌙', keywords: 'hilal ay gece gökyüzü islam' },
+      { char: '☁️', keywords: 'bulut hava gökyüzü kapalı' },
+      { char: '🌧️', keywords: 'yağmurlu bulut damla hava' },
+      { char: '⚡', keywords: 'şimşek yıldırım elektrik güç hızlı' },
+      { char: '🔥', keywords: 'ateş alev sıcak yanıyor süper popüler' },
+      { char: '❄️', keywords: 'kar tanesi kış soğuk buz' },
+      { char: '🌊', keywords: 'dalga tsunami deniz okyanus su' }
+    ]
+  },
+  food: {
+    icon: '🍔',
+    name: 'Yiyecek & İçecek',
+    emojis: [
+      { char: '🍏', keywords: 'yeşil elma meyve taze ekşi' },
+      { char: '🍎', keywords: 'kırmızı elma meyve tatlı' },
+      { char: '🍐', keywords: 'armut meyve yeşil' },
+      { char: '🍊', keywords: 'mandalina portakal narenciye vitamin' },
+      { char: '🍋', keywords: 'limon ekşi sarı vitamin' },
+      { char: '🍌', keywords: 'muz sarı meyve' },
+      { char: '🍉', keywords: 'karpuz yaz meyvesi kırmızı' },
+      { char: '🍇', keywords: 'üzüm mor meyve asma' },
+      { char: '🍓', keywords: 'çilek kırmızı lezzetli meyve' },
+      { char: '🍒', keywords: 'kiraz vişne kırmızı meyve' },
+      { char: '🍍', keywords: 'ananas tropikal dikenli meyve' },
+      { char: '🍅', keywords: 'domates kırmızı sebze salata' },
+      { char: '🍆', keywords: 'patlıcan mor sebze' },
+      { char: '🥑', keywords: 'avokado yeşil sağlıklı yağ' },
+      { char: '🌽', keywords: 'mısır sarı közlenmiş koçan' },
+      { char: '🥕', keywords: 'havuç turuncu tavşan sebze' },
+      { char: '🥔', keywords: 'patates kızartma kumpir' },
+      { char: '🍞', keywords: 'ekmek fırın somun un buğday' },
+      { char: '🥐', keywords: 'kruvasan kahvaltı tereyağlı' },
+      { char: '🧀', keywords: 'peynir sarı delikli kahvaltı' },
+      { char: '🍖', keywords: 'kemikli et mangal ızgara' },
+      { char: '🍗', keywords: 'tavuk budu kızarmış baget' },
+      { char: '🍔', keywords: 'hamburger fast food ekmek et köfte' },
+      { char: '🍟', keywords: 'patates kızartması fast food tuzlu patates' },
+      { char: '🍕', keywords: 'pizza İtalyan fast food peynirli sucuklu' },
+      { char: '🌭', keywords: 'sosisli sandviç hot dog fast food' },
+      { char: '🍳', keywords: 'tavada yumurta omlet kahvaltı pişirme' },
+      { char: '🍿', keywords: 'patlamış mısır sinema film dizi keyif mısır' },
+      { char: '🍣', keywords: 'suşi japon balık pilav yosun' },
+      { char: '🍦', keywords: 'külah dondurma tatlı soğuk yaz' },
+      { char: '🍩', keywords: 'donut çörek tatlı delikli çikolata' },
+      { char: '🍪', keywords: 'kurabiye çikolata parçacıklı bisküvi' },
+      { char: '🎂', keywords: 'doğum günü pastası mumlu pasta kutlama' },
+      { char: '🍰', keywords: 'dilim pasta çilekli tatlı fırın' },
+      { char: '🍫', keywords: 'çikolata kakao tatlı şekerleme bitter' },
+      { char: '🍬', keywords: 'şeker paketli tatlı şekerleme' },
+      { char: '☕', keywords: 'kahve çay sıcak içecek kupa espresso' },
+      { char: '🍵', keywords: 'yeşil çay bitki çayı kupa sıcak' },
+      { char: '🍺', keywords: 'bira bardak alkol bar içki' },
+      { char: '🍻', keywords: 'bira bardakları tokuşturma şerefe' },
+      { char: '🍷', keywords: 'kadeh kırmızı şarap alkol bar içki' },
+      { char: '🥃', keywords: 'viski bardağı alkol bar içki' },
+      { char: '🍹', keywords: 'tropikal kokteyl pipetli meyve suyu yaz' },
+      { char: '🥤', keywords: 'pipetli bardak kola gazoz içecek soğuk' }
+    ]
+  },
+  travel: {
+    icon: '🚗',
+    name: 'Seyahat & Yerler',
+    emojis: [
+      { char: '🚗', keywords: 'araba kırmızı otomobil binek araç' },
+      { char: '🚕', keywords: 'taksi sarı araç ulaşım' },
+      { char: '🚙', keywords: 'cip mavi arazi aracı araba' },
+      { char: '🚌', keywords: 'otobüs sarı toplu taşıma yolculuk' },
+      { char: '🏎️', keywords: 'yarış arabası formula f1 hızlı' },
+      { char: '🚓', keywords: 'polis arabası siren araç güvenlik' },
+      { char: '🚑', keywords: 'ambulans hasta hastane acil ilk yardım' },
+      { char: '🚒', keywords: 'itfaiye arabası yangın acil kırmızı' },
+      { char: '🚚', keywords: 'kamyon nakliye kargo lojistik' },
+      { char: '🚜', keywords: 'traktör tarım tarla çiftlik yeşil' },
+      { char: '🚲', keywords: 'bisiklet pedal iki teker spor ulaşım' },
+      { char: '🛵', keywords: 'motosiklet scooter kurye paket ulaşım' },
+      { char: '🚨', keywords: 'polis sireni kırmızı mavi ışık acil alarm' },
+      { char: '✈️', keywords: 'uçak uçuş seyahat havaalanı havayolu tatil' },
+      { char: '🚀', keywords: 'roket uzay fırlatma uçuş hızlı' },
+      { char: '🚁', keywords: 'helikopter hava uçuş pervaneli' },
+      { char: '⛵', keywords: 'yelkenli tekne deniz rüzgar tatil' },
+      { char: '🚢', keywords: 'gemi dev yolcu gemisi deniz okyanus' },
+      { char: '🚆', keywords: 'hızlı tren ray metro ulaşım' },
+      { char: '🗺️', keywords: 'dünya haritası atlas seyahat konum keşif' },
+      { char: '🏔️', keywords: 'karlı dağ zirve doğa kış manzara' },
+      { char: '🌋', keywords: 'yanardağ volkan lav patlama ateş' },
+      { char: '🏕️', keywords: 'kamp çadır doğa orman tatil macera' },
+      { char: '🏖️', keywords: 'plaj şemsiyeli kum deniz güneş tatil yaz' },
+      { char: '🏙️', keywords: 'şehir silüeti gökdelenler binalar metropol' },
+      { char: '🏰', keywords: 'şato kale masal kral prenses' },
+      { char: '🏠', keywords: 'ev konut yuva bina çatı' },
+      { char: '🏢', keywords: 'ofis binası işyeri plaza gökdelen' },
+      { char: '🏥', keywords: 'hastane doktor tıp acil bina' },
+      { char: '🏦', keywords: 'banka para finans bina dolar euro' },
+      { char: '🏨', keywords: 'otel konaklama seyahat tatil bina' },
+      { char: '🏫', keywords: 'okul sınıf eğitim öğrenci öğretmen' },
+      { char: '🕌', keywords: 'cami islam din ibadet minare kubbe' },
+      { char: '⛺', keywords: 'çadır kamp' }
+    ]
+  },
+  objects: {
+    icon: '💡',
+    name: 'Objeler & Semboller',
+    emojis: [
+      { char: '👓', keywords: 'gözlük görme çerçeve aksesuar' },
+      { char: '🕶️', keywords: 'güneş gözlüğü havalı yaz tarz izleme' },
+      { char: '💼', keywords: 'evrak çantası iş dosya memur toplantı' },
+      { char: '🎒', keywords: 'sırt çantası okul öğrenci seyahat kamp' },
+      { char: '👑', keywords: 'kral tacı kraliçe altın iktidar lider' },
+      { char: '💍', keywords: 'yüzük pırlanta elmas evlilik nişan aşk' },
+      { char: '💎', keywords: 'elmas mücevher pırlanta değerli taş' },
+      { char: '📱', keywords: 'akıllı telefon cep telefonu mobil teknoloji' },
+      { char: '💻', keywords: 'dizüstü bilgisayar laptop bilgisayar yazılım' },
+      { char: '📺', keywords: 'televizyon ekran dizi film yayın kutu' },
+      { char: '📷', keywords: 'fotoğraf makinesi kamera mercek çekim' },
+      { char: '📼', keywords: 'vhs kaset video bant nostalji eski film' },
+      { char: '💿', keywords: 'cd dvd disk müzik film veri saklama' },
+      { char: '💡', keywords: 'ampul fikir ışık parlak mucit elektrik' },
+      { char: '💵', keywords: 'dolar banknot yeşil para nakit finans' },
+      { char: '💳', keywords: 'kredi kartı banka kartı ödeme para' },
+      { char: '✉️', keywords: 'mektup zarf e-posta posta mesaj' },
+      { char: '📝', keywords: 'not defteri kalem yazı not alma ders' },
+      { char: '✏️', keywords: 'kurşun kalem yazı çizim eğitim okul' },
+      { char: '🔑', keywords: 'anahtar kilit açma güvenli şifre ev' },
+      { char: '🔒', keywords: 'kapalı kilit güvenli şifreli kilitli koruma' },
+      { char: '🔨', keywords: 'çekiç inşaat alet tamirat metal' },
+      { char: '🛡️', keywords: 'kalkan koruma savunma şövalye güvenli' },
+      { char: '🎨', keywords: 'ressam paleti sanat boya fırça resim çizim' },
+      { char: '🎬', keywords: 'klaket film sinema yönetmen çekim vizyon' },
+      { char: '🎤', keywords: 'mikrofon şarkı ses müzik konser' },
+      { char: '🎧', keywords: 'kulaklık müzik ses dinleme dj kablosuz' },
+      { char: '⚽', keywords: 'futbol topu spor kale maç' },
+      { char: '🏀', keywords: 'basketbol topu pota spor maç' },
+      { char: '🎯', keywords: 'hedef dart tam onikiden ok spor' },
+      { char: '🎲', keywords: 'zar masa oyunu kumar şans tavla' },
+      { char: '🎮', keywords: 'oyun konsolu konsol kumanda gamepad video' },
+      { char: '✅', keywords: 'onay yeşil tik tamam doğru evet başarılı işaret' },
+      { char: '❌', keywords: 'çarpı kırmızı iptal yanlış başarısız hayır yasak' },
+      { char: '👁️', keywords: 'göz görme bakış izleme bakmak' },
+      { char: '❤️', keywords: 'kırmızı kalp aşk sevgi kalp dostluk' },
+      { char: '⭐', keywords: 'yıldız altın puan şans favori popüler' },
+      { char: '🌟', keywords: 'parıldayan yıldız parlak yeni puan' },
+      { char: '⏳', keywords: 'kum saati süre zaman bekliyor yükleniyor' },
+      { char: '❓', keywords: 'soru işareti kırmızı soru merak' },
+      { char: '📢', keywords: 'hoparlör megafon duyuru ilan haber ses' },
+      { char: '🔔', keywords: 'zil bildirim uyarı ses alarm sarı' },
+      { char: '🎈', keywords: 'balon kırmızı parti kutlama doğum günü' },
+      { char: '🎉', keywords: 'konfeti parti patlaması kutlama tebrik' },
+      { char: '🎁', keywords: 'hediye kutusu sürpriz doğum günü' }
+    ]
+  }
+};
+
 let lastFocusedInput = null;
+let currentActiveTab = 'recent';
+let isEmojiDeleteMode = false;
+
+// Input Focus Takibi
 const addModalBody = document.querySelector('#addModal .modal-body');
 if(addModalBody) {
     addModalBody.addEventListener('focusin', (e) => {
@@ -796,16 +1119,7 @@ if(addModalBody) {
     });
 }
 
-window.toggleEmojiPicker = (e) => {
-    e.preventDefault();
-    const container = document.getElementById('emojiPickerContainer');
-    if(container) {
-        // Toggle the picker properly
-        const isHidden = container.style.display === 'none' || container.style.display === '';
-        container.style.display = isHidden ? 'flex' : 'none';
-    }
-};
-
+// Emoji Ekleme Fonksiyonu
 function insertEmojiToFocused(emoji) {
     if (lastFocusedInput) {
         const start = lastFocusedInput.selectionStart || 0;
@@ -815,114 +1129,193 @@ function insertEmojiToFocused(emoji) {
         lastFocusedInput.selectionStart = lastFocusedInput.selectionEnd = start + emoji.length;
         lastFocusedInput.focus();
         lastFocusedInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+        // Son kullanılanlara ekle
+        addToRecentEmojis(emoji);
     }
 }
 
-window.toggleEmojiSettings = (e) => {
-    e.preventDefault();
-    const container = document.getElementById('emojiSettingsContainer');
-    if(container) {
-        const isHidden = container.style.display === 'none' || container.style.display === '';
-        container.style.display = isHidden ? 'block' : 'none';
-        if(isHidden) loadCustomEmojiSettings();
+// Son Kullanılan Emojileri Kaydetme
+const getRecentEmojis = () => JSON.parse(localStorage.getItem('recentEmojis') || '[]');
+const addToRecentEmojis = (emoji) => {
+    let recents = getRecentEmojis();
+    recents = recents.filter(x => x !== emoji); // Aynısı varsa çıkar
+    recents.unshift(emoji); // Başa ekle
+    if (recents.length > 21) recents = recents.slice(0, 21); // 3 satır sınırı
+    localStorage.setItem('recentEmojis', JSON.stringify(recents));
+    if (currentActiveTab === 'recent') renderEmojisGrid();
+};
+
+// Favori Emojileri Kaydetme
+const getFavoriteEmojis = () => JSON.parse(localStorage.getItem('customEmojis') || '["✅","❌","👁️","🕶️","⭐","🍿"]');
+
+// Emoji Grid'i Render Etme
+const renderEmojisGrid = (searchQuery = '') => {
+    const grid = document.getElementById('customEmojiGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    let listToRender = [];
+
+    if (searchQuery.trim() !== '') {
+        // Arama Aktif: Tüm kategorilerde, favorilerde ve son kullanılanlarda ara
+        const query = searchQuery.toLowerCase().trim();
+        const addedChars = new Set();
+
+        const allAvailable = [
+            ...getFavoriteEmojis().map(char => ({ char, keywords: 'favori özel' })),
+            ...getRecentEmojis().map(char => ({ char, keywords: 'son son kullanılan' })),
+            ...Object.values(emojiCategories).flatMap(cat => cat.emojis)
+        ];
+
+        allAvailable.forEach(item => {
+            if ((item.char.includes(query) || (item.keywords && item.keywords.includes(query))) && !addedChars.has(item.char)) {
+                listToRender.push(item);
+                addedChars.add(item.char);
+            }
+        });
+    } else {
+        // Tab Seçimi Aktif
+        if (currentActiveTab === 'recent') {
+            const recents = getRecentEmojis();
+            if (recents.length === 0) {
+                grid.innerHTML = `<div style="grid-column: span 7; color: var(--text-muted); font-size:12px; text-align:center; padding: 20px 0;">Son kullanılan emoji yok.</div>`;
+                return;
+            }
+            listToRender = recents.map(char => ({ char }));
+        } else if (currentActiveTab === 'custom') {
+            listToRender = getFavoriteEmojis().map(char => ({ char }));
+        } else if (emojiCategories[currentActiveTab]) {
+            listToRender = emojiCategories[currentActiveTab].emojis;
+        }
     }
-};
 
-const getCustomEmojis = () => JSON.parse(localStorage.getItem('customEmojis') || '["✅","❌","👁️","🕶️","⭐","🍿"]');
+    // Grid Elemanlarını Ekleme
+    listToRender.forEach(item => {
+        const span = document.createElement('span');
+        span.className = 'custom-emoji-item';
+        span.innerText = item.char;
 
-const updatePickerCustomEmojis = () => {
-    const picker = document.querySelector('emoji-picker');
-    if(!picker) return;
-    const emojis = getCustomEmojis();
-    picker.customEmoji = emojis.map((emoji, i) => {
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-size="24">${emoji}</text></svg>`;
-        return {
-            name: emoji,
-            shortcodes: [`custom_${i}`],
-            url: `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`,
-            category: 'Favorilerim'
-        };
+        if (currentActiveTab === 'custom' && isEmojiDeleteMode && searchQuery.trim() === '') {
+            span.classList.add('delete-mode');
+            span.onclick = () => {
+                const favorites = getFavoriteEmojis().filter(x => x !== item.char);
+                localStorage.setItem('customEmojis', JSON.stringify(favorites));
+                renderEmojisGrid();
+            };
+        } else {
+            span.onclick = () => insertEmojiToFocused(item.char);
+        }
+
+        grid.appendChild(span);
     });
 };
 
-const loadCustomEmojiSettings = () => {
-    const list = document.getElementById('customEmojiManageList');
-    if(!list) return;
-    list.innerHTML = '';
-    const emojis = getCustomEmojis();
-    emojis.forEach(emoji => {
-        const div = document.createElement('div');
-        div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
-        div.style.background = '#111'; div.style.padding = '8px 12px'; div.style.borderRadius = '4px'; div.style.border = '1px solid #333';
-        div.innerHTML = `<span style="font-size:20px;">${emoji}</span> <button style="background:var(--danger-color); color:white; border:none; border-radius:4px; cursor:pointer; padding:4px 8px; font-weight:bold;">Sil</button>`;
-        div.querySelector('button').onclick = () => {
-            const newEmojis = emojis.filter(e => e !== emoji);
-            localStorage.setItem('customEmojis', JSON.stringify(newEmojis));
-            loadCustomEmojiSettings();
-            updatePickerCustomEmojis();
-        };
-        list.appendChild(div);
-    });
-};
+// Sekme Butonlarına Olay Dinleyicisi
+document.querySelectorAll('.emoji-tab-btn').forEach(btn => {
+    btn.onclick = (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.emoji-tab-btn').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
 
-window.addCustomEmoji = () => {
-    const input = document.getElementById('newCustomEmojiInput');
-    if(!input) return;
-    const val = input.value.trim();
-    if(val) {
-        const emojis = getCustomEmojis();
-        if(!emojis.includes(val)) {
-            emojis.push(val);
-            localStorage.setItem('customEmojis', JSON.stringify(emojis));
-            loadCustomEmojiSettings();
-            updatePickerCustomEmojis();
+        // Arama kutusunu sıfırla
+        const searchInput = document.getElementById('customEmojiSearch');
+        if(searchInput) searchInput.value = '';
+
+        currentActiveTab = btn.getAttribute('data-tab');
+
+        // Favoriler sekmesiyse işlemleri göster
+        const actions = document.getElementById('customEmojiActions');
+        if (actions) {
+            actions.style.display = currentActiveTab === 'custom' ? 'flex' : 'none';
+        }
+
+        // Düzenleme modunu kapat
+        isEmojiDeleteMode = false;
+        const toggleBtn = document.getElementById('toggleEmojiDeleteModeBtn');
+        if(toggleBtn) {
+            toggleBtn.innerText = 'Düzenle';
+            toggleBtn.style.background = '#2d201c';
+            toggleBtn.style.color = 'var(--danger-color)';
+        }
+
+        renderEmojisGrid();
+    };
+});
+
+// Arama Girişi Dinleyicisi
+const searchInput = document.getElementById('customEmojiSearch');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value;
+        // Arama yapılıyorsa sekmeleri pasif göster
+        if(query.trim() !== '') {
+            document.querySelectorAll('.emoji-tab-btn').forEach(x => x.classList.remove('active'));
+            const actions = document.getElementById('customEmojiActions');
+            if(actions) actions.style.display = 'none';
+        } else {
+            // Arama silindiyse aktif sekmeyi geri yükle
+            const activeBtn = document.querySelector(`.emoji-tab-btn[data-tab="${currentActiveTab}"]`);
+            if(activeBtn) activeBtn.classList.add('active');
+            const actions = document.getElementById('customEmojiActions');
+            if(actions) actions.style.display = currentActiveTab === 'custom' ? 'flex' : 'none';
+        }
+        renderEmojisGrid(query);
+    });
+}
+
+// Favori Emojilere Yeni Ekleme
+window.addEmojiToFavorites = () => {
+    const input = document.getElementById('addCustomEmojiText');
+    if (!input) return;
+    const char = input.value.trim();
+    if (char) {
+        let favorites = getFavoriteEmojis();
+        if (!favorites.includes(char)) {
+            favorites.push(char);
+            localStorage.setItem('customEmojis', JSON.stringify(favorites));
+            renderEmojisGrid();
         }
         input.value = '';
     }
 };
 
-const emojiPicker = document.querySelector('emoji-picker');
-if(emojiPicker) {
-    emojiPicker.i18n = {
-        search: 'Emoji Ara (İngilizce)...',
-        clearSearch: 'Aramayı temizle',
-        notFound: 'Emoji bulunamadı',
-        skinTone: 'Ten rengi seç',
-        categoriesLabel: 'Kategoriler',
-        skinTones: ['Varsayılan', 'Açık', 'Orta-Açık', 'Orta', 'Orta-Koyu', 'Koyu'],
-        categories: {
-            custom: 'Favorilerim',
-            recent: 'Son Kullanılanlar',
-            'smileys-emotion': 'Yüzler ve Duygular',
-            'people-body': 'Kişiler ve Vücut',
-            'animals-nature': 'Hayvanlar ve Doğa',
-            'food-drink': 'Yiyecek ve İçecek',
-            'travel-places': 'Seyahat ve Yerler',
-            'activities': 'Aktiviteler',
-            'objects': 'Nesneler',
-            'symbols': 'Semboller',
-            'flags': 'Bayraklar'
+// Favori Emojiler Düzenleme Modu
+window.toggleEmojiDeleteMode = () => {
+    isEmojiDeleteMode = !isEmojiDeleteMode;
+    const toggleBtn = document.getElementById('toggleEmojiDeleteModeBtn');
+    if (toggleBtn) {
+        if(isEmojiDeleteMode) {
+            toggleBtn.innerText = 'Bitti';
+            toggleBtn.style.background = 'var(--accent-color)';
+            toggleBtn.style.color = '#fff';
+        } else {
+            toggleBtn.innerText = 'Düzenle';
+            toggleBtn.style.background = '#2d201c';
+            toggleBtn.style.color = 'var(--danger-color)';
         }
-    };
-    
-    updatePickerCustomEmojis();
-
-    emojiPicker.addEventListener('emoji-click', event => {
-        const char = event.detail.unicode || event.detail.emoji.name;
-        insertEmojiToFocused(char);
-    });
-}
-
-document.addEventListener('click', (e) => {
-    const pCont = document.getElementById('emojiPickerContainer');
-    const pBtn = document.getElementById('emojiToggleBtn');
-    const sCont = document.getElementById('emojiSettingsContainer');
-    const sBtn = document.getElementById('emojiSettingsBtn');
-    
-    if (pCont && pBtn && (pCont.style.display === 'block' || pCont.style.display === 'flex') && !pCont.contains(e.target) && !pBtn.contains(e.target)) {
-        pCont.style.display = 'none';
     }
-    if (sCont && sBtn && (sCont.style.display === 'block') && !sCont.contains(e.target) && !sBtn.contains(e.target)) {
-        sCont.style.display = 'none';
+    renderEmojisGrid();
+};
+
+// Panel Aç / Kapat
+window.toggleEmojiPicker = (e) => {
+    e.preventDefault();
+    const container = document.getElementById('emojiPickerContainer');
+    if(container) {
+        const isHidden = container.style.display === 'none' || container.style.display === '';
+        container.style.display = isHidden ? 'flex' : 'none';
+        if (isHidden) {
+            renderEmojisGrid();
+        }
+    }
+};
+
+// Dışarı Tıklayınca Kapatma
+document.addEventListener('click', (e) => {
+    const container = document.getElementById('emojiPickerContainer');
+    const btn = document.getElementById('emojiToggleBtn');
+    if (container && btn && container.style.display === 'flex' && !container.contains(e.target) && !btn.contains(e.target)) {
+        container.style.display = 'none';
     }
 });
