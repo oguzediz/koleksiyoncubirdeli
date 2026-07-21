@@ -818,50 +818,68 @@ function insertEmojiToFocused(emoji) {
     }
 }
 
-const customEmojiList = document.getElementById('customEmojiList');
-const newCustomEmojiInput = document.getElementById('newCustomEmojiInput');
-
-const loadCustomEmojis = () => {
-    const emojis = JSON.parse(localStorage.getItem('customEmojis') || '["✅","❌","👁️","🕶️","⭐","🍿"]');
-    if(customEmojiList) {
-        customEmojiList.innerHTML = '';
-        emojis.forEach(emoji => {
-            const span = document.createElement('span');
-            span.innerText = emoji;
-            span.style.cursor = 'pointer';
-            span.style.fontSize = '22px';
-            span.style.transition = 'transform 0.2s';
-            span.onmouseenter = () => span.style.transform = 'scale(1.2)';
-            span.onmouseleave = () => span.style.transform = 'scale(1)';
-            span.onclick = () => insertEmojiToFocused(emoji);
-            span.oncontextmenu = (e) => {
-                e.preventDefault();
-                if(confirm(emoji + ' emojisini favorilerden silmek istiyor musun?')) {
-                    const newEmojis = emojis.filter(ex => ex !== emoji);
-                    localStorage.setItem('customEmojis', JSON.stringify(newEmojis));
-                    loadCustomEmojis();
-                }
-            };
-            customEmojiList.appendChild(span);
-        });
+window.toggleEmojiSettings = (e) => {
+    e.preventDefault();
+    const container = document.getElementById('emojiSettingsContainer');
+    if(container) {
+        const isHidden = container.style.display === 'none' || container.style.display === '';
+        container.style.display = isHidden ? 'block' : 'none';
+        if(isHidden) loadCustomEmojiSettings();
     }
 };
-loadCustomEmojis();
 
-if(newCustomEmojiInput) {
-    newCustomEmojiInput.addEventListener('keypress', (e) => {
-        if(e.key === 'Enter' && newCustomEmojiInput.value.trim() !== '') {
-            const emoji = newCustomEmojiInput.value.trim();
-            const emojis = JSON.parse(localStorage.getItem('customEmojis') || '["✅","❌","👁️","🕶️","⭐","🍿"]');
-            if(!emojis.includes(emoji)) {
-                emojis.push(emoji);
-                localStorage.setItem('customEmojis', JSON.stringify(emojis));
-                loadCustomEmojis();
-            }
-            newCustomEmojiInput.value = '';
-        }
+const getCustomEmojis = () => JSON.parse(localStorage.getItem('customEmojis') || '["✅","❌","👁️","🕶️","⭐","🍿"]');
+
+const updatePickerCustomEmojis = () => {
+    const picker = document.querySelector('emoji-picker');
+    if(!picker) return;
+    const emojis = getCustomEmojis();
+    picker.customEmoji = emojis.map((emoji, i) => {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-size="24">${emoji}</text></svg>`;
+        return {
+            name: emoji,
+            shortcodes: [`custom_${i}`],
+            url: `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`,
+            category: 'Favorilerim'
+        };
     });
-}
+};
+
+const loadCustomEmojiSettings = () => {
+    const list = document.getElementById('customEmojiManageList');
+    if(!list) return;
+    list.innerHTML = '';
+    const emojis = getCustomEmojis();
+    emojis.forEach(emoji => {
+        const div = document.createElement('div');
+        div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
+        div.style.background = '#111'; div.style.padding = '8px 12px'; div.style.borderRadius = '4px'; div.style.border = '1px solid #333';
+        div.innerHTML = `<span style="font-size:20px;">${emoji}</span> <button style="background:var(--danger-color); color:white; border:none; border-radius:4px; cursor:pointer; padding:4px 8px; font-weight:bold;">Sil</button>`;
+        div.querySelector('button').onclick = () => {
+            const newEmojis = emojis.filter(e => e !== emoji);
+            localStorage.setItem('customEmojis', JSON.stringify(newEmojis));
+            loadCustomEmojiSettings();
+            updatePickerCustomEmojis();
+        };
+        list.appendChild(div);
+    });
+};
+
+window.addCustomEmoji = () => {
+    const input = document.getElementById('newCustomEmojiInput');
+    if(!input) return;
+    const val = input.value.trim();
+    if(val) {
+        const emojis = getCustomEmojis();
+        if(!emojis.includes(val)) {
+            emojis.push(val);
+            localStorage.setItem('customEmojis', JSON.stringify(emojis));
+            loadCustomEmojiSettings();
+            updatePickerCustomEmojis();
+        }
+        input.value = '';
+    }
+};
 
 const emojiPicker = document.querySelector('emoji-picker');
 if(emojiPicker) {
@@ -870,9 +888,11 @@ if(emojiPicker) {
         clearSearch: 'Aramayı temizle',
         notFound: 'Emoji bulunamadı',
         skinTone: 'Ten rengi seç',
+        categoriesLabel: 'Kategoriler',
+        skinTones: ['Varsayılan', 'Açık', 'Orta-Açık', 'Orta', 'Orta-Koyu', 'Koyu'],
         categories: {
-            custom: 'Özel',
-            'recent': 'Sık Kullanılanlar',
+            custom: 'Favorilerim',
+            recent: 'Son Kullanılanlar',
             'smileys-emotion': 'Yüzler ve Duygular',
             'people-body': 'Kişiler ve Vücut',
             'animals-nature': 'Hayvanlar ve Doğa',
@@ -884,15 +904,25 @@ if(emojiPicker) {
             'flags': 'Bayraklar'
         }
     };
+    
+    updatePickerCustomEmojis();
+
     emojiPicker.addEventListener('emoji-click', event => {
-        insertEmojiToFocused(event.detail.unicode);
+        const char = event.detail.unicode || event.detail.emoji.name;
+        insertEmojiToFocused(char);
     });
 }
 
 document.addEventListener('click', (e) => {
-    const container = document.getElementById('emojiPickerContainer');
-    const btn = document.getElementById('emojiToggleBtn');
-    if (container && btn && (container.style.display === 'block' || container.style.display === 'flex') && !container.contains(e.target) && !btn.contains(e.target)) {
-        container.style.display = 'none';
+    const pCont = document.getElementById('emojiPickerContainer');
+    const pBtn = document.getElementById('emojiToggleBtn');
+    const sCont = document.getElementById('emojiSettingsContainer');
+    const sBtn = document.getElementById('emojiSettingsBtn');
+    
+    if (pCont && pBtn && (pCont.style.display === 'block' || pCont.style.display === 'flex') && !pCont.contains(e.target) && !pBtn.contains(e.target)) {
+        pCont.style.display = 'none';
+    }
+    if (sCont && sBtn && (sCont.style.display === 'block') && !sCont.contains(e.target) && !sBtn.contains(e.target)) {
+        sCont.style.display = 'none';
     }
 });
