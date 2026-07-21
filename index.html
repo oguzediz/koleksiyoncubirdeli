@@ -106,13 +106,12 @@
                 </div>
                 <!-- Emojis Grid Area -->
                 <div id="customEmojiGrid" style="flex:1; padding:12px; overflow-y:auto; display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; align-content:start;">
-                    <!-- Emojis dynamically injected here -->
                 </div>
                 <!-- Custom Tab Actions (visible only when custom tab is active) -->
-                <div id="customEmojiActions" style="display:none; padding:10px 12px; background:#18140e; border-top:1px solid var(--border-color); align-items:center; justify-content:space-between; gap:10px;">
+                <div id="customEmojiActions" style="display:none; padding:10px 12px; background:#18140e; border-top:1px solid var(--border-color); align-items:center; justify-content:space-between; gap:8px;">
                     <input type="text" id="addCustomEmojiText" placeholder="Emoji yapıştır..." maxlength="4" style="flex:1; padding:6px 10px; font-size:13px; background:var(--input-bg); color:var(--text-main); border:1px solid var(--border-color); border-radius:4px; outline:none;">
-                    <button onclick="window.addEmojiToFavorites()" style="background:var(--accent-color); color:var(--modal-bg); border:none; border-radius:4px; padding:6px 12px; font-size:13px; font-weight:bold; cursor:pointer;">Ekle</button>
-                    <button id="toggleEmojiDeleteModeBtn" onclick="window.toggleEmojiDeleteMode()" style="background:#2d201c; color:var(--danger-color); border:1px solid #4a2824; border-radius:4px; padding:6px 12px; font-size:13px; font-weight:bold; cursor:pointer;">Düzenle</button>
+                    <button onclick="window.addEmojiToFavorites()" title="Ekle" style="background:var(--accent-color); color:var(--modal-bg); border:none; border-radius:4px; padding:6px 10px; cursor:pointer; display:flex; align-items:center; justify-content:center; height:29px;"><i class="fa-solid fa-plus" style="font-size:14px;"></i></button>
+                    <button id="toggleEmojiDeleteModeBtn" onclick="window.toggleEmojiDeleteMode()" title="Düzenle" style="background:#2d201c; color:var(--danger-color); border:1px solid #4a2824; border-radius:4px; padding:6px 10px; cursor:pointer; display:flex; align-items:center; justify-content:center; height:29px;"><i class="fa-solid fa-trash-can" style="font-size:14px;"></i></button>
                 </div>
             </div>
             

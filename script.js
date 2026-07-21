@@ -1234,9 +1234,11 @@ document.querySelectorAll('.emoji-tab-btn').forEach(btn => {
         isEmojiDeleteMode = false;
         const toggleBtn = document.getElementById('toggleEmojiDeleteModeBtn');
         if(toggleBtn) {
-            toggleBtn.innerText = 'Düzenle';
+            toggleBtn.innerHTML = '<i class="fa-solid fa-trash-can" style="font-size:14px;"></i>';
+            toggleBtn.title = 'Düzenle';
             toggleBtn.style.background = '#2d201c';
             toggleBtn.style.color = 'var(--danger-color)';
+            toggleBtn.style.borderColor = '#4a2824';
         }
 
         renderEmojisGrid();
@@ -1286,13 +1288,17 @@ window.toggleEmojiDeleteMode = () => {
     const toggleBtn = document.getElementById('toggleEmojiDeleteModeBtn');
     if (toggleBtn) {
         if(isEmojiDeleteMode) {
-            toggleBtn.innerText = 'Bitti';
+            toggleBtn.innerHTML = '<i class="fa-solid fa-check" style="font-size:14px;"></i>';
+            toggleBtn.title = 'Bitti';
             toggleBtn.style.background = 'var(--accent-color)';
             toggleBtn.style.color = '#fff';
+            toggleBtn.style.borderColor = 'transparent';
         } else {
-            toggleBtn.innerText = 'Düzenle';
+            toggleBtn.innerHTML = '<i class="fa-solid fa-trash-can" style="font-size:14px;"></i>';
+            toggleBtn.title = 'Düzenle';
             toggleBtn.style.background = '#2d201c';
             toggleBtn.style.color = 'var(--danger-color)';
+            toggleBtn.style.borderColor = '#4a2824';
         }
     }
     renderEmojisGrid();
