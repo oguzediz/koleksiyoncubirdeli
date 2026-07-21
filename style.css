@@ -221,7 +221,8 @@ body { display: flex; height: 100vh; overflow: hidden; background-color: var(--b
 .modal.show { display: block; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);}
 
-#addModal { width: 950px; height: 680px; padding: 0; overflow: hidden; }
+#addModal { width: 950px; height: 680px; padding: 0; overflow: hidden; resize: both; min-width: 600px; min-height: 400px; }
+.floating-emoji-btn:hover { transform: scale(1.1); color: white !important; }
 #addModal.show { display: flex; flex-direction: row; }
 .modal-sidebar { width: 240px; background: #111; border-right: 1px solid var(--border-color); padding: 20px; display: flex; flex-direction: column; overflow-y: auto;}
 .modal-body { flex: 1; padding: 30px 40px; overflow-y: auto; position: relative; background: var(--modal-bg); }

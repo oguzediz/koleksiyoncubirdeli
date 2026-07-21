@@ -784,3 +784,44 @@ document.addEventListener('mousedown', (e) => { slider = e.target.closest('.netf
 document.addEventListener('mouseleave', () => { isDown = false; if(slider) slider.classList.remove('active'); });
 document.addEventListener('mouseup', () => { isDown = false; if(slider) slider.classList.remove('active'); setTimeout(() => { window.isDraggingCard = false; }, 0); });
 document.addEventListener('mousemove', (e) => { if(!isDown || !slider) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; if (Math.abs(walk) > 5) window.isDraggingCard = true; slider.scrollLeft = scrollLeft - walk; });
+
+// --- EMOJI PICKER LOGIC ---
+let lastFocusedInput = null;
+const addModalBody = document.querySelector('#addModal .modal-body');
+if(addModalBody) {
+    addModalBody.addEventListener('focusin', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            lastFocusedInput = e.target;
+        }
+    });
+}
+
+window.toggleEmojiPicker = (e) => {
+    e.preventDefault();
+    const container = document.getElementById('emojiPickerContainer');
+    if(container) container.style.display = container.style.display === 'none' ? 'block' : 'none';
+};
+
+const emojiPicker = document.querySelector('emoji-picker');
+if(emojiPicker) {
+    emojiPicker.addEventListener('emoji-click', event => {
+        if (lastFocusedInput) {
+            const start = lastFocusedInput.selectionStart || 0;
+            const end = lastFocusedInput.selectionEnd || 0;
+            const text = lastFocusedInput.value;
+            const emoji = event.detail.unicode;
+            lastFocusedInput.value = text.slice(0, start) + emoji + text.slice(end);
+            lastFocusedInput.selectionStart = lastFocusedInput.selectionEnd = start + emoji.length;
+            lastFocusedInput.focus();
+            lastFocusedInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+}
+
+document.addEventListener('click', (e) => {
+    const container = document.getElementById('emojiPickerContainer');
+    const btn = document.getElementById('emojiToggleBtn');
+    if (container && btn && container.style.display === 'block' && !container.contains(e.target) && !btn.contains(e.target)) {
+        container.style.display = 'none';
+    }
+});
